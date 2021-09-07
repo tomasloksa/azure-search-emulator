@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  searchqueryservice:
+    image: ${DOCKER_REGISTRY-}searchqueryservice
+    build:
+      context: .
+      dockerfile: SearchQueryService/Dockerfile
+    ports:
+      - "8000:443" 
+
+  mocksearchresultsservice:
+    image: ${DOCKER_REGISTRY-}mocksearchresultsservice
+    build:
+      context: .
+      dockerfile: MockSearchResultsService/Dockerfile
+    ports:
+      - "8001:443" 
+
+
