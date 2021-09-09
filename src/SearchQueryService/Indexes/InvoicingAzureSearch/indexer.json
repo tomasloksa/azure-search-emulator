@@ -1,0 +1,23 @@
+{
+  "@odata.context": "https://esw-priceoffers-search.search.windows.net/$metadata#indexers/$entity",
+  "@odata.etag": "\"0x8D74D78A18D518C\"",
+  "name": "invoicingindexer",
+  "description": "",
+  "dataSourceName": "invoicing",
+  "skillsetName": null,
+  "targetIndexName": "invoicingindex",
+  "disabled": null,
+  "schedule": {
+    "interval": "P1D",
+    "startTime": "0001-01-01T00:00:00Z"
+  },
+  "parameters": {
+    "batchSize": null,
+    "maxFailedItems": null,
+    "maxFailedItemsPerBatch": null,
+    "base64EncodeKeys": false,
+    "configuration": {}
+  },
+  "fieldMappings": [],
+  "outputFieldMappings": []
+}

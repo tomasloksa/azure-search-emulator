@@ -11,10 +11,10 @@ namespace SearchQueryService.Controllers
     [Route("indexes/{indexName}/docs")]
     public class SearchController : ControllerBase
     {
-        private readonly HttpClient httpClient;
-        public SearchController()
+        private readonly HttpClient _httpClient;
+        public SearchController(HttpClient httpClient)
         {
-            httpClient = new HttpClient();
+            _httpClient = httpClient;
         }
 
         [HttpGet]
@@ -40,7 +40,7 @@ namespace SearchQueryService.Controllers
 
             request.RequestUri = new Uri(searchUrl);
 
-            var response = await httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
             var weatherResponse = await response.Content.ReadAsStringAsync();
 
             return searchUrl;
