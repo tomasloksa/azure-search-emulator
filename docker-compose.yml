@@ -5,7 +5,7 @@ services:
     image: ${DOCKER_REGISTRY-}searchqueryservice
     build:
       context: .
-      dockerfile: SearchQueryService/Dockerfile
+      dockerfile: src/SearchQueryService/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
@@ -20,7 +20,7 @@ services:
     image: ${DOCKER_REGISTRY-}mocksearchresultsservice
     build:
       context: .
-      dockerfile: MockSearchResultsService/Dockerfile
+      dockerfile: src/MockSearchResultsService/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
