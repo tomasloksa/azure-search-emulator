@@ -1,0 +1,121 @@
+{
+  "name": "invoicingindex",
+  "defaultScoringProfile": "",
+  "fields": [
+    {
+      "name": "Id",
+      "type": "Edm.String",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "sortable": true,
+      "facetable": false,
+      "key": true,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "CompanyId",
+      "type": "Edm.Int64",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    }
+  ],
+  "scoringProfiles": [],
+  "corsOptions": null,
+  "suggesters": [
+    {
+      "name": "suggester",
+      "searchMode": "analyzingInfixMatching",
+      "sourceFields": [
+        "DocumentNumber",
+        "NumberingSequence"
+      ]
+    }
+  ],
+  "analyzers": [
+    {
+      "name": "slovak_asciifolding",
+      "@odata.type": "#Microsoft.Azure.Search.CustomAnalyzer",
+      "tokenizer": "slovak_tokenizer",
+      "tokenFilters": [
+        "lowercase",
+        "asciifolding"
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Azure.Search.CustomAnalyzer",
+      "name": "dateTimeAnalyzer",
+      "tokenizer": "standard_v2",
+      "tokenFilters": [
+        "shingleFilter3",
+        "shingleFilter2"
+      ],
+      "charFilters": [
+        "dateTimeSeparatorReplacer"
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Azure.Search.CustomAnalyzer",
+      "name": "numberAnalyzer",
+      "tokenizer": "standard_v2",
+      "tokenFilters": [],
+      "charFilters": [
+        "decimalSeparatorReplacer"
+      ]
+    }
+  ],
+  "tokenizers": [
+    {
+      "@odata.type": "#Microsoft.Azure.Search.MicrosoftLanguageStemmingTokenizer",
+      "name": "slovak_tokenizer",
+      "isSearchTokenizer": true,
+      "language": "slovak"
+    }
+  ],
+  "tokenFilters": [
+    {
+      "@odata.type": "#Microsoft.Azure.Search.ShingleTokenFilter",
+      "name": "shingleFilter3",
+      "maxShingleSize": 3,
+      "minShingleSize": 3,
+      "outputUnigrams": false,
+      "outputUnigramsIfNoShingles": true,
+      "tokenSeparator": " ",
+      "filterToken": "_"
+    },
+    {
+      "@odata.type": "#Microsoft.Azure.Search.ShingleTokenFilter",
+      "name": "shingleFilter2",
+      "maxShingleSize": 2,
+      "minShingleSize": 2,
+      "outputUnigrams": false,
+      "outputUnigramsIfNoShingles": true,
+      "tokenSeparator": " ",
+      "filterToken": "_"
+    }
+  ],
+  "charFilters": [
+    {
+      "@odata.type": "#Microsoft.Azure.Search.PatternReplaceCharFilter",
+      "name": "dateTimeSeparatorReplacer",
+      "pattern": "[./-]",
+      "replacement": " "
+    },
+    {
+      "@odata.type": "#Microsoft.Azure.Search.PatternReplaceCharFilter",
+      "name": "decimalSeparatorReplacer",
+      "pattern": "[,]",
+      "replacement": "."
+    }
+  ]
+}

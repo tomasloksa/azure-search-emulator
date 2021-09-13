@@ -1,21 +1,18 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace SearchQueryService
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
+            var handler = new HttpClientHandler() { UseProxy = false };
+            var indexes = new Indexes.Indexes(new HttpClient(handler));
+            indexes.CreateIndex();
+
             CreateHostBuilder(args).Build().Run();
-
-
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
