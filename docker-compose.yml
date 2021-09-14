@@ -3,10 +3,16 @@ version: '3.4'
 services:
   solr:
     image: solr:7
+    container_name: SolrService
     ports:
      - "8983:8983"
     volumes:
-      - data:/var/solr
+     - data:/var/solr
+     - data:/opt/solr
+    entrypoint:
+     - bash
+     - "-c"
+     - "precreate-core catalog-internal-index; precreate-core invoicingindex; exec solr -f"
 
   searchqueryservice:
     image: ${DOCKER_REGISTRY-}searchqueryservice

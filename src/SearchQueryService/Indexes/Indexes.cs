@@ -21,31 +21,22 @@ namespace SearchQueryService.Indexes
         public async Task<string> CreateIndex()
         {
             SearchIndex index;
-            using (StreamReader r = new StreamReader("Indexes/InvoicingAzureSearch/index.json"))
+            using (StreamReader r = new StreamReader("Indexes/CatalogAzureSearch/index.json"))
             {
                 string json = r.ReadToEnd();
                 index = JsonConvert.DeserializeObject<SearchIndex>(json);
             }
+
             var postBody = new Dictionary<string, IEnumerable<SolrField>> { { "add-field", 
                 index.Fields.Select(item => new SolrField
                 {
                     Name = item.Name,
                     Type = getSolrType(item.Type),
                     Stored = item.Retrievable
+                    // TODO ďalšie parametre
                 }) } 
+                // TODO add-copy-field https://stackoverflow.com/questions/12833592/solr-query-over-all-fields-best-practice
             };
-            /*var postBody = new
-            {
-                addfield = index.Fields.Select(item => new
-                {
-                    name = item.Name,
-                    type = item.Type,
-                    stored = item.Retrievable
-                })
-            };*/
-            var collectionUrl = "http://localhost:8983/solr/admin/cores?action=CREATE&name=" + index.Name + "&configSet=_default";
-
-            var response = await _httpClient.GetAsync(collectionUrl);
 
             string postJson = JsonConvert.SerializeObject(postBody);
             StringContent data = new StringContent(postJson, Encoding.UTF8, "application/json");
@@ -59,11 +50,11 @@ namespace SearchQueryService.Indexes
         => azType switch
         {
             "Edm.String" => "text_general",
-            "Edm.Int32" => "int",
+            "Edm.Int32" => "pint",
             "Edm.Int64" => "plong",
             "Edm.Boolean" => "boolean",
             "Edm.Double" => "double",
-            "Edm.DateTimeOffset" => "date",
+            "Edm.DateTimeOffset" => "pdate",
             _ => throw new ArgumentOutOfRangeException($"Not expected index type value: {azType}") // TODO Collection(Edm.ComplexType)
         };
    

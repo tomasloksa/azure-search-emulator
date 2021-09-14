@@ -37,5 +37,8 @@ namespace SearchQueryService.Indexes.InvoicingAzureSearch
         public string Type;
         [JsonProperty(PropertyName = "stored")]
         public bool Stored;
+        [JsonProperty(PropertyName = "indexed")]
+        public bool Indexed;
+
     }
 }
