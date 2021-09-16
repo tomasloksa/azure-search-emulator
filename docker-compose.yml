@@ -8,7 +8,6 @@ services:
      - "8983:8983"
     volumes:
      - data:/var/solr
-     - data:/opt/solr
     entrypoint:
      - bash
      - "-c"
@@ -28,21 +27,6 @@ services:
       - "8000:443" 
     #volumes:
      # - ~/.aspnet/https:/https:ro
-
-  mocksearchresultsservice:
-    image: ${DOCKER_REGISTRY-}mocksearchresultsservice
-    build:
-      context: .
-      dockerfile: src/MockSearchResultsService/Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-     # - ASPNETCORE_Kestrel__Certificates__Default__Password=123456789
-     # - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-    ports:
-      - "8001:443" 
-    #volumes:
-      #- ~/.aspnet/https:/https:ro
 
 volumes:
   data:

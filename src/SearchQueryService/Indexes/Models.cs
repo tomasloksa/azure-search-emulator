@@ -1,8 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SearchQueryService.Indexes.InvoicingAzureSearch
 {
@@ -29,7 +25,9 @@ namespace SearchQueryService.Indexes.InvoicingAzureSearch
         public string[] SynonymMaps;
     }
 
-    public class SolrField
+    public interface SolrField { }
+
+    public class SolrAddField : SolrField
     {
         [JsonProperty(PropertyName = "name")]
         public string Name;
@@ -40,5 +38,13 @@ namespace SearchQueryService.Indexes.InvoicingAzureSearch
         [JsonProperty(PropertyName = "indexed")]
         public bool Indexed;
 
+    }
+
+    public class SolrAddCopyField : SolrField
+    {
+        [JsonProperty(PropertyName = "source")]
+        public string Source;
+        [JsonProperty(PropertyName = "dest")]
+        public string Destination;
     }
 }

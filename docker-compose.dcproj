@@ -6,7 +6,7 @@
     <ProjectGuid>e15c2ff8-b32c-4478-94b4-ea6fb365b4ac</ProjectGuid>
     <DockerLaunchAction>None</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/weatherforecast</DockerServiceUrl>
-    <DockerServiceName>mocksearchresultsservice</DockerServiceName>
+    <DockerServiceName>searchqueryservice</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">

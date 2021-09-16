@@ -10,7 +10,7 @@ namespace SearchQueryService
         {
             var handler = new HttpClientHandler() { UseProxy = false };
             var indexes = new Indexes.Indexes(new HttpClient(handler));
-            indexes.CreateIndex();
+            var test = indexes.CreateIndex().Result;
 
             CreateHostBuilder(args).Build().Run();
         }
