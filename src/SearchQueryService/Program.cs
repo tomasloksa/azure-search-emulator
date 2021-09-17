@@ -10,7 +10,12 @@ namespace SearchQueryService
         {
             var handler = new HttpClientHandler() { UseProxy = false };
             var indexes = new Indexes.Indexes(new HttpClient(handler));
-            var test = indexes.CreateIndex().Result;
+
+            var directories = System.IO.Directory.GetDirectories("Indexes");
+            foreach (string dir in directories)
+            {
+                var result = indexes.CreateIndex(dir).Result;
+            }
 
             CreateHostBuilder(args).Build().Run();
         }
