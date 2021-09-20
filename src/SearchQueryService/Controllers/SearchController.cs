@@ -44,8 +44,8 @@ namespace SearchQueryService.Controllers
 
             request.RequestUri = new Uri(searchUrl);
 
-            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            _ = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var response = await _httpClient.SendAsync(request);
+            _ = await response.Content.ReadAsStringAsync();
 
             return searchUrl;
         }

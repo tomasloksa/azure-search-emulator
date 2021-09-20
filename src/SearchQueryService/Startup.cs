@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SearchQueryService.Indexes;
 using System.Net.Http;
 
 namespace SearchQueryService
@@ -17,14 +18,12 @@ namespace SearchQueryService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
             services.AddHttpClient();
-            var factory = services.BuildServiceProvider().GetService<IHttpClientFactory>();
-            CreateIndexes(factory);
+            services.AddTransient<IndexesProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IndexesProcessor indexes)
         {
             if (env.IsDevelopment())
             {
@@ -38,17 +37,8 @@ namespace SearchQueryService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-        }
 
-        private static void CreateIndexes(IHttpClientFactory httpFactory)
-        {
-            var indexes = new Indexes.Indexes(httpFactory);
-
-            var directories = System.IO.Directory.GetDirectories("../srv/demo");
-            foreach (string dir in directories)
-            {
-                _ = indexes.CreateIndex(dir);
-            }
+            _ = indexes.ProcessDirectory();
         }
     }
 }
