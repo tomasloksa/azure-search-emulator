@@ -22,12 +22,10 @@ namespace SearchQueryService.Controllers
             int skip = 0,
             string search = "",
             string filter = "",
-            string searchMode = "", // TODO zistit, ci je potrebny
+            //string searchMode = "", TODO find out if necessary
             string orderBy = ""
         )
         {
-            var rng = new Random();
-
             var request = new HttpRequestMessage();
             var searchUrl = $"http://mocksearchresultsservice/solr/{indexName}/select?q=";
             if (search.Length > 0) searchUrl += search;
@@ -38,8 +36,8 @@ namespace SearchQueryService.Controllers
 
             request.RequestUri = new Uri(searchUrl);
 
-            var response = await _httpClient.SendAsync(request);
-            var weatherResponse = await response.Content.ReadAsStringAsync();
+            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+            _ = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return searchUrl;
         }

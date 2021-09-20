@@ -2,7 +2,7 @@
 
 namespace SearchQueryService.Indexes
 {
-    public class Tools
+    public static class Tools
     {
         public static string GetSolrType(string azType)
         => azType switch

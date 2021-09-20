@@ -16,35 +16,37 @@ namespace SearchQueryService.Indexes
         public const string SearchUri = "http://solr:8983/solr/";
         private readonly HttpClient _httpClient;
 
-        public Indexes(HttpClient httpClient)
+        public Indexes(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
-        public async Task<string> CreateIndex(string indexDir)
+        public async Task CreateIndex(string indexDir)
         {
-
             SearchIndex index;
-            using (StreamReader r = new StreamReader($"{indexDir}/index.json"))
+            using (StreamReader r = new($"{indexDir}/index.json"))
             {
                 string json = r.ReadToEnd();
                 index = JsonConvert.DeserializeObject<SearchIndex>(json);
             }
 
-            UriBuilder builder = new UriBuilder(SearchUri + index.Name + "/query");
+            UriBuilder builder = new(SearchUri + index.Name + "/query");
             builder.Query = "q=*:*";
             var docsResponse = _httpClient.GetAsync(builder.Uri).Result;
             var docsResult = docsResponse.Content.ReadAsStringAsync().Result;
-            var finalResult = JsonConvert.DeserializeObject<SolrSearchResponse>(docsResult); // TODO vytiahnuť dáta z response
+            var finalResult = JsonConvert.DeserializeObject<SolrSearchResponse>(docsResult);
+
+            if (finalResult.Response.NumFound != 0)
+                return;
 
             var a = index.Fields.Select(field => SolrAddField.Create(field.Name, field));
 
             var b = index.Fields.Where(field => field.Fields is not null).SelectMany(field => field.Fields
                 .Select(nestedField => SolrAddField.Create(field.Name + "." + nestedField.Name, nestedField)));
 
-            var add = Enumerable.Concat(a, b);
+            var add = a.Concat(b);
 
-            var postBody = new Dictionary<string, IEnumerable<SolrField>> {
+            var postBody = new Dictionary<string, IEnumerable<ISolrField>> {
                 {
                     "add-field",
                     add
@@ -59,25 +61,27 @@ namespace SearchQueryService.Indexes
                 }
             };
 
-            var serializerSettings = new JsonSerializerSettings();
-            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            var serializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
 
             string postJson = JsonConvert.SerializeObject(postBody, serializerSettings);
-            StringContent data = new StringContent(postJson, Encoding.UTF8, "application/json");
+            StringContent data = new(postJson, Encoding.UTF8, "application/json");
             var indexUrl = $"{SearchUri}{index.Name}/schema";
 
-            var indexResponse = await _httpClient.PostAsync(indexUrl, data);
-            var output = await indexResponse.Content.ReadAsStringAsync();
+            var indexResponse = await _httpClient.PostAsync(indexUrl, data).ConfigureAwait(false);
+            var output = await indexResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            using (StreamReader r = new StreamReader($"{indexDir}/mockData.json"))
+            using (StreamReader r = new($"{indexDir}/mockData.json"))
             {
                 string json = r.ReadToEnd();
                 data = new StringContent(json, Encoding.UTF8, "application/json");
-                indexResponse = await _httpClient.PostAsync($"{SearchUri}{index.Name}/update/json/docs?commit=true", data);
-                output = await indexResponse.Content.ReadAsStringAsync();
+                indexResponse = await _httpClient.PostAsync($"{SearchUri}{index.Name}/update/json/docs?commit=true", data).ConfigureAwait(false);
+                output = await indexResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            return output;
+            return;
         }
     }
 }

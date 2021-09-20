@@ -1,5 +1,5 @@
 ﻿using MMLib.ToString.Abstraction;
-using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace SearchQueryService.Indexes.InvoicingAzureSearch
 {
@@ -26,10 +26,10 @@ namespace SearchQueryService.Indexes.InvoicingAzureSearch
         public string[] SynonymMaps { get; set; }
     }
 
-    public interface SolrField { }
+    public interface ISolrField { }
 
     [ToString]
-    public partial class SolrAddField : SolrField
+    public partial class SolrAddField : ISolrField
     {
         /// <summary>
         /// Name of the field.
@@ -57,7 +57,7 @@ namespace SearchQueryService.Indexes.InvoicingAzureSearch
         public bool UseDocValuesAsStored { get; set; }
 
         public static SolrAddField Create(string name, Field field)
-            => new SolrAddField
+            => new()
             {
                 Name = name,
                 Type = Tools.GetSolrType(field.Type),
@@ -68,7 +68,7 @@ namespace SearchQueryService.Indexes.InvoicingAzureSearch
             };
     }
 
-    public class SolrAddCopyField : SolrField
+    public class SolrAddCopyField : ISolrField
     {
         /// <summary>
         /// Source Field, from which the value is copied.
@@ -82,9 +82,20 @@ namespace SearchQueryService.Indexes.InvoicingAzureSearch
 
     public class SolrSearchResponse
     {
-        /// <summary>
-        /// Number of documents found.
-        /// </summary>
+        public ResponseHeader ResponseHeader { get; set; }
+        public Response Response { get; set; }
+    }
+
+    public class Response
+    {
         public int NumFound { get; set; }
+        public int Start { get; set; }
+        public List<object> Docs { get; set; }
+    }
+
+    public class ResponseHeader
+    {
+        public int Status { get; set; }
+        public int QTime { get; set; }
     }
 }
