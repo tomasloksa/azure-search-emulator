@@ -16,10 +16,7 @@ namespace SearchQueryService.Indexes
         public const string SearchUri = "http://solr:8983/solr/";
         private readonly HttpClient _httpClient;
 
-        public Indexes(IHttpClientFactory httpClientFactory)
-        {
-            _httpClient = httpClientFactory.CreateClient();
-        }
+        public Indexes(IHttpClientFactory httpClientFactory) => _httpClient = httpClientFactory.CreateClient();
 
         public async Task CreateIndex(string indexDir)
         {
@@ -37,7 +34,9 @@ namespace SearchQueryService.Indexes
             var finalResult = JsonConvert.DeserializeObject<SolrSearchResponse>(docsResult);
 
             if (finalResult.Response.NumFound != 0)
+            {
                 return;
+            }
 
             var a = index.Fields.Select(field => SolrAddField.Create(field.Name, field));
 

@@ -5,8 +5,8 @@ namespace SearchQueryService.Indexes.InvoicingAzureSearch
 {
     public class SearchIndex
     {
-        public string Name;
-        public Field[] Fields;
+        public string Name { get; set; }
+        public Field[] Fields { get; set; }
     }
 
     public class Field

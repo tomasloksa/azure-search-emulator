@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,10 +9,7 @@ namespace SearchQueryService
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
@@ -46,7 +43,8 @@ namespace SearchQueryService
         private static void CreateIndexes(IHttpClientFactory httpFactory)
         {
             var indexes = new Indexes.Indexes(httpFactory);
-            var directories = System.IO.Directory.GetDirectories("Indexes");
+
+            var directories = System.IO.Directory.GetDirectories("../srv/demo");
             foreach (string dir in directories)
             {
                 _ = indexes.CreateIndex(dir);

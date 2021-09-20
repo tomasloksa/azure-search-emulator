@@ -17,7 +17,7 @@ services:
     image: ${DOCKER_REGISTRY-}searchqueryservice
     build:
       context: .
-      dockerfile: src/SearchQueryService/Dockerfile
+      dockerfile: ../src/SearchQueryService/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
@@ -25,8 +25,8 @@ services:
       #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     ports:
       - "8000:443" 
-    #volumes:
-     # - ~/.aspnet/https:/https:ro
+    volumes:
+      - "./indexes:/srv/demo"
 
 volumes:
   data:

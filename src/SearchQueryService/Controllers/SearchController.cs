@@ -10,10 +10,7 @@ namespace SearchQueryService.Controllers
     public class SearchController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        public SearchController(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        public SearchController(IHttpClientFactory httpClientFactory) => _httpClient = httpClientFactory.CreateClient();
 
         [HttpGet]
         public async Task<string> GetAsync(
@@ -28,11 +25,22 @@ namespace SearchQueryService.Controllers
         {
             var request = new HttpRequestMessage();
             var searchUrl = $"http://mocksearchresultsservice/solr/{indexName}/select?q=";
-            if (search.Length > 0) searchUrl += search;
+            if (search.Length > 0)
+            {
+                searchUrl += search;
+            }
+
             searchUrl += "&rows=" + top;
             searchUrl += "&start=" + skip;
-            if (filter.Length > 0) searchUrl += "&fq=" + filter;
-            if (orderBy.Length > 0) searchUrl += "%sort=" + orderBy;
+            if (filter.Length > 0)
+            {
+                searchUrl += "&fq=" + filter;
+            }
+
+            if (orderBy.Length > 0)
+            {
+                searchUrl += "%sort=" + orderBy;
+            }
 
             request.RequestUri = new Uri(searchUrl);
 
