@@ -2,11 +2,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31605.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockSearchResultsService", "src\MockSearchResultsService\MockSearchResultsService.csproj", "{6A05C206-AE47-4595-8A47-8658DB83841F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchQueryService", "src\SearchQueryService\SearchQueryService.csproj", "{516AC1A3-E9DE-4E13-990E-9F739561A53D}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{E15C2FF8-B32C-4478-94B4-EA6FB365B4AC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{57D4235D-5E7A-482D-BBC0-C589AE22B591}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "demo\docker-compose.dcproj", "{E15C2FF8-B32C-4478-94B4-EA6FB365B4AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6A05C206-AE47-4595-8A47-8658DB83841F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A05C206-AE47-4595-8A47-8658DB83841F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A05C206-AE47-4595-8A47-8658DB83841F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A05C206-AE47-4595-8A47-8658DB83841F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{516AC1A3-E9DE-4E13-990E-9F739561A53D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{516AC1A3-E9DE-4E13-990E-9F739561A53D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{516AC1A3-E9DE-4E13-990E-9F739561A53D}.Release|Any CPU.ActiveCfg = Release|Any CPU

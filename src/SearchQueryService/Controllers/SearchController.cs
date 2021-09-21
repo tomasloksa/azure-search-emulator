@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MockSearchResultsService;
-using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,11 +9,8 @@ namespace SearchQueryService.Controllers
     [Route("indexes/{indexName}/docs")]
     public class SearchController : ControllerBase
     {
-        private readonly HttpClient httpClient;
-        public SearchController()
-        {
-            httpClient = new HttpClient();
-        }
+        private readonly HttpClient _httpClient;
+        public SearchController(IHttpClientFactory httpClientFactory) => _httpClient = httpClientFactory.CreateClient();
 
         [HttpGet]
         public async Task<string> GetAsync(
@@ -24,24 +19,33 @@ namespace SearchQueryService.Controllers
             int skip = 0,
             string search = "",
             string filter = "",
-            string searchMode = "", // TODO zistit, ci je potrebny
+            //string searchMode = "", TODO find out if necessary
             string orderBy = ""
         )
         {
-            var rng = new Random();
-
             var request = new HttpRequestMessage();
             var searchUrl = $"http://mocksearchresultsservice/solr/{indexName}/select?q=";
-            if (search.Length > 0) searchUrl += search;
+            if (search.Length > 0)
+            {
+                searchUrl += search;
+            }
+
             searchUrl += "&rows=" + top;
             searchUrl += "&start=" + skip;
-            if (filter.Length > 0) searchUrl += "&fq=" + filter;
-            if (orderBy.Length > 0) searchUrl += "%sort=" + orderBy;
+            if (filter.Length > 0)
+            {
+                searchUrl += "&fq=" + filter;
+            }
+
+            if (orderBy.Length > 0)
+            {
+                searchUrl += "%sort=" + orderBy;
+            }
 
             request.RequestUri = new Uri(searchUrl);
 
-            var response = await httpClient.SendAsync(request);
-            var weatherResponse = await response.Content.ReadAsStringAsync();
+            var response = await _httpClient.SendAsync(request);
+            _ = await response.Content.ReadAsStringAsync();
 
             return searchUrl;
         }

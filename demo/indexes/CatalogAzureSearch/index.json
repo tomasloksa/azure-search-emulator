@@ -1,0 +1,295 @@
+﻿{
+  "name": "catalog-internal-index",
+  "defaultScoringProfile": "",
+    "fields": [
+        {
+            "name": "Id",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": true,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "CompanyId",
+            "type": "Edm.Int64",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": false,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "Name",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": "slovak_asciifolding",
+            "synonymMaps": []
+        },
+        {
+            "name": "Description",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "Description_Searchable",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": false,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": "slovak_asciifolding",
+            "synonymMaps": []
+        },
+        {
+            "name": "MeasureUnit",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "UnitPrice",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": "numberAnalyzer",
+            "synonymMaps": []
+        },
+        {
+            "name": "UnitPriceInclVat",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": "numberAnalyzer",
+            "synonymMaps": []
+        },
+        {
+            "name": "VatRate",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "IsDeleted",
+            "type": "Edm.Boolean",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": false,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "Number",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": false,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "ItemCode",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "QuantityOnHand",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "StockItemType",
+            "type": "Edm.Int32",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "CreatedTimestamp",
+            "type": "Edm.DateTimeOffset",
+            "searchable": false,
+            "filterable": false,
+            "retrievable": false,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "RowVersionAsLong",
+            "type": "Edm.Int64",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "synonymMaps": []
+        }
+    ],
+  "scoringProfiles": [],
+  "corsOptions": null,
+  "suggesters": [],
+  "analyzers": [
+    {
+      "name": "slovak_asciifolding",
+      "@odata.type": "#Microsoft.Azure.Search.CustomAnalyzer",
+      "tokenizer": "slovak_tokenizer",
+      "tokenFilters": [
+        "lowercase",
+        "asciifolding"
+      ]
+    },
+    {
+      "name": "numberAnalyzer",
+      "@odata.type": "#Microsoft.Azure.Search.CustomAnalyzer",
+      "tokenizer": "standard_v2",
+      "tokenFilters": [],
+      "charFilters": [
+        "decimalSeparatorReplacer"
+      ]
+    }
+  ],
+  "tokenizers": [
+    {
+      "@odata.type": "#Microsoft.Azure.Search.MicrosoftLanguageStemmingTokenizer",
+      "name": "slovak_tokenizer",
+      "isSearchTokenizer": true,
+      "language": "slovak"
+    }
+  ],
+  "tokenFilters": [
+    {
+      "@odata.type": "#Microsoft.Azure.Search.ShingleTokenFilter",
+      "name": "shingleFilter3",
+      "maxShingleSize": 3,
+      "minShingleSize": 3,
+      "outputUnigrams": false,
+      "outputUnigramsIfNoShingles": true,
+      "tokenSeparator": " ",
+      "filterToken": "_"
+    },
+    {
+      "@odata.type": "#Microsoft.Azure.Search.ShingleTokenFilter",
+      "name": "shingleFilter2",
+      "maxShingleSize": 2,
+      "minShingleSize": 2,
+      "outputUnigrams": false,
+      "outputUnigramsIfNoShingles": true,
+      "tokenSeparator": " ",
+      "filterToken": "_"
+    }
+  ],
+  "charFilters": [
+    {
+      "@odata.type": "#Microsoft.Azure.Search.PatternReplaceCharFilter",
+      "name": "dateTimeSeparatorReplacer",
+      "pattern": "[./-]",
+      "replacement": " "
+    },
+    {
+      "@odata.type": "#Microsoft.Azure.Search.PatternReplaceCharFilter",
+      "name": "decimalSeparatorReplacer",
+      "pattern": "[,]",
+      "replacement": "."
+    }
+  ]
+}

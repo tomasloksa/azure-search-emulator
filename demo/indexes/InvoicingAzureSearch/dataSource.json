@@ -1,0 +1,22 @@
+{
+    "name": "invoicing",
+    "description": null,
+    "type": "azuresql",
+    "subtype": null,
+    "credentials": {
+        "connectionString": null
+    },
+    "container": {
+        "name": "[InvoicesSearch]",
+        "query": null
+    },
+    "dataChangeDetectionPolicy": {
+        "@odata.type": "#Microsoft.Azure.Search.HighWaterMarkChangeDetectionPolicy",
+        "highWaterMarkColumnName": "RowVersion"
+    },
+    "dataDeletionDetectionPolicy": {
+        "@odata.type": "#Microsoft.Azure.Search.SoftDeleteColumnDeletionDetectionPolicy",
+        "softDeleteColumnName": "IsDeleted",
+        "softDeleteMarkerValue": "true"
+    }
+}
