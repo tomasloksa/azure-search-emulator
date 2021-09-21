@@ -49,6 +49,7 @@ namespace SearchQueryService.Indexes
 
             await _httpClient.PostAsync(indexUrl, data);
         }
+
         private static Dictionary<string, IEnumerable<ISolrField>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
             new()
             {

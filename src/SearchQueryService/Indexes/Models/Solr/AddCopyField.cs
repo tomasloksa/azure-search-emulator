@@ -6,6 +6,7 @@
         /// Source Field, from which the value is copied.
         /// </summary>
         public string Source { get; set; }
+
         /// <summary>
         /// Destination Field, where the value is copied.
         /// </summary>
