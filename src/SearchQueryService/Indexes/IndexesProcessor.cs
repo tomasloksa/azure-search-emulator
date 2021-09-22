@@ -33,6 +33,9 @@ namespace SearchQueryService.Indexes
                 var postBody = CreateSchemaPostBody(fieldsToAdd);
                 CreateCoreSchema(postBody, index.Name);
 
+                // TODO find a better solution
+                System.Threading.Thread.Sleep(5000);
+
                 PostMockData(indexDir, index.Name);
             }
         }
@@ -64,6 +67,18 @@ namespace SearchQueryService.Indexes
                         Source = item.Name,
                         Dest = "_text_"
                     })
+                },
+                {
+                    "add-dynamic-field",
+                    new[] { new AddField
+                    {
+                        Name = "*",
+                        Type = "text_general",
+                        MultiValued = true,
+                        Indexed = false,
+                        Stored = false,
+                        UseDocValuesAsStored = false
+                    }}
                 }
             };
 
@@ -98,7 +113,8 @@ namespace SearchQueryService.Indexes
                 {
                     string json = r.ReadToEnd();
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    await _httpClient.PostAsync($"{SearchUri}{indexName}/update/json/docs?commit=true", data);
+                    var result = await _httpClient.PostAsync($"{SearchUri}{indexName}/update/json/docs?commit=true", data);
+                    var readable = result.Content.ReadAsStringAsync();
                 }
             }
         }

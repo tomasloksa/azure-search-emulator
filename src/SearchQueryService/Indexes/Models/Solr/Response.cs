@@ -8,6 +8,7 @@ namespace SearchQueryService.Indexes.Models
 
         public int Start { get; set; }
 
-        public List<object> Docs { get; set; }
+        public IEnumerable<Dictionary<string, object>> Docs { get; set; }
     }
+
 }
