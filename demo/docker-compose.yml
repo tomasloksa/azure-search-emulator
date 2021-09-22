@@ -24,9 +24,24 @@ services:
       #- ASPNETCORE_Kestrel__Certificates__Default__Password=123456789
       #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     ports:
-      - "8000:443" 
+      - "8000:443"
+      - "8001:80"
     volumes:
       - "./indexes:/srv/demo"
+
+  searchapi:
+    image: ${DOCKER_REGISTRY-}searchapi
+    build:
+      context: .
+      dockerfile: ./SearchApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=123456789
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    ports:
+      - "7000:443" 
+      - "7001:80" 
 
 volumes:
   data:
