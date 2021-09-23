@@ -10,5 +10,4 @@ namespace SearchQueryService.Indexes.Models
 
         public IEnumerable<Dictionary<string, object>> Docs { get; set; }
     }
-
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SearchQueryService.Indexes.Models;
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -12,37 +12,51 @@ namespace SearchQueryService.Controllers
     public class SearchController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        public SearchController(IHttpClientFactory httpClientFactory) => _httpClient = httpClientFactory.CreateClient();
+        private readonly IConfiguration _config;
+
+        public SearchController(
+            IHttpClientFactory httpClientFactory,
+            IConfiguration configuration)
+        {
+            _httpClient = httpClientFactory.CreateClient();
+            _config = configuration;
+        }
 
         [HttpGet]
         public async Task<object> GetAsync(
             [FromRoute] string indexName,
-            [FromQuery(Name ="$top")]
-            int top = 10,
-            [FromQuery(Name ="$skip")]
-            int skip = 0,
-            string search = "",
-            string filter = "",
-            //string searchMode = "", TODO find out if necessary
-            string orderBy = ""
+            [FromQuery(Name = "$top")] int? top,
+            [FromQuery(Name = "$skip")] int? skip,
+            [FromQuery] string search,
+            [FromQuery] string filter,
+            //string searchMode = "", TODO find out how to set
+            [FromQuery(Name = "$orderby")] string orderBy
         )
         {
-            var searchUrl = $"http://solr:8983/solr/{indexName}/select?q=";
-            if (search.Length > 0)
+            var searchUrl = _config.GetConnectionString("SolrUri") + indexName + "/select?q=";
+            if (!string.IsNullOrEmpty(search))
             {
                 searchUrl += search;
             }
 
-            searchUrl += "&rows=" + top;
-            searchUrl += "&start=" + skip;
-            if (filter.Length > 0)
+            if (top is not null)
+            {
+                searchUrl += "&rows=" + top;
+            }
+
+            if (skip is not null)
+            {
+                searchUrl += "&start=" + skip;
+            }
+
+            if (!string.IsNullOrEmpty(filter))
             {
                 searchUrl += "&fq=" + filter;
             }
 
-            if (orderBy.Length > 0)
+            if (!string.IsNullOrEmpty(orderBy))
             {
-                searchUrl += "%sort=" + orderBy;
+                searchUrl += "&sort=" + orderBy;
             }
 
             var response = await _httpClient.GetAsync(searchUrl);
