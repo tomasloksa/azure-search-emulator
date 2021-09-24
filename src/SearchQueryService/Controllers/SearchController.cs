@@ -2,7 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SearchQueryService.Indexes.Models;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SearchQueryService.Controllers
@@ -28,7 +31,7 @@ namespace SearchQueryService.Controllers
             [FromQuery(Name = "$top")] int? top,
             [FromQuery(Name = "$skip")] int? skip,
             [FromQuery] string search,
-            [FromQuery] string filter,
+            [FromQuery(Name = "$filter")] string filter,
             //string searchMode = "", TODO find out how to set
             [FromQuery(Name = "$orderby")] string orderBy
         )
@@ -51,7 +54,7 @@ namespace SearchQueryService.Controllers
 
             if (!string.IsNullOrEmpty(filter))
             {
-                searchUrl += "&fq=" + filter;
+                searchUrl += "&fq=" + AzToSolrQuery(filter);
             }
 
             if (!string.IsNullOrEmpty(orderBy))
@@ -63,6 +66,31 @@ namespace SearchQueryService.Controllers
             dynamic result = JsonConvert.DeserializeObject<SearchResponse>(await response.Content.ReadAsStringAsync());
 
             return result.Response.Docs;
+        }
+
+        private string AzToSolrQuery(string filter)
+        {
+            var replacements = new Dictionary<string, string>()
+            {
+                { @"(\w+)\s+(ge)\s+([^\s]+)", "$1:[$3 TO *]"},
+                { @"(\w+)\s+(gt)\s+([^\s]+)", "$1:{$3 TO *}"},
+                { @"(\w+)\s+(le)\s+([^\s]+)", "$1:[* TO $3]"},
+                { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}"},
+                { @"(\w+)\s+(ne)", "NOT $1:"}
+            };
+
+            foreach (var kv in replacements)
+            {
+                filter = Regex.Replace(filter, kv.Key, kv.Value);
+            }
+
+            StringBuilder sb = new StringBuilder(filter);
+            sb.Replace(" eq", ":");
+            sb.Replace("and", "AND");
+            sb.Replace("or", "OR");
+            sb.Replace("not", "NOT");
+
+            return sb.ToString();
         }
     }
 }

@@ -26,6 +26,7 @@ namespace SearchApi.Controllers
         [HttpGet("search")]
         public async Task<ContentResult> Search(
             [FromQuery] string search,
+            [FromQuery] string filter,
             [FromQuery] string orderBy,
             [FromQuery] int? top = null,
             [FromQuery] int? skip = null) => Content(await GetSearchResults(top, skip, search, orderBy), "application/json");
