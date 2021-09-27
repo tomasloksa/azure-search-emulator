@@ -6,11 +6,11 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-WORKDIR /src
-COPY ["demo/SearchApi/SearchApi.csproj", "demo/SearchApi/"]
+WORKDIR /demo
+COPY ["SearchApi/SearchApi.csproj", "demo/SearchApi/"]
 RUN dotnet restore "demo/SearchApi/SearchApi.csproj"
 COPY . .
-WORKDIR "/src/demo/SearchApi"
+WORKDIR "SearchApi"
 RUN dotnet build "SearchApi.csproj" -c Release -o /app/build
 
 FROM build AS publish
