@@ -36,7 +36,15 @@ namespace SearchQueryService.Controllers
             [FromQuery(Name = "$orderby")] string orderBy
         )
         {
-            var searchUrl = _config.GetConnectionString("SolrUri") + indexName + "/select?q=";
+            var response = await _httpClient.GetAsync(BuildSearchQuery(indexName, top, skip, search, filter, orderBy));
+            dynamic result = JsonConvert.DeserializeObject<SearchResponse>(await response.Content.ReadAsStringAsync());
+
+            return result.Response.Docs;
+        }
+
+        private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
+        {
+            string searchUrl = _config.GetConnectionString("SolrUri") + indexName + "/select?q=";
             if (!string.IsNullOrEmpty(search))
             {
                 searchUrl += search;
@@ -62,10 +70,7 @@ namespace SearchQueryService.Controllers
                 searchUrl += "&sort=" + orderBy;
             }
 
-            var response = await _httpClient.GetAsync(searchUrl);
-            dynamic result = JsonConvert.DeserializeObject<SearchResponse>(await response.Content.ReadAsStringAsync());
-
-            return result.Response.Docs;
+            return searchUrl;
         }
 
         private string AzToSolrQuery(string filter)
