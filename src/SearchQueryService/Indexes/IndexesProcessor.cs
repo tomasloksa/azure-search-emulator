@@ -55,7 +55,9 @@ namespace SearchQueryService.Indexes
             {
                 Thread.Sleep(sleepPeriod);
                 if (await GetSchemaSize(indexName) - 4 >= fieldCount)
+                {
                     return;
+                }
 
                 sleepPeriod *= 2;
             }

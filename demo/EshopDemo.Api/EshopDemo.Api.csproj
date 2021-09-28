@@ -5,7 +5,7 @@
     <UserSecretsId>0ef283dd-92a5-4584-b419-4f9a99991b9d</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
-    <StartupObject>SearchApi.Program</StartupObject>
+    <StartupObject>EshopDemo.Api.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

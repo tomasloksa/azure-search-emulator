@@ -29,11 +29,11 @@ services:
     volumes:
       - "./indexes:/srv/demo"
 
-  searchapi:
-    image: ${DOCKER_REGISTRY-}searchapi
+  eshopdemo.api:
+    image: ${DOCKER_REGISTRY-}eshopdemo.api
     build:
       context: .
-      dockerfile: ./SearchApi/Dockerfile
+      dockerfile: ./EshopDemo.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80

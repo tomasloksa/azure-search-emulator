@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace SearchApi
+namespace EshopDemo.Api
 {
     public static class Program
     {
