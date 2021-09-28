@@ -1,8 +1,9 @@
-﻿using SearchQueryService.Config;
+﻿using EshopDemo.Api.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Flurl;
 
 namespace EshopDemo.Api.Controllers
 {
@@ -11,11 +12,11 @@ namespace EshopDemo.Api.Controllers
     public class EshopItemsController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        private readonly ConnectionStringOptions _connectionStrings;
+        private readonly ConnectionStringsOptions _connectionStrings;
 
         public EshopItemsController(
             IHttpClientFactory httpClientFactory,
-            IOptions<ConnectionStringOptions> configuration)
+            IOptions<ConnectionStringsOptions> configuration)
         {
             _httpClient = httpClientFactory.CreateClient();
             _connectionStrings = configuration.Value;
@@ -45,29 +46,13 @@ namespace EshopDemo.Api.Controllers
 
         private string BuildSearchQuery(int? top, int? skip, string search, string filter, string orderBy)
         {
-            string uri = _connectionStrings["SearchService"] + $"indexes/invoicingindex/docs?search={search}";
-
-            if (top is not null)
-            {
-                uri += "&$top=" + top;
-            }
-
-            if (skip is not null)
-            {
-                uri += "&$skip=" + skip;
-            }
-
-            if (!string.IsNullOrEmpty(filter))
-            {
-                uri += "&$filter=" + filter;
-            }
-
-            if (!string.IsNullOrEmpty(orderBy))
-            {
-                uri += "&$orderby=" + orderBy;
-            }
-
-            return uri;
+            return _connectionStrings["SearchService"]
+                .AppendPathSegments("indexes", "invoicingindex", "docs")
+                .SetQueryParam("search", search)
+                .SetQueryParam("$top", top)
+                .SetQueryParam("$skip", skip)
+                .SetQueryParam("$filter", filter)
+                .SetQueryParam("$orderBy", orderBy);
         }
     }
 }

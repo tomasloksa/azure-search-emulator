@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Flurl;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SearchQueryService.Config;
@@ -26,11 +26,11 @@ namespace SearchQueryService.Controllers
         };
 
         private readonly HttpClient _httpClient;
-        private readonly ConnectionStringOptions _connectionStrings;
+        private readonly ConnectionStringsOptions _connectionStrings;
 
         public SearchController(
             IHttpClientFactory httpClientFactory,
-            IOptions<ConnectionStringOptions> configuration)
+            IOptions<ConnectionStringsOptions> configuration)
         {
             _httpClient = httpClientFactory.CreateClient();
             _connectionStrings = configuration.Value;
@@ -55,34 +55,17 @@ namespace SearchQueryService.Controllers
 
         private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
         {
-            string searchUrl = _connectionStrings["Solr"] + indexName + "/select?q=";
+            return _connectionStrings["Solr"]
+                .AppendPathSegments(indexName, "select")
+                .SetQueryParams(new
+                {
+                    q = search,
+                    rows = top,
+                    start = skip,
+                    fq = string.IsNullOrEmpty(filter) ? filter : AzToSolrQuery(filter),
+                    sort = orderBy
+                });
 
-            if (!string.IsNullOrEmpty(search))
-            {
-                searchUrl += search;
-            }
-
-            if (top is not null)
-            {
-                searchUrl += "&rows=" + top;
-            }
-
-            if (skip is not null)
-            {
-                searchUrl += "&start=" + skip;
-            }
-
-            if (!string.IsNullOrEmpty(filter))
-            {
-                searchUrl += "&fq=" + AzToSolrQuery(filter);
-            }
-
-            if (!string.IsNullOrEmpty(orderBy))
-            {
-                searchUrl += "&sort=" + orderBy;
-            }
-
-            return searchUrl;
         }
 
         private static string AzToSolrQuery(string filter)

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace SearchQueryService.Config
+namespace EshopDemo.Api.Config
 {
     /// <summary>
     /// Configuration of connection strings.
     /// </summary>
-    public class ConnectionStringOptions : Dictionary<string, string>
+    public class ConnectionStringsOptions : Dictionary<string, string>
     {
     }
 }

@@ -20,7 +20,7 @@ namespace SearchQueryService
             services.AddControllers();
             services.AddHttpClient();
             services.AddTransient<IndexesProcessor>();
-            services.Configure<ConnectionStringOptions>(options => Configuration.GetSection("ConnectionStrings").Bind(options));
+            services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

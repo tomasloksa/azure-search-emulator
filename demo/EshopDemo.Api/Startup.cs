@@ -1,9 +1,9 @@
-﻿using SearchQueryService.Config;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using EshopDemo.Api.Config;
 
 namespace EshopDemo.Api
 {
@@ -18,7 +18,7 @@ namespace EshopDemo.Api
         {
             services.AddControllers();
             services.AddHttpClient();
-            services.Configure<ConnectionStringOptions>(options => Configuration.GetSection("ConnectionStrings").Bind(options));
+            services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
