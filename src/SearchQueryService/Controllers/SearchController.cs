@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using SearchQueryService.Config;
 using SearchQueryService.Indexes.Models;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -14,15 +16,24 @@ namespace SearchQueryService.Controllers
     [Route("indexes/{indexName}/docs")]
     public class SearchController : ControllerBase
     {
+        static readonly Dictionary<string, string> _replacements = new()
+        {
+            { @"(\w+)\s+(ge)\s+([^\s]+)", "$1:[$3 TO *]"},
+            { @"(\w+)\s+(gt)\s+([^\s]+)", "$1:{$3 TO *}"},
+            { @"(\w+)\s+(le)\s+([^\s]+)", "$1:[* TO $3]"},
+            { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}"},
+            { @"(\w+)\s+(ne)", "NOT $1:"}
+        };
+
         private readonly HttpClient _httpClient;
-        private readonly IConfiguration _config;
+        private readonly ConnectionStringOptions _connectionStrings;
 
         public SearchController(
             IHttpClientFactory httpClientFactory,
-            IConfiguration configuration)
+            IOptions<ConnectionStringOptions> configuration)
         {
             _httpClient = httpClientFactory.CreateClient();
-            _config = configuration;
+            _connectionStrings = configuration.Value;
         }
 
         [HttpGet]
@@ -44,7 +55,8 @@ namespace SearchQueryService.Controllers
 
         private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
         {
-            string searchUrl = _config.GetConnectionString("SolrUri") + indexName + "/select?q=";
+            string searchUrl = _connectionStrings["Solr"] + indexName + "/select?q=";
+
             if (!string.IsNullOrEmpty(search))
             {
                 searchUrl += search;
@@ -73,23 +85,14 @@ namespace SearchQueryService.Controllers
             return searchUrl;
         }
 
-        private string AzToSolrQuery(string filter)
+        private static string AzToSolrQuery(string filter)
         {
-            var replacements = new Dictionary<string, string>()
-            {
-                { @"(\w+)\s+(ge)\s+([^\s]+)", "$1:[$3 TO *]"},
-                { @"(\w+)\s+(gt)\s+([^\s]+)", "$1:{$3 TO *}"},
-                { @"(\w+)\s+(le)\s+([^\s]+)", "$1:[* TO $3]"},
-                { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}"},
-                { @"(\w+)\s+(ne)", "NOT $1:"}
-            };
-
-            foreach (var kv in replacements)
+            foreach (var kv in _replacements)
             {
                 filter = Regex.Replace(filter, kv.Key, kv.Value);
             }
 
-            StringBuilder sb = new StringBuilder(filter);
+            var sb = new StringBuilder(filter);
             sb.Replace(" eq", ":");
             sb.Replace("and", "AND");
             sb.Replace("or", "OR");

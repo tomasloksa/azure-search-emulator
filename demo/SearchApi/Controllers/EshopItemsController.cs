@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using SearchQueryService.Config;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -10,22 +12,19 @@ namespace SearchApi.Controllers
     public class EshopItemsController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        private readonly IConfiguration _config;
+        private readonly ConnectionStringOptions _connectionStrings;
 
         public EshopItemsController(
             IHttpClientFactory httpClientFactory,
-            IConfiguration configuration)
+            IOptions<ConnectionStringOptions> configuration)
         {
             _httpClient = httpClientFactory.CreateClient();
-            _config = configuration;
+            _connectionStrings = configuration.Value;
         }
 
         [HttpGet]
         public async Task<ContentResult> Get() => Content(
-            await GetSearchResults(
-                BuildSearchQuery(30, 0, "*:*", "")),
-        "application/json"
-            );
+            await GetSearchResults(BuildSearchQuery(30, 0, "*:*", "")), "application/json" );
 
         [HttpGet("search")]
         public async Task<ContentResult> Search(
@@ -47,7 +46,7 @@ namespace SearchApi.Controllers
 
         private string BuildSearchQuery(int? top, int? skip, string search, string orderBy)
         {
-            string uri = _config.GetConnectionString("SearchService") + $"indexes/invoicingindex/docs?search={search}";
+            string uri = _connectionStrings["SearchService"] + $"indexes/invoicingindex/docs?search={search}";
 
             if (top is not null)
             {
