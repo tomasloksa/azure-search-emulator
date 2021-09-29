@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using System.Threading;
 using SearchQueryService.Exceptions;
 using Flurl;
+using System.Dynamic;
 
 namespace SearchQueryService.Indexes
 {
@@ -84,7 +85,8 @@ namespace SearchQueryService.Indexes
             StringContent data = new(postJson, Encoding.UTF8, "application/json");
             var indexUrl = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema");
 
-            await _httpClient.PostAsync(indexUrl, data);
+            var test = await _httpClient.PostAsync(indexUrl, data);
+            var content = test.Content.ReadAsStringAsync();
         }
 
         private static Dictionary<string, IEnumerable<ISolrField>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
@@ -117,12 +119,14 @@ namespace SearchQueryService.Indexes
             };
 
         private static IEnumerable<AddField> GetFieldsFromIndex(SearchIndex index) {
-            var fields = index.Fields.Select(field => AddField.Create(field.Name, field));
+            var fields = index.Fields
+                .Where(field => !string.Equals(field.Name, "id", System.StringComparison.OrdinalIgnoreCase))
+                .Select(field => AddField.Create(field.Name.ToCamelCase(), field));
 
             var nestedFields = index.Fields
                 .Where(field => field.Fields is not null)
                 .SelectMany(field => field.Fields
-                .Select(nestedField => AddField.Create(field.Name + "." + nestedField.Name, nestedField)));
+                .Select(nestedField => AddField.Create(field.Name.ToCamelCase() + "." + nestedField.Name, nestedField)));
 
             return fields.Concat(nestedFields);
         }
@@ -146,14 +150,21 @@ namespace SearchQueryService.Indexes
             {
                 using (StreamReader r = new($"{dataDir}/mockData.json"))
                 {
-                    string json = r.ReadToEnd();
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var jsonSerializerSettings = new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    };
+
+                    var deserialized = JsonConvert.DeserializeObject<List<ExpandoObject>>(r.ReadToEnd());
+                    var serialized = JsonConvert.SerializeObject(deserialized, jsonSerializerSettings);
+
+                    var content = new StringContent(serialized, Encoding.UTF8, "application/json");
 
                     var uri = _connectionStrings["Solr"]
                         .AppendPathSegments(indexName, "update", "json", "docs")
                         .SetQueryParam("commit", "true");
 
-                    await _httpClient.PostAsync(uri, data);
+                    await _httpClient.PostAsync(uri, content);
                 }
             }
         }
