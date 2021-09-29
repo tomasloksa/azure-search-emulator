@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SearchQueryService.Config;
-using SearchQueryService.Indexes;
+using EshopDemo.Api.Config;
 
-namespace SearchQueryService
+namespace EshopDemo.Api
 {
     public class Startup
     {
@@ -19,12 +18,11 @@ namespace SearchQueryService
         {
             services.AddControllers();
             services.AddHttpClient();
-            services.AddTransient<IndexesProcessor>();
             services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IndexesProcessor indexes)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -38,8 +36,6 @@ namespace SearchQueryService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-
-            _ = indexes.ProcessDirectory();
         }
     }
 }

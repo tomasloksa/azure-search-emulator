@@ -6,17 +6,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
-using System;
 using SearchQueryService.Indexes.Models;
+using SearchQueryService.Config;
+using Microsoft.Extensions.Options;
+using System.Threading;
+using SearchQueryService.Exceptions;
+using Flurl;
 
 namespace SearchQueryService.Indexes
 {
     public class IndexesProcessor
     {
-        public const string SearchUri = "http://solr:8983/solr/";
         private readonly HttpClient _httpClient;
+        private readonly ConnectionStringsOptions _connectionStrings;
 
-        public IndexesProcessor(IHttpClientFactory httpClientFactory) => _httpClient = httpClientFactory.CreateClient();
+        public IndexesProcessor(
+            IHttpClientFactory httpClientFactory,
+            IOptions<ConnectionStringsOptions> configuration)
+        {
+            _httpClient = httpClientFactory.CreateClient();
+            _connectionStrings = configuration.Value;
+        }
 
         public async Task ProcessDirectory()
         {
@@ -29,12 +39,39 @@ namespace SearchQueryService.Indexes
                     return;
                 }
 
-                var fieldsToAdd = GetFieldsFromIndex(index);
+                var fieldsToAdd = GetFieldsFromIndex(index).ToList();
                 var postBody = CreateSchemaPostBody(fieldsToAdd);
                 CreateCoreSchema(postBody, index.Name);
 
+                await WaitUntilSchemaCreated(4, 500, fieldsToAdd.Count, index.Name);
+
                 PostMockData(indexDir, index.Name);
             }
+        }
+
+        private async Task WaitUntilSchemaCreated(int tryCount, int sleepPeriod, int fieldCount, string indexName)
+        {
+            for (int i = 0; i < tryCount; i++)
+            {
+                Thread.Sleep(sleepPeriod);
+                if (await GetSchemaSize(indexName) - 4 >= fieldCount)
+                {
+                    return;
+                }
+
+                sleepPeriod *= 2;
+            }
+
+            throw new SchemaNotCreatedException();
+        }
+
+        private async Task<int> GetSchemaSize(string indexName)
+        {
+            var url = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema", "fields");
+            var response = _httpClient.GetAsync(url).Result;
+            var result = JsonConvert.DeserializeObject<SchemaFieldsResponse>(await response.Content.ReadAsStringAsync());
+
+            return result.Fields.Count;
         }
 
         private async void CreateCoreSchema(Dictionary<string, IEnumerable<ISolrField>> postBody, string indexName) {
@@ -45,7 +82,7 @@ namespace SearchQueryService.Indexes
 
             string postJson = JsonConvert.SerializeObject(postBody, serializerSettings);
             StringContent data = new(postJson, Encoding.UTF8, "application/json");
-            var indexUrl = $"{SearchUri}{indexName}/schema";
+            var indexUrl = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema");
 
             await _httpClient.PostAsync(indexUrl, data);
         }
@@ -59,11 +96,23 @@ namespace SearchQueryService.Indexes
                 },
                 {
                     "add-copy-field",
-                    fieldsToAdd.Where(item => item.Indexed).Select(item => new AddCopyField
+                    fieldsToAdd.Where(item => item.Searchable).Select(item => new AddCopyField
                     {
                         Source = item.Name,
                         Dest = "_text_"
                     })
+                },
+                {
+                    "add-dynamic-field",
+                    new[] { new AddField
+                    {
+                        Name = "*",
+                        Type = "text_general",
+                        MultiValued = true,
+                        Indexed = false,
+                        Stored = false,
+                        UseDocValuesAsStored = false
+                    }}
                 }
             };
 
@@ -80,9 +129,10 @@ namespace SearchQueryService.Indexes
 
         private async Task<bool> IsCorePopulated(string indexName)
         {
-            UriBuilder builder = new(SearchUri + indexName + "/query");
-            builder.Query = "q=*:*";
-            var docsResponse = await _httpClient.GetAsync(builder.Uri);
+            var uri = _connectionStrings["Solr"]
+                .AppendPathSegments(indexName, "query")
+                .SetQueryParam("q", "*:*");
+            var docsResponse = await _httpClient.GetAsync(uri);
             var docsResult = await docsResponse.Content.ReadAsStringAsync();
             var finalResult = JsonConvert.DeserializeObject<SearchResponse>(docsResult);
 
@@ -98,7 +148,12 @@ namespace SearchQueryService.Indexes
                 {
                     string json = r.ReadToEnd();
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    await _httpClient.PostAsync($"{SearchUri}{indexName}/update/json/docs?commit=true", data);
+
+                    var uri = _connectionStrings["Solr"]
+                        .AppendPathSegments(indexName, "update", "json", "docs")
+                        .SetQueryParam("commit", "true");
+
+                    await _httpClient.PostAsync(uri, data);
                 }
             }
         }

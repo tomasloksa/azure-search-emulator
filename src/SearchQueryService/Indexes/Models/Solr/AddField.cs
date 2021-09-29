@@ -1,4 +1,6 @@
-﻿namespace SearchQueryService.Indexes.Models
+﻿using Newtonsoft.Json;
+
+namespace SearchQueryService.Indexes.Models
 {
     public class AddField : ISolrField
     {
@@ -16,6 +18,9 @@
         /// Whether the field can be retrieved in search query.
         /// </summary>
         public bool Stored { get; set; }
+
+        [JsonIgnore]
+        public bool Searchable { get; set; }
 
         /// <summary>
         /// Whether the field can be searched.
@@ -38,7 +43,8 @@
                 Name = name,
                 Type = Tools.GetSolrType(field.Type),
                 Stored = field.Retrievable,
-                Indexed = field.Searchable,
+                Searchable = field.Searchable,
+                Indexed = field.Searchable || field.Filterable,
                 MultiValued = name.Contains("."),
                 UseDocValuesAsStored = false
             };
