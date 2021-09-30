@@ -20,5 +20,8 @@ namespace SearchQueryService.Indexes
             "Collection(Edm.DateTimeOffset)" => "pdates",
             _ => throw new ArgumentOutOfRangeException($"Not expected index type value: {azType}")
         };
+
+        public static string ToCamelCase(this string str)
+            => char.ToLowerInvariant(str[0]) + str[1..];
     }
 }
