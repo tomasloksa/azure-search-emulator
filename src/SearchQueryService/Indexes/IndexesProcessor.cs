@@ -85,8 +85,7 @@ namespace SearchQueryService.Indexes
             StringContent data = new(postJson, Encoding.UTF8, "application/json");
             var indexUrl = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema");
 
-            var test = await _httpClient.PostAsync(indexUrl, data);
-            var content = test.Content.ReadAsStringAsync();
+            await _httpClient.PostAsync(indexUrl, data);
         }
 
         private static Dictionary<string, IEnumerable<ISolrField>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
