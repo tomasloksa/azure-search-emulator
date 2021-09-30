@@ -2,18 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SearchQueryService.Config;
 using SearchQueryService.Indexes.Models;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SearchQueryService.Controllers
 {
     [ApiController]
-    [Route("indexes/{indexName}/docs")]
+    [Route("indexes/{indexName}/docs/")]
     public class SearchController : ControllerBase
     {
         static readonly Dictionary<string, string> _replacements = new()
@@ -36,12 +38,13 @@ namespace SearchQueryService.Controllers
             _connectionStrings = configuration.Value;
         }
 
-        [HttpGet]
+        [HttpGet("search")]
         public async Task<object> GetAsync(
             [FromRoute] string indexName,
             [FromQuery(Name = "$top")] int? top,
             [FromQuery(Name = "$skip")] int? skip,
             [FromQuery] string search,
+
             [FromQuery(Name = "$filter")] string filter,
             //string searchMode = "", TODO find out how to set
             [FromQuery(Name = "$orderby")] string orderBy
@@ -51,6 +54,14 @@ namespace SearchQueryService.Controllers
             dynamic result = JsonConvert.DeserializeObject<SearchResponse>(await response.Content.ReadAsStringAsync());
 
             return result.Response.Docs;
+        }
+
+        [HttpPost("index")]
+        public async void PostAsync([FromBody] JObject value)
+        {
+
+
+            return;
         }
 
         private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
