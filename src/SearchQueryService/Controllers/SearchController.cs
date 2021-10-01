@@ -20,11 +20,11 @@ namespace SearchQueryService.Controllers
     {
         static readonly Dictionary<string, string> _replacements = new()
         {
-            { @"(\w+)\s+(ge)\s+([^\s]+)", "$1:[$3 TO *]"},
-            { @"(\w+)\s+(gt)\s+([^\s]+)", "$1:{$3 TO *}"},
-            { @"(\w+)\s+(le)\s+([^\s]+)", "$1:[* TO $3]"},
-            { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}"},
-            { @"(\w+)\s+(ne)", "NOT $1:"}
+            { @"(\w+)\s+(ge)\s+([^\s]+)", "$1:[$3 TO *]" },
+            { @"(\w+)\s+(gt)\s+([^\s]+)", "$1:{$3 TO *}" },
+            { @"(\w+)\s+(le)\s+([^\s]+)", "$1:[* TO $3]" },
+            { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}" },
+            { @"(\w+)\s+(ne)", "NOT $1:" }
         };
 
         private readonly HttpClient _httpClient;
@@ -57,11 +57,38 @@ namespace SearchQueryService.Controllers
         }
 
         [HttpPost("index")]
-        public async void PostAsync([FromBody] JObject value)
+        public async void PostAsync(
+            [FromRoute] string indexName,
+            [FromBody] AzPost value
+        )
         {
+            var newList = new List<Dictionary<string, object>>();
+            foreach (var dict in value.Value)
+            {
+                var newDict = new Dictionary<string, object>();
+                foreach (var kv in dict)
+                {
+                    if (kv.Key == "id")
+                    {
+                        newDict["id"] = kv.Value;
+                        continue;
+                    }
 
+                    var setVal = new Dictionary<string, dynamic>();
+                    setVal.Add("set", kv.Value);
+                    newDict[kv.Key] = kv;
+                }
 
-            return;
+                newList.Add(newDict);
+            }
+
+            var uri = _connectionStrings["Solr"]
+                        .AppendPathSegments(indexName, "update", "json")
+                        .SetQueryParam("commit", "true");
+
+            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(newList));
+
+            await _httpClient.PostAsync(uri, content);
         }
 
         private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
@@ -76,7 +103,6 @@ namespace SearchQueryService.Controllers
                     fq = string.IsNullOrEmpty(filter) ? filter : AzToSolrQuery(filter),
                     sort = orderBy
                 });
-
         }
 
         private static string AzToSolrQuery(string filter)
