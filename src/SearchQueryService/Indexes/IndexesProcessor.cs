@@ -86,6 +86,8 @@ namespace SearchQueryService.Indexes
             var indexUrl = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema");
 
             await _httpClient.PostAsync(indexUrl, data);
+
+            data.Dispose();
         }
 
         private static Dictionary<string, IEnumerable<ISolrField>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
@@ -164,6 +166,8 @@ namespace SearchQueryService.Indexes
                         .SetQueryParam("commit", "true");
 
                     await _httpClient.PostAsync(uri, content);
+
+                    content.Dispose();
                 }
             }
         }

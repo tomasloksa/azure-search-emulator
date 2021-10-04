@@ -66,6 +66,8 @@ namespace SearchQueryService.Controllers
             var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(value)));
 
             await _httpClient.PostAsync(uri, content);
+
+            content.Dispose();
         }
 
         private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
@@ -115,13 +117,14 @@ namespace SearchQueryService.Controllers
                 if (kv.Key == "id")
                 {
                     newDict["id"] = kv.Value;
-                    continue;
                 }
-
-                newDict[kv.Key] = new Dictionary<string, dynamic>
+                else
                 {
-                    { "set", kv.Value }
-                };
+                    newDict[kv.Key] = new Dictionary<string, dynamic>
+                    {
+                        { "set", kv.Value }
+                    };
+                }
             }
 
             return newDict;
