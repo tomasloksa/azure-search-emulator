@@ -99,27 +99,32 @@ namespace SearchQueryService.Controllers
         private static List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
         {
             var newList = new List<Dictionary<string, object>>();
-            foreach (var dict in azDocs.Value)
+            foreach (var doc in azDocs.Value)
             {
-                var newDict = new Dictionary<string, object>();
-                foreach (var kv in dict)
-                {
-                    if (kv.Key == "id")
-                    {
-                        newDict["id"] = kv.Value;
-                        continue;
-                    }
-
-                    newDict[kv.Key] = new Dictionary<string, dynamic>
-                    {
-                        { "set", kv.Value }
-                    };
-                }
-
-                newList.Add(newDict);
+                newList.Add(ConvertDocument(doc));
             }
 
             return newList;
+        }
+
+        private static Dictionary<string, object> ConvertDocument(Dictionary<string, dynamic> document)
+        {
+            var newDict = new Dictionary<string, object>();
+            foreach (var kv in document)
+            {
+                if (kv.Key == "id")
+                {
+                    newDict["id"] = kv.Value;
+                    continue;
+                }
+
+                newDict[kv.Key] = new Dictionary<string, dynamic>
+                {
+                    { "set", kv.Value }
+                };
+            }
+
+            return newDict;
         }
     }
 }
