@@ -16,13 +16,13 @@ namespace SearchQueryService.Controllers
     [Route("indexes/{indexName}/docs")]
     public class SearchController : ControllerBase
     {
-        static readonly Dictionary<string, string> _replacements = new()
+        private static readonly Dictionary<string, string> _replacements = new()
         {
-            { @"(\w+)\s+(ge)\s+([^\s]+)", "$1:[$3 TO *]"},
-            { @"(\w+)\s+(gt)\s+([^\s]+)", "$1:{$3 TO *}"},
-            { @"(\w+)\s+(le)\s+([^\s]+)", "$1:[* TO $3]"},
-            { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}"},
-            { @"(\w+)\s+(ne)", "NOT $1:"}
+            { @"(\w+)\s+(ge)\s+([^\s]+)", "$1:[$3 TO *]" },
+            { @"(\w+)\s+(gt)\s+([^\s]+)", "$1:{$3 TO *}" },
+            { @"(\w+)\s+(le)\s+([^\s]+)", "$1:[* TO $3]" },
+            { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}" },
+            { @"(\w+)\s+(ne)", "NOT $1:" }
         };
 
         private readonly HttpClient _httpClient;
@@ -36,7 +36,7 @@ namespace SearchQueryService.Controllers
             _connectionStrings = configuration.Value;
         }
 
-        [HttpGet]
+        [HttpGet("search")]
         public async Task<object> GetAsync(
             [FromRoute] string indexName,
             [FromQuery(Name = "$top")] int? top,
@@ -53,22 +53,35 @@ namespace SearchQueryService.Controllers
             return result.Response.Docs;
         }
 
-        private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
+        [HttpPost("index")]
+        public async void PostAsync(
+            [FromRoute] string indexName,
+            [FromBody] AzPost value
+        )
         {
-            return _connectionStrings["Solr"]
-                .AppendPathSegments(indexName, "select")
-                .SetQueryParams(new
-                {
-                    q = search,
-                    rows = top,
-                    start = skip,
-                    fq = string.IsNullOrEmpty(filter) ? filter : AzToSolrQuery(filter),
-                    sort = orderBy
-                });
+            using (var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(value))))
+            {
+                var uri = _connectionStrings["Solr"]
+                            .AppendPathSegments(indexName, "update", "json")
+                            .SetQueryParam("commit", "true");
 
+                await _httpClient.PostAsync(uri, content);
+            }
         }
 
-        private static string AzToSolrQuery(string filter)
+        private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
+            => _connectionStrings["Solr"]
+            .AppendPathSegments(indexName, "select")
+            .SetQueryParams(new
+            {
+                q = search,
+                rows = top,
+                start = skip,
+                fq = string.IsNullOrEmpty(filter) ? filter : ConvertAzQuery(filter),
+                sort = orderBy
+            });
+
+        private static string ConvertAzQuery(string filter)
         {
             foreach (var kv in _replacements)
             {
@@ -82,6 +95,38 @@ namespace SearchQueryService.Controllers
             sb.Replace("not", "NOT");
 
             return sb.ToString();
+        }
+
+        private static List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
+        {
+            var newList = new List<Dictionary<string, object>>();
+            foreach (var doc in azDocs.Value)
+            {
+                newList.Add(ConvertDocument(doc));
+            }
+
+            return newList;
+        }
+
+        private static Dictionary<string, object> ConvertDocument(Dictionary<string, dynamic> document)
+        {
+            var newDict = new Dictionary<string, object>();
+            foreach (var kv in document)
+            {
+                if (kv.Key == "id")
+                {
+                    newDict["id"] = kv.Value;
+                }
+                else
+                {
+                    newDict[kv.Key] = new Dictionary<string, dynamic>
+                    {
+                        { "set", kv.Value }
+                    };
+                }
+            }
+
+            return newDict;
         }
     }
 }

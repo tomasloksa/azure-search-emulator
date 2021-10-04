@@ -40,19 +40,16 @@ namespace EshopDemo.Api.Controllers
             HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
             Response.StatusCode = (int)response.StatusCode;
-            string text = await response.Content.ReadAsStringAsync();
-            return text;
+            return await response.Content.ReadAsStringAsync();
         }
 
         private string BuildSearchQuery(int? top, int? skip, string search, string filter, string orderBy)
-        {
-            return _connectionStrings["SearchService"]
-                .AppendPathSegments("indexes", "invoicingindex", "docs")
-                .SetQueryParam("search", search)
-                .SetQueryParam("$top", top)
-                .SetQueryParam("$skip", skip)
-                .SetQueryParam("$filter", filter)
-                .SetQueryParam("$orderBy", orderBy);
-        }
+            => _connectionStrings["SearchService"]
+            .AppendPathSegments("indexes", "invoicingindex", "docs")
+            .SetQueryParam("search", search)
+            .SetQueryParam("$top", top)
+            .SetQueryParam("$skip", skip)
+            .SetQueryParam("$filter", filter)
+            .SetQueryParam("$orderBy", orderBy);
     }
 }
