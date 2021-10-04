@@ -59,15 +59,14 @@ namespace SearchQueryService.Controllers
             [FromBody] AzPost value
         )
         {
-            var uri = _connectionStrings["Solr"]
-                        .AppendPathSegments(indexName, "update", "json")
-                        .SetQueryParam("commit", "true");
+            using (var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(value))))
+            {
+                var uri = _connectionStrings["Solr"]
+                            .AppendPathSegments(indexName, "update", "json")
+                            .SetQueryParam("commit", "true");
 
-            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(value)));
-
-            await _httpClient.PostAsync(uri, content);
-
-            content.Dispose();
+                await _httpClient.PostAsync(uri, content);
+            }
         }
 
         private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)

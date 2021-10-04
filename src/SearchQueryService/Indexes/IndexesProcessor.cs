@@ -82,12 +82,12 @@ namespace SearchQueryService.Indexes
             };
 
             string postJson = JsonConvert.SerializeObject(postBody, serializerSettings);
-            StringContent data = new(postJson, Encoding.UTF8, "application/json");
-            var indexUrl = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema");
 
-            await _httpClient.PostAsync(indexUrl, data);
-
-            data.Dispose();
+            using (StringContent data = new(postJson, Encoding.UTF8, "application/json"))
+            {
+                var indexUrl = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema");
+                await _httpClient.PostAsync(indexUrl, data);
+            }
         }
 
         private static Dictionary<string, IEnumerable<ISolrField>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
@@ -159,15 +159,14 @@ namespace SearchQueryService.Indexes
                     var deserialized = JsonConvert.DeserializeObject<List<ExpandoObject>>(r.ReadToEnd());
                     var serialized = JsonConvert.SerializeObject(deserialized, jsonSerializerSettings);
 
-                    var content = new StringContent(serialized, Encoding.UTF8, "application/json");
+                    using (var content = new StringContent(serialized, Encoding.UTF8, "application/json"))
+                    {
+                        var uri = _connectionStrings["Solr"]
+                                    .AppendPathSegments(indexName, "update", "json", "docs")
+                                    .SetQueryParam("commit", "true");
 
-                    var uri = _connectionStrings["Solr"]
-                        .AppendPathSegments(indexName, "update", "json", "docs")
-                        .SetQueryParam("commit", "true");
-
-                    await _httpClient.PostAsync(uri, content);
-
-                    content.Dispose();
+                        await _httpClient.PostAsync(uri, content);
+                    }
                 }
             }
         }
