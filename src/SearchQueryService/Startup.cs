@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SearchQueryService.Config;
 using SearchQueryService.Indexes;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SearchQueryService
 {
@@ -18,9 +20,20 @@ namespace SearchQueryService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddHttpClient();
             services.AddTransient<IndexesProcessor>();
             services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
+            services
+                .AddHttpClient("Default")
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                {
+                    var certificate = new X509Certificate2("../srv/certs/solr-ssl.keystore.pfx", "123SecureSolr!");
+                    var certificateValidator = new CertValidator(certificate);
+
+                    return new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = certificateValidator.Validate
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,7 +44,7 @@ namespace SearchQueryService
                 app.UseDeveloperExceptionPage();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 

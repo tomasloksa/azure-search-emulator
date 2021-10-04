@@ -32,7 +32,7 @@ namespace SearchQueryService.Controllers
             IHttpClientFactory httpClientFactory,
             IOptions<ConnectionStringsOptions> configuration)
         {
-            _httpClient = httpClientFactory.CreateClient();
+            _httpClient = httpClientFactory.CreateClient("Default");
             _connectionStrings = configuration.Value;
         }
 

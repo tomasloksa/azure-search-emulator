@@ -18,7 +18,7 @@ namespace EshopDemo.Api.Controllers
             IHttpClientFactory httpClientFactory,
             IOptions<ConnectionStringsOptions> configuration)
         {
-            _httpClient = httpClientFactory.CreateClient();
+            _httpClient = httpClientFactory.CreateClient("Default");
             _connectionStrings = configuration.Value;
         }
 
@@ -45,7 +45,7 @@ namespace EshopDemo.Api.Controllers
 
         private string BuildSearchQuery(int? top, int? skip, string search, string filter, string orderBy)
             => _connectionStrings["SearchService"]
-            .AppendPathSegments("indexes", "invoicingindex", "docs")
+            .AppendPathSegments("indexes", "invoicingindex", "docs", "search")
             .SetQueryParam("search", search)
             .SetQueryParam("$top", top)
             .SetQueryParam("$skip", skip)
