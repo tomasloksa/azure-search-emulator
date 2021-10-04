@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SearchQueryService.Controllers
 {
     [ApiController]
-    [Route("indexes/{indexName}/docs/")]
+    [Route("indexes/{indexName}/docs")]
     public class SearchController : ControllerBase
     {
         private static readonly Dictionary<string, string> _replacements = new()
