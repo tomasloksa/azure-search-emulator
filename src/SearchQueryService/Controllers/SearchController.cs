@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SearchQueryService.Controllers
 {
     [ApiController]
-    [Route("indexes/{indexName}/docs")]
+    [Route("indexes('{indexName}')/docs")]
     public class SearchController : ControllerBase
     {
         private static readonly Dictionary<string, string> _replacements = new()
@@ -36,21 +36,21 @@ namespace SearchQueryService.Controllers
             _connectionStrings = configuration.Value;
         }
 
-        [HttpGet("search")]
+        [HttpPost("search.post.search")]
         public async Task<object> GetAsync(
             [FromRoute] string indexName,
-            [FromQuery(Name = "$top")] int? top,
-            [FromQuery(Name = "$skip")] int? skip,
-            [FromQuery] string search,
-            [FromQuery(Name = "$filter")] string filter,
-            //string searchMode = "", TODO find out how to set
-            [FromQuery(Name = "$orderby")] string orderBy
+            [FromBody] AzPostTest value
         )
         {
-            var response = await _httpClient.GetAsync(BuildSearchQuery(indexName, top, skip, search, filter, orderBy));
+            var response = await _httpClient.GetAsync(BuildSearchQuery("invoicingindex",
+                null,
+                value.Skip,
+                value.Search,
+                "",
+                ""));
             dynamic result = JsonConvert.DeserializeObject<SearchResponse>(await response.Content.ReadAsStringAsync());
 
-            return result.Response.Docs;
+            return result.Response;
         }
 
         [HttpPost("index")]

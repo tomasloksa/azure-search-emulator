@@ -28,13 +28,13 @@ services:
       - "8000:443"
       - "8001:80"
     environment:
-     - ASPNETCORE_ENVIRONMENT=Development
-     - ASPNETCORE_URLS=https://+:443;http://+:80
-     - ASPNETCORE_Kestrel__Certificates__Default__Path=/srv/certs/solr-ssl.keystore.pfx
-     - ASPNETCORE_Kestrel__Certificates__Default__Password=123SecureSolr!
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
       - "./indexes:/srv/demo"
-      - "./certs:/srv/certs"
+      - ~/.aspnet/https:/https:ro
 
   eshopdemo.api:
     image: ${DOCKER_REGISTRY-}eshopdemo.api
@@ -44,13 +44,13 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/srv/certs/solr-ssl.keystore.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=123SecureSolr!
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     ports:
       - "7000:443"
       - "7001:80"
     volumes:
-      - "./certs:/srv/certs"
+      - ~/.aspnet/https:/https:ro
 
 volumes:
   data:

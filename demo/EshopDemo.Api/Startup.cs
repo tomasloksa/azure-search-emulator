@@ -4,9 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EshopDemo.Api.Config;
-using System.Security.Cryptography.X509Certificates;
-using SearchQueryService;
 using System.Net.Http;
+using System.Net;
 
 namespace EshopDemo.Api
 {
@@ -22,15 +21,15 @@ namespace EshopDemo.Api
             services.AddControllers();
             services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
 
-            services.AddHttpClient("Default")
+            services
+                .AddHttpClient("Default")
                 .ConfigurePrimaryHttpMessageHandler(() =>
                 {
-                    var certificate = new X509Certificate2("../srv/certs/solr-ssl.keystore.pfx", "123SecureSolr!");
-                    var certificateValidator = new CertValidator(certificate);
-
                     return new HttpClientHandler
                     {
-                        ServerCertificateCustomValidationCallback = certificateValidator.Validate
+                        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true,
+                        Proxy = new WebProxy("http://host.docker.internal:8888"),
+                        UseProxy = true
                     };
                 });
         }

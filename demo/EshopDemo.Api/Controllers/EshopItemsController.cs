@@ -4,6 +4,11 @@ using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Flurl;
+using Azure;
+using Azure.Search.Documents;
+using Azure.Core.Pipeline;
+using SearchQueryService.Indexes.Models;
+using Newtonsoft.Json;
 
 namespace EshopDemo.Api.Controllers
 {
@@ -24,7 +29,7 @@ namespace EshopDemo.Api.Controllers
 
         [HttpGet]
         public async Task<ContentResult> Get() => Content(
-            await GetSearchResults(BuildSearchQuery(30, 0, "*:*", "not IsDeleted", "")), "application/json" );
+            GetSearchResults(BuildSearchQuery(30, 0, "*:*", "not IsDeleted", "")).Result.ToString(), "application/json" );
 
         [HttpGet("search")]
         public async Task<ContentResult> Search(
@@ -33,14 +38,18 @@ namespace EshopDemo.Api.Controllers
             [FromQuery] string orderBy,
             [FromQuery] int? top = null,
             [FromQuery] int? skip = null) => Content(
-                await GetSearchResults(BuildSearchQuery(top, skip, search, filter, orderBy)), "application/json");
+                GetSearchResults(BuildSearchQuery(top, skip, search, filter, orderBy)).Result.ToString(), "application/json");
 
-        public async Task<string> GetSearchResults(string uri)
+        public async Task<object> GetSearchResults(string uri)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(uri);
-
-            Response.StatusCode = (int)response.StatusCode;
-            return await response.Content.ReadAsStringAsync();
+            var credential = new AzureKeyCredential("abc");
+            var options = new SearchClientOptions();
+            options.Transport = new HttpClientTransport(_httpClient);
+            var so = new SearchOptions();
+            so.Skip = 1;
+            var sc = new SearchClient(new System.Uri("https://loksa:8000"), "invoicingindex", credential, options);
+            var doc = await sc.SearchAsync<SearchResponse>("abc", so);
+            return JsonConvert.SerializeObject(doc.Value.GetResults());
         }
 
         private string BuildSearchQuery(int? top, int? skip, string search, string filter, string orderBy)

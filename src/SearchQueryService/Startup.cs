@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using SearchQueryService.Config;
 using SearchQueryService.Indexes;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SearchQueryService
 {
@@ -26,12 +25,9 @@ namespace SearchQueryService
                 .AddHttpClient("Default")
                 .ConfigurePrimaryHttpMessageHandler(() =>
                 {
-                    var certificate = new X509Certificate2("../srv/certs/solr-ssl.keystore.pfx", "123SecureSolr!");
-                    var certificateValidator = new CertValidator(certificate);
-
                     return new HttpClientHandler
                     {
-                        ServerCertificateCustomValidationCallback = certificateValidator.Validate
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
                     };
                 });
         }
