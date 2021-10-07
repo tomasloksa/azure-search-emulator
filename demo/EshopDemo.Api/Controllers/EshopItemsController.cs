@@ -3,12 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Flurl;
 using Azure;
 using Azure.Search.Documents;
 using Azure.Core.Pipeline;
-using SearchQueryService.Indexes.Models;
-using Newtonsoft.Json;
+using Azure.Search.Documents.Models;
 
 namespace EshopDemo.Api.Controllers
 {
@@ -28,37 +26,38 @@ namespace EshopDemo.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ContentResult> Get() => Content(
-            GetSearchResults(BuildSearchQuery(30, 0, "*:*", "not IsDeleted", "")).Result.ToString(), "application/json" );
+        public ContentResult Get() => Content(
+            GetSearchResults(new SearchParams { Search = "*:*", Filter = "not IsDeleted", OrderBy = "", Top = 30, Skip = 0 }).Result.ToString(), "application/json");
 
         [HttpGet("search")]
-        public async Task<ContentResult> Search(
+        public ContentResult Search(
             [FromQuery] string search,
             [FromQuery] string filter,
             [FromQuery] string orderBy,
             [FromQuery] int? top = null,
             [FromQuery] int? skip = null) => Content(
-                GetSearchResults(BuildSearchQuery(top, skip, search, filter, orderBy)).Result.ToString(), "application/json");
+                GetSearchResults(new SearchParams { Search = search, Filter = filter, OrderBy = orderBy, Top = top, Skip = skip }).Result.ToString(), "application/json");
 
-        public async Task<object> GetSearchResults(string uri)
+        public async Task<object> GetSearchResults(SearchParams searchParams)
         {
-            var credential = new AzureKeyCredential("abc");
-            var options = new SearchClientOptions();
-            options.Transport = new HttpClientTransport(_httpClient);
-            var so = new SearchOptions();
-            so.Skip = 1;
-            var sc = new SearchClient(new System.Uri("https://loksa:8000"), "invoicingindex", credential, options);
-            var doc = await sc.SearchAsync<SearchResponse>("abc", so);
-            return JsonConvert.SerializeObject(doc.Value.GetResults());
-        }
+            var clientOptions = new SearchClientOptions { Transport = new HttpClientTransport(_httpClient) };
+            var searchOptions = new SearchOptions
+            {
+                Skip = searchParams.Skip,
+                Filter = searchParams.Filter,
+                Size = searchParams.Top
+            };
+            searchOptions.OrderBy.Add(searchParams.OrderBy);
 
-        private string BuildSearchQuery(int? top, int? skip, string search, string filter, string orderBy)
-            => _connectionStrings["SearchService"]
-            .AppendPathSegments("indexes", "invoicingindex", "docs", "search")
-            .SetQueryParam("search", search)
-            .SetQueryParam("$top", top)
-            .SetQueryParam("$skip", skip)
-            .SetQueryParam("$filter", filter)
-            .SetQueryParam("$orderBy", orderBy);
+            var searchClient = new SearchClient(
+                new System.Uri(_connectionStrings["SearchService"]),
+                "invoicingindex",
+                new AzureKeyCredential("notNeeded"),
+                clientOptions
+            );
+            var searchResponse = await searchClient.SearchAsync<SearchDocument>(searchParams.Search, searchOptions);
+
+            return searchResponse.Value.GetResults();
+        }
     }
 }

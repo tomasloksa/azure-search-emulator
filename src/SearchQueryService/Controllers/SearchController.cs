@@ -36,22 +36,34 @@ namespace SearchQueryService.Controllers
             _connectionStrings = configuration.Value;
         }
 
-        [HttpPost("search.post.search")]
-        public async Task<object> GetAsync(
+        [HttpGet]
+        public Task<AzResponse> SearchGetAsync(
             [FromRoute] string indexName,
-            [FromBody] AzPostTest value
+            [FromQuery(Name = "$top")] int? top,
+            [FromQuery(Name = "$skip")] int? skip,
+            [FromQuery] string search,
+            [FromQuery(Name = "$filter")] string filter,
+            //string searchMode = "", TODO find out how to set
+            [FromQuery(Name = "$orderby")] string orderBy
         )
         {
-            var response = await _httpClient.GetAsync(BuildSearchQuery("invoicingindex",
-                null,
-                value.Skip,
-                value.Search,
-                "",
-                ""));
-            dynamic result = JsonConvert.DeserializeObject<SearchResponse>(await response.Content.ReadAsStringAsync());
+            var searchParams = new AzSearchParams
+            {
+                Top = top,
+                Skip = skip,
+                Search = search,
+                Filter = filter,
+                OrderBy = orderBy
+            };
 
-            return result.Response;
+            return Search(indexName, searchParams);
         }
+
+        [HttpPost("search.post.search")]
+        public Task<AzResponse> SearchPost(
+            [FromRoute] string indexName,
+            [FromBody] AzSearchParams searchParams
+        ) => Search(indexName, searchParams);
 
         [HttpPost("index")]
         public async void PostAsync(
@@ -68,16 +80,25 @@ namespace SearchQueryService.Controllers
             await _httpClient.PostAsync(uri, content);
         }
 
-        private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
+        private async Task<AzResponse> Search(string indexName, AzSearchParams searchParams)
+        {
+            var searchResponse = await _httpClient.GetAsync(BuildSearchQuery(indexName, searchParams));
+            var responseContent = await searchResponse.Content.ReadAsStringAsync();
+            var searchResult = JsonConvert.DeserializeObject<SearchResponse>(responseContent);
+
+            return new AzResponse(searchResult.Response);
+        }
+
+        private string BuildSearchQuery(string indexName, AzSearchParams searchParams)
             => _connectionStrings["Solr"]
             .AppendPathSegments(indexName, "select")
             .SetQueryParams(new
             {
-                q = search,
-                rows = top,
-                start = skip,
-                fq = string.IsNullOrEmpty(filter) ? filter : ConvertAzQuery(filter),
-                sort = orderBy
+                q = searchParams.Search,
+                rows = searchParams.Top,
+                start = searchParams.Skip,
+                fq = string.IsNullOrEmpty(searchParams.Filter) ? searchParams.Filter : ConvertAzQuery(searchParams.Filter),
+                sort = searchParams.OrderBy
             });
 
         private static string ConvertAzQuery(string filter)

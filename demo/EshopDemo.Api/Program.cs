@@ -15,9 +15,7 @@ namespace EshopDemo.Api
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseKestrel(options => options.ListenAnyIP(443, listenOptions => listenOptions.UseHttps(
                         adapterOptions =>
-                        {
-                            adapterOptions.ServerCertificate = new X509Certificate2("/https/aspnetapp.pfx", "password");
-                        })));
+                            adapterOptions.ServerCertificate = new X509Certificate2("/https/aspnetapp.pfx", "password"))));
                 });
     }
 }

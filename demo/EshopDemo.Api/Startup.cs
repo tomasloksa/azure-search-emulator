@@ -21,15 +21,15 @@ namespace EshopDemo.Api
             services.AddControllers();
             services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
 
-            services
-                .AddHttpClient("Default")
+            services.AddHttpClient("Default")
                 .ConfigurePrimaryHttpMessageHandler(() =>
                 {
                     return new HttpClientHandler
                     {
-                        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true,
-                        Proxy = new WebProxy("http://host.docker.internal:8888"),
-                        UseProxy = true
+                        ServerCertificateCustomValidationCallback =
+                            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                        /*Proxy = new WebProxy("http://host.docker.internal:8888"),
+                        UseProxy = true*/
                     };
                 });
         }
