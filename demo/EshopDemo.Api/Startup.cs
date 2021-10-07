@@ -27,9 +27,9 @@ namespace EshopDemo.Api
                     return new HttpClientHandler
                     {
                         ServerCertificateCustomValidationCallback =
-                            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                        /*Proxy = new WebProxy("http://host.docker.internal:8888"),
-                        UseProxy = true*/
+                            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                        Proxy = new WebProxy("http://host.docker.internal:8888"),
+                        UseProxy = true
                     };
                 });
         }

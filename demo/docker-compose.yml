@@ -6,14 +6,14 @@ services:
     container_name: SolrService
     ports:
      - "8983:8983"
-    environment:
-     - SOLR_SSL_KEY_STORE=/opt/solr/server/certs/solr-ssl.keystore.pfx
-     - SOLR_SSL_TRUST_STORE=/opt/solr/server/certs/solr-ssl.keystore.pfx
-     - SOLR_SSL_KEY_STORE_PASSWORD=123SecureSolr!
-     - SOLR_SSL_TRUST_STORE_PASSWORD=123SecureSolr!
+    #environment:
+     #- SOLR_SSL_KEY_STORE=/opt/solr/server/certs/solr-ssl.keystore.pfx
+     #- SOLR_SSL_TRUST_STORE=/opt/solr/server/certs/solr-ssl.keystore.pfx
+     #- SOLR_SSL_KEY_STORE_PASSWORD=123SecureSolr!
+     #- SOLR_SSL_TRUST_STORE_PASSWORD=123SecureSolr!
     volumes:
      - data:/var/solr
-     - ./certs:/opt/solr/server/certs
+     #- ./certs:/opt/solr/server/certs
     entrypoint:
      - bash
      - "-c"

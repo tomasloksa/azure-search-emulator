@@ -37,7 +37,7 @@ namespace SearchQueryService.Controllers
         }
 
         [HttpGet]
-        public Task<AzResponse> SearchGetAsync(
+        public Task<AzSearchResponse> SearchGetAsync(
             [FromRoute] string indexName,
             [FromQuery(Name = "$top")] int? top,
             [FromQuery(Name = "$skip")] int? skip,
@@ -60,33 +60,47 @@ namespace SearchQueryService.Controllers
         }
 
         [HttpPost("search.post.search")]
-        public Task<AzResponse> SearchPost(
+        public Task<AzSearchResponse> SearchPost(
             [FromRoute] string indexName,
             [FromBody] AzSearchParams searchParams
         ) => Search(indexName, searchParams);
 
-        [HttpPost("index")]
-        public async void PostAsync(
+        [HttpPost("search.index")]
+        public async Task<object> PostAsync(
             [FromRoute] string indexName,
-            [FromBody] AzPost value
+            [FromBody] AzPost newDoc
         )
         {
             var uri = _connectionStrings["Solr"]
                         .AppendPathSegments(indexName, "update", "json")
                         .SetQueryParam("commit", "true");
 
-            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(value)));
+            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(newDoc)));
 
-            await _httpClient.PostAsync(uri, content);
+            var response = await _httpClient.PostAsync(uri, content);
+
+            var list = new List<object>();
+            list.Add(new
+            {
+                key = newDoc.Value[0]["Id"],
+                status = true,
+                errorMessage = "",
+                StatusCode = 201
+            });
+
+            return new
+            {
+                value = list
+            };
         }
 
-        private async Task<AzResponse> Search(string indexName, AzSearchParams searchParams)
+        private async Task<AzSearchResponse> Search(string indexName, AzSearchParams searchParams)
         {
             var searchResponse = await _httpClient.GetAsync(BuildSearchQuery(indexName, searchParams));
             var responseContent = await searchResponse.Content.ReadAsStringAsync();
             var searchResult = JsonConvert.DeserializeObject<SearchResponse>(responseContent);
 
-            return new AzResponse(searchResult.Response);
+            return new AzSearchResponse(searchResult.Response);
         }
 
         private string BuildSearchQuery(string indexName, AzSearchParams searchParams)

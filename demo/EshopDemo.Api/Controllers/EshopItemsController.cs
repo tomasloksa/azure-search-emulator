@@ -7,6 +7,7 @@ using Azure;
 using Azure.Search.Documents;
 using Azure.Core.Pipeline;
 using Azure.Search.Documents.Models;
+using System.Collections.Generic;
 
 namespace EshopDemo.Api.Controllers
 {
@@ -37,6 +38,25 @@ namespace EshopDemo.Api.Controllers
             [FromQuery] int? top = null,
             [FromQuery] int? skip = null) => Content(
                 GetSearchResults(new SearchParams { Search = search, Filter = filter, OrderBy = orderBy, Top = top, Skip = skip }).Result.ToString(), "application/json");
+
+        [HttpPost]
+        public void IndexDocument(
+            [FromBody] Dictionary<string, dynamic> document
+        )
+        {
+            var clientOptions = new SearchClientOptions { Transport = new HttpClientTransport(_httpClient) };
+            var searchClient = new SearchClient(
+                new System.Uri("https://loksa:8000"),
+                "invoicingindex",
+                new AzureKeyCredential("notNeeded"),
+                clientOptions
+            );
+
+            var batch = IndexDocumentsBatch.Create(
+                IndexDocumentsAction.Upload(document)
+            );
+            searchClient.IndexDocuments(batch);
+        }
 
         public async Task<object> GetSearchResults(SearchParams searchParams)
         {

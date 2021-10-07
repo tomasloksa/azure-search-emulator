@@ -3,16 +3,16 @@ using System.Text.Json.Serialization;
 
 namespace SearchQueryService.Indexes.Models
 {
-    public class AzResponse
+    public class AzSearchResponse
     {
         [JsonPropertyName("@odata.count")]
         public int Count { get; set; }
 
         public List<AzDocument> Value { get; set; }
 
-        public AzResponse() { }
+        public AzSearchResponse() { }
 
-        public AzResponse(Response solrResponse)
+        public AzSearchResponse(Response solrResponse)
         {
             Count = solrResponse.NumFound - solrResponse.Start;
             Value = new List<AzDocument>();
