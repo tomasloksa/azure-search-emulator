@@ -41,26 +41,19 @@ namespace EshopDemo.Api.Controllers
 
         [HttpPost]
         public void IndexDocument(
-            [FromBody] Dictionary<string, dynamic> document
+            [FromBody] List<Dictionary<string, dynamic>> documents
         )
         {
-            var clientOptions = new SearchClientOptions { Transport = new HttpClientTransport(_httpClient) };
-            var searchClient = new SearchClient(
-                new System.Uri("https://loksa:8000"),
-                "invoicingindex",
-                new AzureKeyCredential("notNeeded"),
-                clientOptions
-            );
+            var searchClient = CreateSearchClient();
+            var batch = IndexDocumentsBatch.MergeOrUpload(documents);
 
-            var batch = IndexDocumentsBatch.Create(
-                IndexDocumentsAction.Upload(document)
-            );
             searchClient.IndexDocuments(batch);
         }
 
         public async Task<object> GetSearchResults(SearchParams searchParams)
         {
-            var clientOptions = new SearchClientOptions { Transport = new HttpClientTransport(_httpClient) };
+            var searchClient = CreateSearchClient();
+
             var searchOptions = new SearchOptions
             {
                 Skip = searchParams.Skip,
@@ -69,15 +62,21 @@ namespace EshopDemo.Api.Controllers
             };
             searchOptions.OrderBy.Add(searchParams.OrderBy);
 
-            var searchClient = new SearchClient(
+            var searchResponse = await searchClient.SearchAsync<SearchDocument>(searchParams.Search, searchOptions);
+
+            return searchResponse.Value.GetResults();
+        }
+
+        private SearchClient CreateSearchClient()
+        {
+            var clientOptions = new SearchClientOptions { Transport = new HttpClientTransport(_httpClient) };
+
+            return new SearchClient(
                 new System.Uri(_connectionStrings["SearchService"]),
                 "invoicingindex",
                 new AzureKeyCredential("notNeeded"),
                 clientOptions
             );
-            var searchResponse = await searchClient.SearchAsync<SearchDocument>(searchParams.Search, searchOptions);
-
-            return searchResponse.Value.GetResults();
         }
     }
 }

@@ -7,6 +7,7 @@ using SearchQueryService.Indexes.Models;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -75,18 +76,26 @@ namespace SearchQueryService.Controllers
                         .AppendPathSegments(indexName, "update", "json")
                         .SetQueryParam("commit", "true");
 
-            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(newDoc)));
+            var options = new JsonSerializerOptions
+            {
+                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+            };
 
-            var response = await _httpClient.PostAsync(uri, content);
+            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(newDoc), options));
+
+            await _httpClient.PostAsync(uri, content);
 
             var list = new List<object>();
-            list.Add(new
+            foreach (var doc in newDoc.Value)
             {
-                key = newDoc.Value[0]["Id"],
-                status = true,
-                errorMessage = "",
-                StatusCode = 201
-            });
+                list.Add(new
+                {
+                    key = doc["Id"],
+                    status = true,
+                    errorMessage = "",
+                    StatusCode = 201
+                });
+            }
 
             return new
             {
@@ -147,16 +156,17 @@ namespace SearchQueryService.Controllers
             var newDict = new Dictionary<string, object>();
             foreach (var kv in document)
             {
-                if (kv.Key == "id")
+                if (string.Equals(kv.Key, "id", System.StringComparison.CurrentCultureIgnoreCase))
                 {
                     newDict["id"] = kv.Value;
-                    continue;
                 }
-
-                newDict[kv.Key] = new Dictionary<string, dynamic>
+                else
                 {
-                    { "set", kv.Value }
-                };
+                    newDict[kv.Key] = new Dictionary<string, dynamic>
+                    {
+                        { "set", kv.Value }
+                    };
+                }
             }
 
             return newDict;

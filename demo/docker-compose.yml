@@ -6,14 +6,8 @@ services:
     container_name: SolrService
     ports:
      - "8983:8983"
-    #environment:
-     #- SOLR_SSL_KEY_STORE=/opt/solr/server/certs/solr-ssl.keystore.pfx
-     #- SOLR_SSL_TRUST_STORE=/opt/solr/server/certs/solr-ssl.keystore.pfx
-     #- SOLR_SSL_KEY_STORE_PASSWORD=123SecureSolr!
-     #- SOLR_SSL_TRUST_STORE_PASSWORD=123SecureSolr!
     volumes:
      - data:/var/solr
-     #- ./certs:/opt/solr/server/certs
     entrypoint:
      - bash
      - "-c"
@@ -30,11 +24,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
       - "./indexes:/srv/demo"
-      - ~/.aspnet/https:/https:ro
 
   eshopdemo.api:
     image: ${DOCKER_REGISTRY-}eshopdemo.api
@@ -44,13 +35,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     ports:
       - "7000:443"
       - "7001:80"
-    volumes:
-      - ~/.aspnet/https:/https:ro
 
 volumes:
   data:
