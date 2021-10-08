@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EshopDemo.Api.Config;
 using System.Net.Http;
-using System.Net;
 
 namespace EshopDemo.Api
 {
