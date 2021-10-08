@@ -68,26 +68,19 @@ namespace SearchQueryService.Controllers
         ) => Search(indexName, searchParams);
 
         [HttpPost("search.index")]
-        public async Task<object> PostAsync(
+        public object Post(
             [FromRoute] string indexName,
-            [FromBody] AzPost newDoc
+            [FromBody] AzPost newDocs
         )
         {
-            var uri = _connectionStrings["Solr"]
-                        .AppendPathSegments(indexName, "update", "json")
-                        .SetQueryParam("commit", "true");
+            PostDocuments(indexName, newDocs);
+            return CreateAzSearchResponse(newDocs);
+        }
 
-            var options = new JsonSerializerOptions
-            {
-                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(newDoc), options));
-
-            await _httpClient.PostAsync(uri, content);
-
+        private static object CreateAzSearchResponse(AzPost newDocs)
+        {
             var list = new List<object>();
-            foreach (var doc in newDoc.Value)
+            foreach (var doc in newDocs.Value)
             {
                 list.Add(new
                 {
@@ -102,6 +95,22 @@ namespace SearchQueryService.Controllers
             {
                 value = list
             };
+        }
+
+        private async void PostDocuments(string indexName, AzPost docs)
+        {
+            var uri = _connectionStrings["Solr"]
+                        .AppendPathSegments(indexName, "update", "json")
+                        .SetQueryParam("commit", "true");
+
+            var options = new JsonSerializerOptions
+            {
+                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(docs), options));
+
+            await _httpClient.PostAsync(uri, content);
         }
 
         private async Task<AzSearchResponse> Search(string indexName, AzSearchParams searchParams)
