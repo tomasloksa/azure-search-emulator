@@ -1,5 +1,8 @@
-﻿namespace SearchQueryService.Indexes.Models
+﻿namespace SearchQueryService.Documents.Models
 {
+    /// <summary>
+    /// Search parameters recieved from Azure.Search.Docs.
+    /// </summary>
     public class AzSearchParams
     {
         public string Search { get; set; }

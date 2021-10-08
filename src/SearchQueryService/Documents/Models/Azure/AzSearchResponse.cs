@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using SearchQueryService.Indexes.Models;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace SearchQueryService.Indexes.Models
+namespace SearchQueryService.Documents.Models
 {
+    /// <summary>
+    /// Response format required by Azure.Search.Documents.
+    /// </summary>
     public class AzSearchResponse
     {
         [JsonPropertyName("@odata.count")]

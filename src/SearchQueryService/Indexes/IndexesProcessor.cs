@@ -13,6 +13,7 @@ using System.Threading;
 using SearchQueryService.Exceptions;
 using Flurl;
 using System.Dynamic;
+using SearchQueryService.Documents.Models;
 
 namespace SearchQueryService.Indexes
 {

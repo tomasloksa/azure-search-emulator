@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SearchQueryService.Config;
+using SearchQueryService.Documents.Models;
 using SearchQueryService.Indexes.Models;
 using System.Collections.Generic;
 using System.Net.Http;

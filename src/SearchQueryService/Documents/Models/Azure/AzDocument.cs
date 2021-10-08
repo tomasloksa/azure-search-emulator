@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace SearchQueryService.Indexes.Models
+namespace SearchQueryService.Documents.Models
 {
+    /// <summary>
+    /// Document format required by Azure.Search.Documents.
+    /// </summary>
     public class AzDocument
     {
         [JsonPropertyName("@search.score")]
