@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["SearchQueryService/SearchQueryService.csproj", "SearchQueryService/"]
+COPY ["SearchQueryService.csproj", "SearchQueryService/"]
 RUN dotnet restore "SearchQueryService/SearchQueryService.csproj"
 COPY . .
 WORKDIR "/src/SearchQueryService"
