@@ -41,7 +41,7 @@ jobs:
         with:
           context: ./src/SearchQueryService
           push: true
-          tags: tomasloksa/azure-search-emulator
+          tags: tomee/azure-search-emulator
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
