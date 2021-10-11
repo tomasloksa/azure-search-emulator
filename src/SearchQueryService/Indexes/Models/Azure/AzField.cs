@@ -1,5 +1,8 @@
 ﻿namespace SearchQueryService.Indexes.Models
 {
+    /// <summary>
+    /// Azure Index model, read from index files.
+    /// </summary>
     public class AzField
     {
         public string Name { get; set; }

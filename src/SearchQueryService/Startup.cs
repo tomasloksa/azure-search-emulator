@@ -18,9 +18,9 @@ namespace SearchQueryService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddHttpClient();
             services.AddTransient<IndexesProcessor>();
             services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,7 +31,7 @@ namespace SearchQueryService
                 app.UseDeveloperExceptionPage();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 

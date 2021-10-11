@@ -3,17 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SearchQueryService.Config;
+using SearchQueryService.Documents.Models;
 using SearchQueryService.Indexes.Models;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SearchQueryService.Controllers
 {
     [ApiController]
-    [Route("indexes/{indexName}/docs")]
+    [Route("indexes('{indexName}')/docs")]
     public class SearchController : ControllerBase
     {
         private static readonly Dictionary<string, string> _replacements = new()
@@ -36,8 +38,8 @@ namespace SearchQueryService.Controllers
             _connectionStrings = configuration.Value;
         }
 
-        [HttpGet("search")]
-        public async Task<object> GetAsync(
+        [HttpGet]
+        public Task<AzSearchResponse> SearchGetAsync(
             [FromRoute] string indexName,
             [FromQuery(Name = "$top")] int? top,
             [FromQuery(Name = "$skip")] int? skip,
@@ -47,38 +49,89 @@ namespace SearchQueryService.Controllers
             [FromQuery(Name = "$orderby")] string orderBy
         )
         {
-            var response = await _httpClient.GetAsync(BuildSearchQuery(indexName, top, skip, search, filter, orderBy));
-            dynamic result = JsonConvert.DeserializeObject<SearchResponse>(await response.Content.ReadAsStringAsync());
+            var searchParams = new AzSearchParams
+            {
+                Top = top,
+                Skip = skip,
+                Search = search,
+                Filter = filter,
+                OrderBy = orderBy
+            };
 
-            return result.Response.Docs;
+            return Search(indexName, searchParams);
         }
 
-        [HttpPost("index")]
-        public async void PostAsync(
+        [HttpPost("search.post.search")]
+        public Task<AzSearchResponse> SearchPost(
             [FromRoute] string indexName,
-            [FromBody] AzPost value
+            [FromBody] AzSearchParams searchParams
+        ) => Search(indexName, searchParams);
+
+        [HttpPost("search.index")]
+        public object Post(
+            [FromRoute] string indexName,
+            [FromBody] AzPost newDocs
         )
         {
-            using (var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(value))))
-            {
-                var uri = _connectionStrings["Solr"]
-                            .AppendPathSegments(indexName, "update", "json")
-                            .SetQueryParam("commit", "true");
-
-                await _httpClient.PostAsync(uri, content);
-            }
+            PostDocuments(indexName, newDocs);
+            return CreateAzSearchResponse(newDocs);
         }
 
-        private string BuildSearchQuery(string indexName, int? top, int? skip, string search, string filter, string orderBy)
+        private static object CreateAzSearchResponse(AzPost newDocs)
+        {
+            var list = new List<object>();
+            foreach (var doc in newDocs.Value)
+            {
+                list.Add(new
+                {
+                    key = doc["Id"],
+                    status = true,
+                    errorMessage = "",
+                    StatusCode = 201
+                });
+            }
+
+            return new
+            {
+                value = list
+            };
+        }
+
+        private async void PostDocuments(string indexName, AzPost docs)
+        {
+            var uri = _connectionStrings["Solr"]
+                        .AppendPathSegments(indexName, "update", "json")
+                        .SetQueryParam("commit", "true");
+
+            var options = new JsonSerializerOptions
+            {
+                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(docs), options));
+
+            await _httpClient.PostAsync(uri, content);
+        }
+
+        private async Task<AzSearchResponse> Search(string indexName, AzSearchParams searchParams)
+        {
+            var searchResponse = await _httpClient.GetAsync(BuildSearchQuery(indexName, searchParams));
+            var responseContent = await searchResponse.Content.ReadAsStringAsync();
+            var searchResult = JsonConvert.DeserializeObject<SearchResponse>(responseContent);
+
+            return new AzSearchResponse(searchResult.Response);
+        }
+
+        private string BuildSearchQuery(string indexName, AzSearchParams searchParams)
             => _connectionStrings["Solr"]
             .AppendPathSegments(indexName, "select")
             .SetQueryParams(new
             {
-                q = search,
-                rows = top,
-                start = skip,
-                fq = string.IsNullOrEmpty(filter) ? filter : ConvertAzQuery(filter),
-                sort = orderBy
+                q = searchParams.Search,
+                rows = searchParams.Top,
+                start = searchParams.Skip,
+                fq = string.IsNullOrEmpty(searchParams.Filter) ? searchParams.Filter : ConvertAzQuery(searchParams.Filter),
+                sort = searchParams.OrderBy
             });
 
         private static string ConvertAzQuery(string filter)
@@ -113,7 +166,7 @@ namespace SearchQueryService.Controllers
             var newDict = new Dictionary<string, object>();
             foreach (var kv in document)
             {
-                if (kv.Key == "id")
+                if (string.Equals(kv.Key, "id", System.StringComparison.CurrentCultureIgnoreCase))
                 {
                     newDict["id"] = kv.Value;
                 }
