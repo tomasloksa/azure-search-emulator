@@ -13,7 +13,6 @@ using System.Threading;
 using SearchQueryService.Exceptions;
 using Flurl;
 using System.Dynamic;
-using SearchQueryService.Documents.Models;
 
 namespace SearchQueryService.Indexes
 {
@@ -26,7 +25,7 @@ namespace SearchQueryService.Indexes
             IHttpClientFactory httpClientFactory,
             IOptions<ConnectionStringsOptions> configuration)
         {
-            _httpClient = httpClientFactory.CreateClient("Default");
+            _httpClient = httpClientFactory.CreateClient();
             _connectionStrings = configuration.Value;
         }
 

@@ -20,7 +20,7 @@ namespace EshopDemo.Api
             services.AddControllers();
             services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
 
-            services.AddHttpClient("Default")
+            services.AddHttpClient("Search")
                 .ConfigurePrimaryHttpMessageHandler(() =>
                 {
                     return new HttpClientHandler

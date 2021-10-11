@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SearchQueryService.Config;
 using SearchQueryService.Indexes;
-using System.Net.Http;
 
 namespace SearchQueryService
 {
@@ -21,15 +20,7 @@ namespace SearchQueryService
             services.AddControllers();
             services.AddTransient<IndexesProcessor>();
             services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
-            services
-                .AddHttpClient("Default")
-                .ConfigurePrimaryHttpMessageHandler(() =>
-                {
-                    return new HttpClientHandler
-                    {
-                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                    };
-                });
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

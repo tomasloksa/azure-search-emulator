@@ -8,6 +8,7 @@ using Azure.Search.Documents;
 using Azure.Core.Pipeline;
 using Azure.Search.Documents.Models;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace EshopDemo.Api.Controllers
 {
@@ -22,7 +23,7 @@ namespace EshopDemo.Api.Controllers
             IHttpClientFactory httpClientFactory,
             IOptions<ConnectionStringsOptions> configuration)
         {
-            _httpClient = httpClientFactory.CreateClient("Default");
+            _httpClient = httpClientFactory.CreateClient("Search");
             _connectionStrings = configuration.Value;
         }
 
@@ -40,7 +41,7 @@ namespace EshopDemo.Api.Controllers
                 GetSearchResults(new SearchParams { Search = search, Filter = filter, OrderBy = orderBy, Top = top, Skip = skip }).Result.ToString(), "application/json");
 
         [HttpPost]
-        public void IndexDocument(
+        public void CreateDocument(
             [FromBody] List<Dictionary<string, dynamic>> documents
         )
         {
@@ -63,8 +64,7 @@ namespace EshopDemo.Api.Controllers
             searchOptions.OrderBy.Add(searchParams.OrderBy);
 
             var searchResponse = await searchClient.SearchAsync<SearchDocument>(searchParams.Search, searchOptions);
-
-            return searchResponse.Value.GetResults();
+            return JsonConvert.SerializeObject(searchResponse.Value.GetResults());
         }
 
         private SearchClient CreateSearchClient()
