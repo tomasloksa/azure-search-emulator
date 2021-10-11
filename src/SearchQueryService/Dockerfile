@@ -9,8 +9,8 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["SearchQueryService.csproj", "SearchQueryService/"]
 RUN dotnet restore "SearchQueryService/SearchQueryService.csproj"
-COPY . .
-WORKDIR "/src/SearchQueryService"
+COPY . SearchQueryService/
+WORKDIR /src/SearchQueryService/
 RUN dotnet build "SearchQueryService.csproj" -c Release -o /app/build
 
 FROM build AS publish
