@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SearchQueryService.Documents.Models;
 using SearchQueryService.Indexes.Models;
-using System;
+using SearchQueryService.Helpers;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -25,8 +25,6 @@ namespace SearchQueryService.Controllers
             { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}" },
             { @"(\w+)\s+(ne)", "NOT $1:" }
         };
-
-        private readonly string _searchUrl = Environment.GetEnvironmentVariable("SEARCH_URL");
 
         private readonly HttpClient _httpClient;
 
@@ -94,7 +92,7 @@ namespace SearchQueryService.Controllers
 
         private async void PostDocuments(string indexName, AzPost docs)
         {
-            var uri = _searchUrl
+            var uri = Tools.GetSearchUrl()
                         .AppendPathSegments(indexName, "update", "json")
                         .SetQueryParam("commit", "true");
 
@@ -117,8 +115,8 @@ namespace SearchQueryService.Controllers
             return new AzSearchResponse(searchResult.Response);
         }
 
-        private string BuildSearchQuery(string indexName, AzSearchParams searchParams)
-            => _searchUrl
+        private static string BuildSearchQuery(string indexName, AzSearchParams searchParams)
+            => Tools.GetSearchUrl()
             .AppendPathSegments(indexName, "select")
             .SetQueryParams(new
             {

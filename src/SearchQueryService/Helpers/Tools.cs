@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SearchQueryService.Indexes
+namespace SearchQueryService.Helpers
 {
     public static class Tools
     {
@@ -23,5 +23,8 @@ namespace SearchQueryService.Indexes
 
         public static string ToCamelCase(this string str)
             => char.ToLowerInvariant(str[0]) + str[1..];
+
+        public static string GetSearchUrl()
+            => Environment.GetEnvironmentVariable("SEARCH_URL");
     }
 }

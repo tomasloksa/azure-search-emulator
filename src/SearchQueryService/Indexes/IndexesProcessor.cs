@@ -11,14 +11,13 @@ using System.Threading;
 using SearchQueryService.Exceptions;
 using Flurl;
 using System.Dynamic;
-using System;
+using SearchQueryService.Helpers;
 
 namespace SearchQueryService.Indexes
 {
     public class IndexesProcessor
     {
         private readonly HttpClient _httpClient;
-        private readonly string _searchUrl = Environment.GetEnvironmentVariable("SEARCH_URL");
 
         public IndexesProcessor(IHttpClientFactory httpClientFactory)
             => _httpClient = httpClientFactory.CreateClient();
@@ -62,7 +61,7 @@ namespace SearchQueryService.Indexes
 
         private async Task<int> GetSchemaSize(string indexName)
         {
-            var url = _searchUrl.AppendPathSegments(indexName, "schema", "fields");
+            var url = Tools.GetSearchUrl().AppendPathSegments(indexName, "schema", "fields");
             var response = _httpClient.GetAsync(url).Result;
             var result = JsonConvert.DeserializeObject<SchemaFieldsResponse>(await response.Content.ReadAsStringAsync());
 
@@ -79,7 +78,7 @@ namespace SearchQueryService.Indexes
 
             using (StringContent data = new(postJson, Encoding.UTF8, "application/json"))
             {
-                var indexUrl = _searchUrl.AppendPathSegments(indexName, "schema");
+                var indexUrl = Tools.GetSearchUrl().AppendPathSegments(indexName, "schema");
                 await _httpClient.PostAsync(indexUrl, data);
             }
         }
@@ -128,7 +127,7 @@ namespace SearchQueryService.Indexes
 
         private async Task<bool> IsCorePopulated(string indexName)
         {
-            var uri = _searchUrl
+            var uri = Tools.GetSearchUrl()
                 .AppendPathSegments(indexName, "query")
                 .SetQueryParam("q", "*:*");
             var docsResponse = await _httpClient.GetAsync(uri);
@@ -155,7 +154,7 @@ namespace SearchQueryService.Indexes
 
                     using (var content = new StringContent(serialized, Encoding.UTF8, "application/json"))
                     {
-                        var uri = _searchUrl
+                        var uri = Tools.GetSearchUrl()
                                     .AppendPathSegments(indexName, "update", "json", "docs")
                                     .SetQueryParam("commit", "true");
 
