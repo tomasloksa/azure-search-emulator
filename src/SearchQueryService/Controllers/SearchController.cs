@@ -31,9 +31,7 @@ namespace SearchQueryService.Controllers
         private readonly HttpClient _httpClient;
 
         public SearchController(IHttpClientFactory httpClientFactory)
-        {
-            _httpClient = httpClientFactory.CreateClient();
-        }
+            => _httpClient = httpClientFactory.CreateClient();
 
         [HttpGet]
         public Task<AzSearchResponse> SearchGetAsync(

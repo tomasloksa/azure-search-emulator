@@ -21,9 +21,7 @@ namespace SearchQueryService.Indexes
         private readonly string _searchUrl = Environment.GetEnvironmentVariable("SEARCH_URL");
 
         public IndexesProcessor(IHttpClientFactory httpClientFactory)
-        {
-            _httpClient = httpClientFactory.CreateClient();
-        }
+            => _httpClient = httpClientFactory.CreateClient();
 
         public async Task ProcessDirectory()
         {
