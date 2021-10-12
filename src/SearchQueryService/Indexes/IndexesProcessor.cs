@@ -7,26 +7,22 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 using SearchQueryService.Indexes.Models;
-using SearchQueryService.Config;
-using Microsoft.Extensions.Options;
 using System.Threading;
 using SearchQueryService.Exceptions;
 using Flurl;
 using System.Dynamic;
+using System;
 
 namespace SearchQueryService.Indexes
 {
     public class IndexesProcessor
     {
         private readonly HttpClient _httpClient;
-        private readonly ConnectionStringsOptions _connectionStrings;
+        private readonly string _searchUrl = Environment.GetEnvironmentVariable("SEARCH_URL");
 
-        public IndexesProcessor(
-            IHttpClientFactory httpClientFactory,
-            IOptions<ConnectionStringsOptions> configuration)
+        public IndexesProcessor(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient();
-            _connectionStrings = configuration.Value;
         }
 
         public async Task ProcessDirectory()
@@ -68,7 +64,7 @@ namespace SearchQueryService.Indexes
 
         private async Task<int> GetSchemaSize(string indexName)
         {
-            var url = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema", "fields");
+            var url = _searchUrl.AppendPathSegments(indexName, "schema", "fields");
             var response = _httpClient.GetAsync(url).Result;
             var result = JsonConvert.DeserializeObject<SchemaFieldsResponse>(await response.Content.ReadAsStringAsync());
 
@@ -85,7 +81,7 @@ namespace SearchQueryService.Indexes
 
             using (StringContent data = new(postJson, Encoding.UTF8, "application/json"))
             {
-                var indexUrl = _connectionStrings["Solr"].AppendPathSegments(indexName, "schema");
+                var indexUrl = _searchUrl.AppendPathSegments(indexName, "schema");
                 await _httpClient.PostAsync(indexUrl, data);
             }
         }
@@ -134,7 +130,7 @@ namespace SearchQueryService.Indexes
 
         private async Task<bool> IsCorePopulated(string indexName)
         {
-            var uri = _connectionStrings["Solr"]
+            var uri = _searchUrl
                 .AppendPathSegments(indexName, "query")
                 .SetQueryParam("q", "*:*");
             var docsResponse = await _httpClient.GetAsync(uri);
@@ -161,7 +157,7 @@ namespace SearchQueryService.Indexes
 
                     using (var content = new StringContent(serialized, Encoding.UTF8, "application/json"))
                     {
-                        var uri = _connectionStrings["Solr"]
+                        var uri = _searchUrl
                                     .AppendPathSegments(indexName, "update", "json", "docs")
                                     .SetQueryParam("commit", "true");
 

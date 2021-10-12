@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SearchQueryService.Config;
 using SearchQueryService.Indexes;
 
 namespace SearchQueryService
@@ -19,7 +18,6 @@ namespace SearchQueryService
         {
             services.AddControllers();
             services.AddTransient<IndexesProcessor>();
-            services.ConfigureOptions<ConnectionStringsOptions>(Configuration);
             services.AddHttpClient();
         }
 

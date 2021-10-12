@@ -1,10 +1,9 @@
 ﻿using Flurl;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using SearchQueryService.Config;
 using SearchQueryService.Documents.Models;
 using SearchQueryService.Indexes.Models;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -27,15 +26,13 @@ namespace SearchQueryService.Controllers
             { @"(\w+)\s+(ne)", "NOT $1:" }
         };
 
-        private readonly HttpClient _httpClient;
-        private readonly ConnectionStringsOptions _connectionStrings;
+        private readonly string _searchUrl = Environment.GetEnvironmentVariable("SEARCH_URL");
 
-        public SearchController(
-            IHttpClientFactory httpClientFactory,
-            IOptions<ConnectionStringsOptions> configuration)
+        private readonly HttpClient _httpClient;
+
+        public SearchController(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient();
-            _connectionStrings = configuration.Value;
         }
 
         [HttpGet]
@@ -99,7 +96,7 @@ namespace SearchQueryService.Controllers
 
         private async void PostDocuments(string indexName, AzPost docs)
         {
-            var uri = _connectionStrings["Solr"]
+            var uri = _searchUrl
                         .AppendPathSegments(indexName, "update", "json")
                         .SetQueryParam("commit", "true");
 
@@ -123,7 +120,7 @@ namespace SearchQueryService.Controllers
         }
 
         private string BuildSearchQuery(string indexName, AzSearchParams searchParams)
-            => _connectionStrings["Solr"]
+            => _searchUrl
             .AppendPathSegments(indexName, "select")
             .SetQueryParams(new
             {
