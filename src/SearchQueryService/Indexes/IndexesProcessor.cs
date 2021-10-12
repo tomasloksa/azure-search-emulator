@@ -120,7 +120,8 @@ namespace SearchQueryService.Indexes
             var nestedFields = index.Fields
                 .Where(field => field.Fields is not null)
                 .SelectMany(field => field.Fields
-                .Select(nestedField => AddField.Create(field.Name.ToCamelCase() + "." + nestedField.Name, nestedField)));
+                .Select(nestedField =>
+                    AddField.Create(field.Name.ToCamelCase() + "." + nestedField.Name.ToCamelCase(), nestedField)));
 
             return fields.Concat(nestedFields);
         }
