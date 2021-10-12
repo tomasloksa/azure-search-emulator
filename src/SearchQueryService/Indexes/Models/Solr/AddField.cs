@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SearchQueryService.Helpers;
 
 namespace SearchQueryService.Indexes.Models
 {

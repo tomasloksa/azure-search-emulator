@@ -1,10 +1,9 @@
 ﻿using Flurl;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using SearchQueryService.Config;
 using SearchQueryService.Documents.Models;
 using SearchQueryService.Indexes.Models;
+using SearchQueryService.Helpers;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -28,15 +27,9 @@ namespace SearchQueryService.Controllers
         };
 
         private readonly HttpClient _httpClient;
-        private readonly ConnectionStringsOptions _connectionStrings;
 
-        public SearchController(
-            IHttpClientFactory httpClientFactory,
-            IOptions<ConnectionStringsOptions> configuration)
-        {
-            _httpClient = httpClientFactory.CreateClient();
-            _connectionStrings = configuration.Value;
-        }
+        public SearchController(IHttpClientFactory httpClientFactory)
+            => _httpClient = httpClientFactory.CreateClient();
 
         [HttpGet]
         public Task<AzSearchResponse> SearchGetAsync(
@@ -99,7 +92,7 @@ namespace SearchQueryService.Controllers
 
         private async void PostDocuments(string indexName, AzPost docs)
         {
-            var uri = _connectionStrings["Solr"]
+            var uri = Tools.GetSearchUrl()
                         .AppendPathSegments(indexName, "update", "json")
                         .SetQueryParam("commit", "true");
 
@@ -122,8 +115,8 @@ namespace SearchQueryService.Controllers
             return new AzSearchResponse(searchResult.Response);
         }
 
-        private string BuildSearchQuery(string indexName, AzSearchParams searchParams)
-            => _connectionStrings["Solr"]
+        private static string BuildSearchQuery(string indexName, AzSearchParams searchParams)
+            => Tools.GetSearchUrl()
             .AppendPathSegments(indexName, "select")
             .SetQueryParams(new
             {
