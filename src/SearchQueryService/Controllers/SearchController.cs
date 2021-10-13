@@ -6,10 +6,9 @@ using SearchQueryService.Indexes.Models;
 using SearchQueryService.Helpers;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SearchQueryService.Services;
 
 namespace SearchQueryService.Controllers
 {
@@ -17,15 +16,6 @@ namespace SearchQueryService.Controllers
     [Route("indexes('{indexName}')/docs")]
     public class SearchController : ControllerBase
     {
-        private static readonly Dictionary<string, string> _replacements = new()
-        {
-            { @"(\w+)\s+(ge)\s+([^\s]+)", "$1:[$3 TO *]" },
-            { @"(\w+)\s+(gt)\s+([^\s]+)", "$1:{$3 TO *}" },
-            { @"(\w+)\s+(le)\s+([^\s]+)", "$1:[* TO $3]" },
-            { @"(\w+)\s+(lt)\s+([^\s]+)", "$1:{* TO $3}" },
-            { @"(\w+)\s+(ne)", "NOT $1:" }
-        };
-
         private readonly HttpClient _httpClient;
 
         public SearchController(IHttpClientFactory httpClientFactory)
@@ -106,41 +96,16 @@ namespace SearchQueryService.Controllers
             await _httpClient.PostAsync(uri, content);
         }
 
-        private async Task<AzSearchResponse> Search(string indexName, AzSearchParams searchParams)
+        private async Task<AzSearchResponse> Search(
+            string indexName,
+            AzSearchParams searchParams,
+            [FromServices] ISearchQueryBuilder searchQueryBuilder)
         {
-            var searchResponse = await _httpClient.GetAsync(BuildSearchQuery(indexName, searchParams));
+            var searchResponse = await _httpClient.GetAsync(searchQueryBuilder.Build(indexName, searchParams));
             var responseContent = await searchResponse.Content.ReadAsStringAsync();
             var searchResult = JsonConvert.DeserializeObject<SearchResponse>(responseContent);
 
             return new AzSearchResponse(searchResult.Response);
-        }
-
-        private static string BuildSearchQuery(string indexName, AzSearchParams searchParams)
-            => Tools.GetSearchUrl()
-            .AppendPathSegments(indexName, "select")
-            .SetQueryParams(new
-            {
-                q = searchParams.Search,
-                rows = searchParams.Top,
-                start = searchParams.Skip,
-                fq = string.IsNullOrEmpty(searchParams.Filter) ? searchParams.Filter : ConvertAzQuery(searchParams.Filter),
-                sort = searchParams.OrderBy
-            });
-
-        private static string ConvertAzQuery(string filter)
-        {
-            foreach (var kv in _replacements)
-            {
-                filter = Regex.Replace(filter, kv.Key, kv.Value);
-            }
-
-            var sb = new StringBuilder(filter);
-            sb.Replace(" eq", ":");
-            sb.Replace("and", "AND");
-            sb.Replace("or", "OR");
-            sb.Replace("not", "NOT");
-
-            return sb.ToString();
         }
 
         private static List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)

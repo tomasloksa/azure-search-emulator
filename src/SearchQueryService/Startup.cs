@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SearchQueryService.Indexes;
+using SearchQueryService.Services;
 
 namespace SearchQueryService
 {
@@ -18,6 +19,7 @@ namespace SearchQueryService
         {
             services.AddControllers();
             services.AddTransient<IndexesProcessor>();
+            services.AddTransient<ISearchQueryBuilder, SolrSearchQueryBuilder>();
             services.AddHttpClient();
         }
 
