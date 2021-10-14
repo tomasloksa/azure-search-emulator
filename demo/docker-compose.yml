@@ -16,8 +16,7 @@ services:
   searchqueryservice:
     image: ${DOCKER_REGISTRY-}searchqueryservice
     build:
-      context: ../src
-      dockerfile: ../src/SearchQueryService/Dockerfile
+      context: ../src/SearchQueryService
     ports:
       - "8000:443"
       - "8001:80"
