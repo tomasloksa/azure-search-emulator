@@ -31,7 +31,7 @@ namespace SearchQueryService.Indexes
 
         public async Task ProcessDirectory()
         {
-            var indexDirectories = Directory.GetDirectories("../srv/demo");
+            var indexDirectories = Directory.GetDirectories("../srv/data");
             _logger.LogInformation("Starting index creation process..");
             _logger.LogInformation("Creating " + indexDirectories.Length + " indexes.");
             foreach (string indexDir in indexDirectories)
@@ -149,7 +149,7 @@ namespace SearchQueryService.Indexes
             var docsResult = await docsResponse.Content.ReadAsStringAsync();
             var finalResult = JsonConvert.DeserializeObject<SearchResponse>(docsResult);
 
-            return finalResult.Response.NumFound != 0;
+            return finalResult?.Response?.NumFound != 0;
         }
 
         private async void PostMockData(string dataDir, string indexName)

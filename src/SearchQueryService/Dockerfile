@@ -5,6 +5,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 ENV SEARCH_URL=http://solr:8983/solr
+COPY ./SearchQueryService/cert/ ../srv/cert
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
