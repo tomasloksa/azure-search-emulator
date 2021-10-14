@@ -2,14 +2,14 @@ version: '3.4'
 
 services:
   solr:
-    image: solr:7
+    image: solr
     container_name: SolrService
     ports:
      - "8983:8983"
     volumes:
      - data:/var/solr
     entrypoint:
-     - bash
+     - "bash"
      - "-c"
      - "precreate-core catalog-internal-index; precreate-core invoicingindex; exec solr -f"
 
@@ -24,8 +24,13 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/srv/cert/testcert.pfx
     volumes:
-      - "./indexes:/srv/demo"
+      - "./indexes:/srv/data"
+    restart: on-failure
+    depends_on:
+      - solr
 
   eshopdemo.api:
     image: ${DOCKER_REGISTRY-}eshopdemo.api
@@ -34,9 +39,8 @@ services:
       dockerfile: ./EshopDemo.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_URLS=http://+:80
     ports:
-      - "7000:443"
       - "7001:80"
 
 volumes:
