@@ -12,24 +12,36 @@ using SearchQueryService.Exceptions;
 using Flurl;
 using System.Dynamic;
 using SearchQueryService.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace SearchQueryService.Indexes
 {
     public class IndexesProcessor
     {
         private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
-        public IndexesProcessor(IHttpClientFactory httpClientFactory)
-            => _httpClient = httpClientFactory.CreateClient();
+        public IndexesProcessor(
+            IHttpClientFactory httpClientFactory,
+            ILogger<IndexesProcessor> logger)
+        {
+            _httpClient = httpClientFactory.CreateClient();
+            _logger = logger;
+        }
 
         public async Task ProcessDirectory()
         {
-            foreach (string indexDir in Directory.GetDirectories("../srv/demo"))
+            var indexDirectories = Directory.GetDirectories("../srv/data");
+            _logger.LogInformation("Starting index creation process..");
+            _logger.LogInformation("Creating " + indexDirectories.Length + " indexes.");
+            foreach (string indexDir in indexDirectories)
             {
                 SearchIndex index = ReadIndex(indexDir);
-
+                _logger.LogInformation("Creating index: " + index.Name);
                 if (await IsCorePopulated(index.Name))
                 {
+                    _logger.LogInformation("Index already created, aborting.");
+
                     return;
                 }
 
@@ -41,6 +53,8 @@ namespace SearchQueryService.Indexes
 
                 PostMockData(indexDir, index.Name);
             }
+
+            _logger.LogInformation("Index creation finished.");
         }
 
         private async Task WaitUntilSchemaCreated(int tryCount, int sleepPeriod, int fieldCount, string indexName)
@@ -135,7 +149,7 @@ namespace SearchQueryService.Indexes
             var docsResult = await docsResponse.Content.ReadAsStringAsync();
             var finalResult = JsonConvert.DeserializeObject<SearchResponse>(docsResult);
 
-            return finalResult.Response.NumFound != 0;
+            return finalResult?.Response?.NumFound != 0;
         }
 
         private async void PostMockData(string dataDir, string indexName)
