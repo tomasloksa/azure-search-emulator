@@ -15,7 +15,7 @@ Has been tested with Solr 7 and 8.10 (latest).
 
 The best way to use this tool is do just download it from [Docker Hub](https://hub.docker.com/repository/docker/tomee/azure-search-emulator) and add it to your docker compose.
 
-Example from `docker-compose.yml`:
+Example from `docker-compose.yml`, which can be found in the `demo` folder:
 ```
   searchqueryservice:
     image: tomee/azure-search-emulator
@@ -36,7 +36,7 @@ Example from `docker-compose.yml`:
 Currently the only way to use this tool, is to precreate Solr cores. This took me a lot of time to figure out, but it (sadly) is the best option. 
 This is beacuse solr API doesn't support creating multiple configurations for core schemas (indexes) and they have to be created manually. 
 
-Example from **docker-compose.yml**, which can be found in the `demo` folder
+Another example from `docker-compose.yml`:
 ```
 services:
   solr:
@@ -53,7 +53,7 @@ services:
 ```
 
 By default, the service expects Solr container to listen on http://solr:8983.
-If for any reason you need to change te container name or port, Solr URL can be configured trough `SEARCH_URL` Environment variable
+If for any reason you need to change the container name or port, Solr URL can be configured through `SEARCH_URL` Environment variable
 
 The localhost https certificate bundled with the service should be valid until *10/2031*. If you want to use another one, it can also be set in docker-compose.
 
@@ -86,4 +86,4 @@ uses the *Azure.Search.Documents* library for indexing and searching documents.
 ## Contributing
 
 Contributions are welcome.
-If there is any missing feature that you would like to be added, or maybe you found a bug, feel free to open up a PR, or contact me.
+If there is any missing feature that you would like to be added or maybe you found a bug, feel free to open up a PR or contact me.
