@@ -29,7 +29,8 @@ namespace SearchQueryService.Controllers
             [FromQuery] string search,
             [FromQuery(Name = "$filter")] string filter,
             //string searchMode = "", TODO find out how to set
-            [FromQuery(Name = "$orderby")] string orderBy
+            [FromQuery(Name = "$orderby")] string orderBy,
+            [FromServices] ISearchQueryBuilder searchQueryBuilder
         )
         {
             var searchParams = new AzSearchParams
@@ -41,14 +42,15 @@ namespace SearchQueryService.Controllers
                 OrderBy = orderBy
             };
 
-            return Search(indexName, searchParams);
+            return Search(indexName, searchParams, searchQueryBuilder);
         }
 
         [HttpPost("search.post.search")]
         public Task<AzSearchResponse> SearchPost(
             [FromRoute] string indexName,
-            [FromBody] AzSearchParams searchParams
-        ) => Search(indexName, searchParams);
+            [FromBody] AzSearchParams searchParams,
+            [FromServices] ISearchQueryBuilder searchQueryBuilder
+        ) => Search(indexName, searchParams, searchQueryBuilder);
 
         [HttpPost("search.index")]
         public object Post(
@@ -99,7 +101,7 @@ namespace SearchQueryService.Controllers
         private async Task<AzSearchResponse> Search(
             string indexName,
             AzSearchParams searchParams,
-            [FromServices] ISearchQueryBuilder searchQueryBuilder)
+            ISearchQueryBuilder searchQueryBuilder)
         {
             var searchResponse = await _httpClient.GetAsync(searchQueryBuilder.Build(indexName, searchParams));
             var responseContent = await searchResponse.Content.ReadAsStringAsync();

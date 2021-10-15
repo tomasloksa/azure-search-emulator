@@ -13,11 +13,15 @@ using Flurl;
 using System.Dynamic;
 using SearchQueryService.Helpers;
 using Microsoft.Extensions.Logging;
+using System;
+using Polly;
 
 namespace SearchQueryService.Indexes
 {
     public class IndexesProcessor
     {
+        private const int DefaultIndexSize = 4;
+
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
@@ -37,11 +41,18 @@ namespace SearchQueryService.Indexes
             foreach (string indexDir in indexDirectories)
             {
                 SearchIndex index = ReadIndex(indexDir);
-                _logger.LogInformation("Creating index: " + index.Name);
-                if (await IsCorePopulated(index.Name))
-                {
-                    _logger.LogInformation("Index already created, aborting.");
 
+                if (index == null)
+                {
+                    _logger.LogInformation("index.json not found in: \"" + indexDir + "\", skipping.");
+                    continue;
+                }
+
+                _logger.LogInformation("Creating index: " + index.Name);
+
+                if (await IsSchemaCorrectSize(index.Name, DefaultIndexSize + 1))
+                {
+                    _logger.LogInformation("Indexes already created, aborting.");
                     return;
                 }
 
@@ -49,7 +60,7 @@ namespace SearchQueryService.Indexes
                 var postBody = CreateSchemaPostBody(fieldsToAdd);
                 CreateCoreSchema(postBody, index.Name);
 
-                await WaitUntilSchemaCreated(4, 500, fieldsToAdd.Count, index.Name);
+                await WaitUntilSchemaCreated(3, 500, index.Name, fieldsToAdd.Count);
 
                 PostMockData(indexDir, index.Name);
             }
@@ -57,12 +68,24 @@ namespace SearchQueryService.Indexes
             _logger.LogInformation("Index creation finished.");
         }
 
-        private async Task WaitUntilSchemaCreated(int tryCount, int sleepPeriod, int fieldCount, string indexName)
+        private async Task<int> GetSchemaSize(string indexName)
+        {
+            var url = Tools.GetSearchUrl().AppendPathSegments(indexName, "schema", "fields");
+            var response = await Policy
+                .HandleResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+                .ExecuteAsync(() => _httpClient.GetAsync(url));
+            var result = JsonConvert.DeserializeObject<SchemaFieldsResponse>(await response.Content.ReadAsStringAsync());
+
+            return result.Fields.Count;
+        }
+
+        private async Task WaitUntilSchemaCreated(int tryCount, int sleepPeriod, string indexName, int fieldCount)
         {
             for (int i = 0; i < tryCount; i++)
             {
                 Thread.Sleep(sleepPeriod);
-                if (await GetSchemaSize(indexName) - 4 >= fieldCount)
+                if (await IsSchemaCorrectSize(indexName, fieldCount))
                 {
                     return;
                 }
@@ -73,14 +96,8 @@ namespace SearchQueryService.Indexes
             throw new SchemaNotCreatedException();
         }
 
-        private async Task<int> GetSchemaSize(string indexName)
-        {
-            var url = Tools.GetSearchUrl().AppendPathSegments(indexName, "schema", "fields");
-            var response = _httpClient.GetAsync(url).Result;
-            var result = JsonConvert.DeserializeObject<SchemaFieldsResponse>(await response.Content.ReadAsStringAsync());
-
-            return result.Fields.Count;
-        }
+        private async Task<bool> IsSchemaCorrectSize(string indexName, int fieldCount)
+            => await GetSchemaSize(indexName) - DefaultIndexSize >= fieldCount;
 
         private async void CreateCoreSchema(Dictionary<string, IEnumerable<ISolrField>> postBody, string indexName) {
             var serializerSettings = new JsonSerializerSettings
@@ -140,18 +157,6 @@ namespace SearchQueryService.Indexes
             return fields.Concat(nestedFields);
         }
 
-        private async Task<bool> IsCorePopulated(string indexName)
-        {
-            var uri = Tools.GetSearchUrl()
-                .AppendPathSegments(indexName, "query")
-                .SetQueryParam("q", "*:*");
-            var docsResponse = await _httpClient.GetAsync(uri);
-            var docsResult = await docsResponse.Content.ReadAsStringAsync();
-            var finalResult = JsonConvert.DeserializeObject<SearchResponse>(docsResult);
-
-            return finalResult?.Response?.NumFound != 0;
-        }
-
         private async void PostMockData(string dataDir, string indexName)
         {
             string dataFile = $"{dataDir}/mockData.json";
@@ -181,11 +186,17 @@ namespace SearchQueryService.Indexes
 
         private static SearchIndex ReadIndex(string indexDir)
         {
-            using (StreamReader r = new($"{indexDir}/index.json"))
+            string file = $"{indexDir}/index.json";
+            if (File.Exists(file))
             {
-                string json = r.ReadToEnd();
-                return JsonConvert.DeserializeObject<SearchIndex>(json);
+                using (StreamReader r = new(file))
+                {
+                    string json = r.ReadToEnd();
+                    return JsonConvert.DeserializeObject<SearchIndex>(json);
+                }
             }
+
+            return null;
         }
     }
 }

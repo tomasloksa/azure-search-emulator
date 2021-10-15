@@ -2,7 +2,7 @@
 
 namespace SearchQueryService.Services
 {
-    internal interface ISearchQueryBuilder
+    public interface ISearchQueryBuilder
     {
         string Build(string indexName, AzSearchParams searchParams);
     }
