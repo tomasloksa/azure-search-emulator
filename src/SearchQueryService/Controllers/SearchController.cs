@@ -80,7 +80,7 @@ namespace SearchQueryService.Controllers
             catch (HttpRequestException exception)
             {
                 _logger.LogError("Document indexing failed!", exception.Message);
-                return exception;
+                throw;
             }
         }
 
