@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json;
 
 namespace SearchQueryService.Documents.Models
 {
@@ -7,6 +8,6 @@ namespace SearchQueryService.Documents.Models
     /// </summary>
     public class AzPost
     {
-        public List<Dictionary<string, dynamic>> Value { get; set; }
+        public List<Dictionary<string, JsonElement>> Value { get; set; }
     }
 }

@@ -6,9 +6,11 @@ using SearchQueryService.Indexes.Models;
 using SearchQueryService.Helpers;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using SearchQueryService.Services;
+using System.Text.RegularExpressions;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace SearchQueryService.Controllers
 {
@@ -16,10 +18,21 @@ namespace SearchQueryService.Controllers
     [Route("indexes('{indexName}')/docs")]
     public class SearchController : ControllerBase
     {
-        private readonly HttpClient _httpClient;
+        private readonly Dictionary<string, string> _valueReplacements = new()
+        {
+            { @"\+[0-9]{2}:[0-9]{2}", "Z" } // Date format
+        };
 
-        public SearchController(IHttpClientFactory httpClientFactory)
-            => _httpClient = httpClientFactory.CreateClient();
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
+
+        public SearchController(
+            IHttpClientFactory httpClientFactory,
+            ILogger<SearchController> logger)
+        {
+            _httpClient = httpClientFactory.CreateClient();
+            _logger = logger;
+        }
 
         [HttpGet]
         public Task<AzSearchResponse> SearchGetAsync(
@@ -58,8 +71,17 @@ namespace SearchQueryService.Controllers
             [FromBody] AzPost newDocs
         )
         {
-            PostDocuments(indexName, newDocs);
-            return CreateAzSearchResponse(newDocs);
+            try
+            {
+                PostDocuments(indexName, newDocs);
+                _logger.LogInformation("Documents indexed succesfully.");
+                return CreateAzSearchResponse(newDocs);
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogError("Document indexing failed!", exception.Message);
+                throw;
+            }
         }
 
         private static object CreateAzSearchResponse(AzPost newDocs)
@@ -85,7 +107,7 @@ namespace SearchQueryService.Controllers
         private async void PostDocuments(string indexName, AzPost docs)
         {
             var uri = Tools.GetSearchUrl()
-                        .AppendPathSegments(indexName, "update", "json")
+                        .AppendPathSegments(indexName, "update", "json", "docs")
                         .SetQueryParam("commit", "true");
 
             var options = new JsonSerializerOptions
@@ -95,7 +117,8 @@ namespace SearchQueryService.Controllers
 
             var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(docs), options));
 
-            await _httpClient.PostAsync(uri, content);
+            var response = await _httpClient.PostAsync(uri, content);
+            response.EnsureSuccessStatusCode();
         }
 
         private async Task<AzSearchResponse> Search(
@@ -110,7 +133,7 @@ namespace SearchQueryService.Controllers
             return new AzSearchResponse(searchResult.Response);
         }
 
-        private static List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
+        private List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
         {
             var newList = new List<Dictionary<string, object>>();
             foreach (var doc in azDocs.Value)
@@ -121,25 +144,40 @@ namespace SearchQueryService.Controllers
             return newList;
         }
 
-        private static Dictionary<string, object> ConvertDocument(Dictionary<string, dynamic> document)
+        private Dictionary<string, object> ConvertDocument(Dictionary<string, JsonElement> document)
         {
-            var newDict = new Dictionary<string, object>();
+            var convertedDocument = new Dictionary<string, object>();
             foreach (var kv in document)
             {
                 if (string.Equals(kv.Key, "id", System.StringComparison.CurrentCultureIgnoreCase))
                 {
-                    newDict["id"] = kv.Value;
+                    convertedDocument["id"] = kv.Value;
                 }
                 else
                 {
-                    newDict[kv.Key] = new Dictionary<string, dynamic>
+                    convertedDocument[kv.Key] = new Dictionary<string, dynamic>
                     {
-                        { "set", kv.Value }
+                        { "set", ConvertValues(kv.Value) }
                     };
                 }
             }
 
-            return newDict;
+            return convertedDocument;
+        }
+
+        private dynamic ConvertValues(JsonElement value)
+        {
+            if (value.ValueKind == JsonValueKind.String)
+            {
+                string newVal = value.GetString();
+                foreach (var kv in _valueReplacements)
+                {
+                    newVal = Regex.Replace(newVal, kv.Key, kv.Value);
+                }
+                return newVal;
+            }
+
+            return value;
         }
     }
 }
