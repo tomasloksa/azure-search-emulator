@@ -5,6 +5,9 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 ENV SEARCH_URL=http://solr:8983/solr
+#For debugging requests
+#ENV http_proxy "http://host.docker.internal:8888/"
+#ENV https_proxy "https://host.docker.internal:8888/"
 COPY ./cert/ ../srv/cert
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build

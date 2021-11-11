@@ -38,6 +38,7 @@ namespace SearchQueryService.Indexes
             var indexDirectories = Directory.GetDirectories("../srv/data");
             _logger.LogInformation("Starting index creation process..");
             _logger.LogInformation("Creating " + indexDirectories.Length + " indexes.");
+
             foreach (string indexDir in indexDirectories)
             {
                 SearchIndex index = ReadIndex(indexDir);
@@ -145,40 +146,40 @@ namespace SearchQueryService.Indexes
 
         private static IEnumerable<AddField> GetFieldsFromIndex(SearchIndex index) {
             var fields = index.Fields
-                .Where(field => !string.Equals(field.Name, "id", System.StringComparison.OrdinalIgnoreCase))
-                .Select(field => AddField.Create(field.Name.ToCamelCase(), field));
+                .Where(field => !string.Equals(field.Name, "id", StringComparison.OrdinalIgnoreCase))
+                .Select(field => AddField.Create(field.Name, field));
 
             var nestedFields = index.Fields
                 .Where(field => field.Fields is not null)
                 .SelectMany(field => field.Fields
                 .Select(nestedField =>
-                    AddField.Create(field.Name.ToCamelCase() + "." + nestedField.Name.ToCamelCase(), nestedField)));
+                    AddField.Create(field.Name + "." + nestedField.Name, nestedField)));
 
             return fields.Concat(nestedFields);
         }
 
-        private async void PostMockData(string dataDir, string indexName)
+        private void PostMockData(string dataDir, string indexName)
         {
             string dataFile = $"{dataDir}/mockData.json";
             if (File.Exists(dataFile))
             {
                 using (StreamReader r = new($"{dataDir}/mockData.json"))
                 {
-                    var jsonSerializerSettings = new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    };
-
                     var deserialized = JsonConvert.DeserializeObject<List<ExpandoObject>>(r.ReadToEnd());
-                    var serialized = JsonConvert.SerializeObject(deserialized, jsonSerializerSettings);
+                    foreach (var value in deserialized)
+                    {
+                        var map = (IDictionary<string, object>)value;
+                        if (map.ContainsKey("Id"))
+                        {
+                            map["id"] = map["Id"];
+                            map.Remove("Id");
+                        }
+                    }
+                    var serialized = JsonConvert.SerializeObject(deserialized);
 
                     using (var content = new StringContent(serialized, Encoding.UTF8, "application/json"))
                     {
-                        var uri = Tools.GetSearchUrl()
-                                    .AppendPathSegments(indexName, "update", "json", "docs")
-                                    .SetQueryParam("commit", "true");
-
-                        await _httpClient.PostAsync(uri, content);
+                        Tools.PostDocuments(content, indexName, _httpClient);
                     }
                 }
             }

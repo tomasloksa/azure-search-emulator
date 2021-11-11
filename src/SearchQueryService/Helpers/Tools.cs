@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using Flurl;
 
 namespace SearchQueryService.Helpers
 {
@@ -26,5 +28,15 @@ namespace SearchQueryService.Helpers
 
         public static string GetSearchUrl()
             => Environment.GetEnvironmentVariable("SEARCH_URL");
+
+        public static async void PostDocuments(StringContent content, string indexName, HttpClient httpClient)
+        {
+            var uri = GetSearchUrl()
+                .AppendPathSegments(indexName, "update", "json", "docs")
+                .SetQueryParam("commit", "true");
+
+            var response = await httpClient.PostAsync(uri, content);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }
