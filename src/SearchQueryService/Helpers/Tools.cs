@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using Flurl;
 
 namespace SearchQueryService.Helpers
 {
@@ -21,10 +23,17 @@ namespace SearchQueryService.Helpers
                 _ => throw new ArgumentOutOfRangeException($"Not expected index type value: {azType}")
             };
 
-        public static string ToCamelCase(this string str)
-            => char.ToLowerInvariant(str[0]) + str[1..];
-
         public static string GetSearchUrl()
             => Environment.GetEnvironmentVariable("SEARCH_URL");
+
+        public static async void PostDocuments(StringContent content, string indexName, HttpClient httpClient)
+        {
+            var uri = GetSearchUrl()
+                .AppendPathSegments(indexName, "update", "json", "docs")
+                .SetQueryParam("commit", "true");
+
+            var response = await httpClient.PostAsync(uri, content);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

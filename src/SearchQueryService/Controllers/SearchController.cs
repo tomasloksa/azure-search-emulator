@@ -1,16 +1,17 @@
-﻿using Flurl;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SearchQueryService.Documents.Models;
 using SearchQueryService.Indexes.Models;
 using SearchQueryService.Helpers;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 using SearchQueryService.Services;
-using System.Text.RegularExpressions;
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
 
 namespace SearchQueryService.Controllers
 {
@@ -84,6 +85,32 @@ namespace SearchQueryService.Controllers
             }
         }
 
+        private async Task<AzSearchResponse> Search(
+           string indexName,
+           AzSearchParams searchParams,
+           ISearchQueryBuilder searchQueryBuilder)
+        {
+            var searchResponse = await _httpClient.GetAsync(searchQueryBuilder.Build(indexName, searchParams));
+            var responseContent = await searchResponse.Content.ReadAsStringAsync();
+            var searchResult = JsonConvert.DeserializeObject<SearchResponse>(responseContent);
+
+            FixIdCapitalization(searchResult);
+
+            return new AzSearchResponse(searchResult.Response);
+        }
+
+        private static void FixIdCapitalization(SearchResponse searchResult) {
+            var docs = searchResult.Response.Docs;
+            if (docs.Any() && (char.IsUpper(docs.First().ElementAt(0).Key[0]) || char.IsUpper(docs.First().ElementAt(1).Key[0])))
+            {
+                foreach (var retrievedDoc in docs)
+                {
+                    retrievedDoc["Id"] = retrievedDoc["id"];
+                    retrievedDoc.Remove("id");
+                }
+            }
+        }
+
         private static object CreateAzSearchResponse(AzPost newDocs)
         {
             var list = new List<object>();
@@ -104,33 +131,11 @@ namespace SearchQueryService.Controllers
             };
         }
 
-        private async void PostDocuments(string indexName, AzPost docs)
+        private void PostDocuments(string indexName, AzPost docs)
         {
-            var uri = Tools.GetSearchUrl()
-                        .AppendPathSegments(indexName, "update", "json", "docs")
-                        .SetQueryParam("commit", "true");
+            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(docs)));
 
-            var options = new JsonSerializerOptions
-            {
-                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(ConvertAzDocs(docs), options));
-
-            var response = await _httpClient.PostAsync(uri, content);
-            response.EnsureSuccessStatusCode();
-        }
-
-        private async Task<AzSearchResponse> Search(
-            string indexName,
-            AzSearchParams searchParams,
-            ISearchQueryBuilder searchQueryBuilder)
-        {
-            var searchResponse = await _httpClient.GetAsync(searchQueryBuilder.Build(indexName, searchParams));
-            var responseContent = await searchResponse.Content.ReadAsStringAsync();
-            var searchResult = JsonConvert.DeserializeObject<SearchResponse>(responseContent);
-
-            return new AzSearchResponse(searchResult.Response);
+            Tools.PostDocuments(content, indexName, _httpClient);
         }
 
         private List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
@@ -149,16 +154,13 @@ namespace SearchQueryService.Controllers
             var convertedDocument = new Dictionary<string, object>();
             foreach (var kv in document)
             {
-                if (string.Equals(kv.Key, "id", System.StringComparison.CurrentCultureIgnoreCase))
+                if (string.Equals(kv.Key, "id", StringComparison.OrdinalIgnoreCase))
                 {
                     convertedDocument["id"] = kv.Value;
                 }
                 else
                 {
-                    convertedDocument[kv.Key] = new Dictionary<string, dynamic>
-                    {
-                        { "set", ConvertValues(kv.Value) }
-                    };
+                    convertedDocument[kv.Key] = ConvertValues(kv.Value);
                 }
             }
 
