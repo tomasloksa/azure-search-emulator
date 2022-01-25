@@ -39,9 +39,17 @@ namespace SearchQueryService.Services
 
             var sb = new StringBuilder(filter);
             sb.Replace(" eq", ":");
+
             sb.Replace("and", "AND");
+            sb.Replace("&", " AND ");
+            sb.Replace("+", " AND ");
+
             sb.Replace("or", "OR");
+            sb.Replace("|", " OR ");
+
             sb.Replace("not", "NOT");
+            sb.Replace("!", " NOT ");
+            sb.Replace("-", " NOT ");
 
             return sb.ToString();
         }
