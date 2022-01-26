@@ -24,7 +24,7 @@ namespace SearchQueryService
             services.AddTransient<IndexesProcessor>();
             services.AddTransient<ISearchQueryBuilder, SolrSearchQueryBuilder>();
             services.AddHttpClient();
-            services.AddHttpClient("solr", httpClient =>
+            services.AddHttpClient<SolrService>(httpClient =>
             {
                 httpClient.BaseAddress = Tools.GetSearchUrl();
             }).AddTransientHttpErrorPolicy(policyBuilder =>

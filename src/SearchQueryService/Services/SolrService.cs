@@ -1,7 +1,6 @@
 ﻿using Flurl;
-using SearchQueryService.Helpers;
+using SearchQueryService.Documents.Models;
 using SearchQueryService.Indexes.Models;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -10,31 +9,52 @@ using System.Threading.Tasks;
 
 namespace SearchQueryService.Services
 {
-    internal class SolrService
+    public class SolrService
     {
         private readonly HttpClient _httpClient;
-        private readonly Uri _baseUrl = Tools.GetSearchUrl();
+        private readonly ISearchQueryBuilder _searchQueryBuilder;
+        private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-        public SolrService(HttpClient httpClient)
+        public SolrService(
+            HttpClient httpClient,
+            ISearchQueryBuilder searchQueryBuilder)
         {
             _httpClient = httpClient;
+            _searchQueryBuilder = searchQueryBuilder;
         }
 
-        public async Task PostDocumentAsync(StringContent content, string indexName)
+        public async Task PostDocumentAsync<TDocument>(TDocument document, string indexName)
         {
-            Url uri = _baseUrl
-                .AppendPathSegments(indexName, "update", "json", "docs")
+            Url uri = indexName
+                .AppendPathSegments("update", "json", "docs")
                 .SetQueryParam("commit", "true");
 
-            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(uri, document, _jsonOptions);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task PostSchemaAsync(string indexName, Dictionary<string, IEnumerable<ISolrField>> schema)
+            => await _httpClient.PostAsJsonAsync(GetSchemeUrl(indexName), schema, _jsonOptions);
+
+        public async Task<int> GetSchemaSizeAsync(string indexName)
         {
-            Url url = _baseUrl.AppendPathSegments(indexName, "schema");
-            await _httpClient.PostAsJsonAsync(url, schema,
-                new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            using HttpResponseMessage response = await _httpClient
+                .GetAsync(GetSchemeUrl(indexName, "fields"));
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return -1;
+            }
+
+            SchemaFieldsResponse schemaResponse = await response.Content!.ReadFromJsonAsync<SchemaFieldsResponse>();
+
+            return schemaResponse!.Fields.Count;
         }
+
+        private static Url GetSchemeUrl(string indexName, string segment = "")
+            => Url.Combine(indexName, "schema", segment);
+
+        public async Task<SearchResponse> SearchAsync(string indexName, AzSearchParams searchParams)
+            => await _httpClient.GetFromJsonAsync<SearchResponse>(_searchQueryBuilder.Build(indexName, searchParams));
     }
 }

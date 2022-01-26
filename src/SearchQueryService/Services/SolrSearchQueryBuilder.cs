@@ -19,8 +19,7 @@ namespace SearchQueryService.Services
         };
 
         public string Build(string indexName, AzSearchParams searchParams)
-            => Tools.GetSearchUrl()
-            .AppendPathSegments(indexName, "select")
+            => indexName.AppendPathSegments("select")
             .SetQueryParams(new
             {
                 q = searchParams.Search,
