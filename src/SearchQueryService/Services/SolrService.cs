@@ -13,7 +13,11 @@ namespace SearchQueryService.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ISearchQueryBuilder _searchQueryBuilder;
-        private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        private readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            IgnoreReadOnlyProperties = true
+        };
 
         public SolrService(
             HttpClient httpClient,
@@ -33,8 +37,12 @@ namespace SearchQueryService.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task PostSchemaAsync(string indexName, Dictionary<string, IEnumerable<ISolrField>> schema)
-            => await _httpClient.PostAsJsonAsync(GetSchemeUrl(indexName), schema, _jsonOptions);
+        public async Task PostSchemaAsync(string indexName, Dictionary<string, IEnumerable<object>> schema)
+        {
+            var response = await _httpClient.PostAsJsonAsync(GetSchemeUrl(indexName), schema, _jsonOptions);
+
+            response.EnsureSuccessStatusCode();
+        }
 
         public async Task<int> GetSchemaSizeAsync(string indexName)
         {

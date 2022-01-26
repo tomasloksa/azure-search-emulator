@@ -1,6 +1,5 @@
 ﻿using Flurl;
 using SearchQueryService.Documents.Models;
-using SearchQueryService.Helpers;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;

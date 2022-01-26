@@ -8,11 +8,8 @@ namespace SearchQueryService.Exceptions
         {
         }
 
-        public SchemaNotCreatedException(string message) : base(message)
-        {
-        }
-
-        public SchemaNotCreatedException(string message, Exception innerException) : base(message, innerException)
+        public SchemaNotCreatedException(string indexName)
+            : base($"====== The schema for index `{indexName}` was not created correctly")
         {
         }
     }

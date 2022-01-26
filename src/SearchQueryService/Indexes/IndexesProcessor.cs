@@ -8,6 +8,8 @@ using System.Dynamic;
 using Microsoft.Extensions.Logging;
 using System;
 using SearchQueryService.Services;
+using Polly;
+using SearchQueryService.Exceptions;
 
 namespace SearchQueryService.Indexes
 {
@@ -15,6 +17,7 @@ namespace SearchQueryService.Indexes
     {
         private const int DefaultIndexSize = 4;
 
+        private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         private readonly SolrService _solrService;
         private readonly ILogger _logger;
 
@@ -68,7 +71,7 @@ namespace SearchQueryService.Indexes
                 case < 0:
                     LogCoreDoesNotExist(index);
                     return false;
-                case >= 1:
+                case > DefaultIndexSize + 1:
                     LogIndexAlreadyExist();
                     return false;
             }
@@ -77,12 +80,26 @@ namespace SearchQueryService.Indexes
         }
 
         private async Task WaitUntilSchemaCreated(string indexName, int fieldCount)
-            => await IsSchemaCorrectSize(indexName, fieldCount);
+        {
+            bool isSchemaCorrect = await Policy
+                .HandleResult<bool>(isSchemaCorrect => !isSchemaCorrect)
+                .WaitAndRetryAsync(10, retryAttempt =>
+                {
+                    _logger.LogWarning($"====== Waiting until schema is created. Attempt: {retryAttempt}");
+                    return TimeSpan.FromMilliseconds(500);
+                })
+                .ExecuteAsync(async () => await IsSchemaCorrectSize(indexName, fieldCount));
+
+            if (!isSchemaCorrect)
+            {
+                throw new SchemaNotCreatedException(indexName);
+            }
+        }
 
         private async Task<bool> IsSchemaCorrectSize(string indexName, int fieldCount)
             => await _solrService.GetSchemaSizeAsync(indexName) - DefaultIndexSize >= fieldCount;
 
-        private static Dictionary<string, IEnumerable<ISolrField>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
+        private static Dictionary<string, IEnumerable<object>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
             new()
             {
                 { "add-field", fieldsToAdd },
@@ -90,7 +107,8 @@ namespace SearchQueryService.Indexes
                     "add-copy-field",
                     fieldsToAdd.Where(item => item.Searchable).Select(item => new AddCopyField
                     {
-                        Source = item.Name, Dest = "_text_"
+                        Source = item.Name,
+                        Dest = "_text_"
                     })
                 },
                 {
@@ -134,7 +152,7 @@ namespace SearchQueryService.Indexes
             }
 
             using StreamReader r = new($"{dataDir}/mockData.json");
-            List<ExpandoObject> document = JsonSerializer.Deserialize<List<ExpandoObject>>(await r.ReadToEndAsync());
+            List<ExpandoObject> document = JsonSerializer.Deserialize<List<ExpandoObject>>(await r.ReadToEndAsync(), _jsonOptions);
 
             await _solrService.PostDocumentAsync(document, indexName);
         }
@@ -149,7 +167,7 @@ namespace SearchQueryService.Indexes
 
             using StreamReader r = new(file);
             string json = await r.ReadToEndAsync();
-            return JsonSerializer.Deserialize<SearchIndex>(json);
+            return JsonSerializer.Deserialize<SearchIndex>(json, _jsonOptions);
         }
 
         private void LogCoreDoesNotExist(SearchIndex index) =>
