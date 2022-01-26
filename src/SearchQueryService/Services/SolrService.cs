@@ -27,6 +27,13 @@ namespace SearchQueryService.Services
             _searchQueryBuilder = searchQueryBuilder;
         }
 
+        public async Task CheckAndThrowExceptionIfSolrIsNotAvailable()
+        {
+            using HttpResponseMessage response = await _httpClient.GetAsync("admin/cores?action=STATUS");
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task PostDocumentAsync<TDocument>(TDocument document, string indexName)
         {
             Url uri = indexName

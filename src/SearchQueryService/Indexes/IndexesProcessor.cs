@@ -35,6 +35,8 @@ namespace SearchQueryService.Indexes
             _logger.LogInformation("Starting index creation process..");
             _logger.LogInformation($"=== Creating {indexDirectories.Length} indexes");
 
+            await _solrService.CheckAndThrowExceptionIfSolrIsNotAvailable();
+
             foreach (string indexDir in indexDirectories)
             {
                 SearchIndex index = await ReadIndexAsync(indexDir);
