@@ -39,7 +39,7 @@ namespace SearchQueryService.Services
 
         public async Task PostSchemaAsync(string indexName, Dictionary<string, IEnumerable<object>> schema)
         {
-            var response = await _httpClient.PostAsJsonAsync(GetSchemeUrl(indexName), schema, _jsonOptions);
+            using HttpResponseMessage response = await _httpClient.PostAsJsonAsync(GetSchemeUrl(indexName), schema, _jsonOptions);
 
             response.EnsureSuccessStatusCode();
         }

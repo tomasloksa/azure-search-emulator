@@ -94,7 +94,7 @@ namespace SearchQueryService.Controllers
 
         private static void FixIdCapitalization(SearchResponse searchResult) {
             var docs = searchResult.Response.Docs.ToList();
-            if (docs.Any() && (char.IsUpper(docs.First().ElementAt(0).Key[0]) || char.IsUpper(docs.First().ElementAt(1).Key[0])))
+            if (docs.Any() && (char.IsUpper(docs[0].ElementAt(0).Key[0]) || char.IsUpper(docs[0].ElementAt(1).Key[0])))
             {
                 foreach (var retrievedDoc in docs)
                 {
