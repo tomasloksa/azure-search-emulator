@@ -15,105 +15,75 @@ using SearchQueryService.Helpers;
 using Microsoft.Extensions.Logging;
 using System;
 using Polly;
+using SearchQueryService.Services;
+using System.Net.Http.Json;
 
 namespace SearchQueryService.Indexes
 {
-    public class IndexesProcessor
+    internal class IndexesProcessor
     {
         private const int DefaultIndexSize = 4;
 
-        private readonly HttpClient _httpClient;
+        private readonly SolrService _solrService;
         private readonly ILogger _logger;
 
         public IndexesProcessor(
-            IHttpClientFactory httpClientFactory,
+            SolrService solrService,
             ILogger<IndexesProcessor> logger)
         {
-            _httpClient = httpClientFactory.CreateClient();
+            _solrService = solrService;
             _logger = logger;
         }
 
         public async Task ProcessDirectory()
         {
-            var indexDirectories = Directory.GetDirectories("../srv/data");
+            string[] indexDirectories = Directory.GetDirectories("../srv/data");
             _logger.LogInformation("Starting index creation process..");
-            _logger.LogInformation("Creating " + indexDirectories.Length + " indexes.");
+            _logger.LogInformation($"=== Creating {indexDirectories.Length} indexes");
 
             foreach (string indexDir in indexDirectories)
             {
-                SearchIndex index = ReadIndex(indexDir);
+                SearchIndex index = await ReadIndex(indexDir);
 
                 if (index == null)
                 {
-                    _logger.LogInformation("index.json not found in: \"" + indexDir + "\", skipping.");
+                    _logger.LogInformation($"index.json not found in: \"{indexDir}\", skipping");
                     continue;
                 }
 
-                _logger.LogInformation("Creating index: " + index.Name);
+                _logger.LogInformation($"====== Creating index: {index.Name}");
 
                 if (await IsSchemaCorrectSize(index.Name, DefaultIndexSize + 1))
                 {
-                    _logger.LogInformation("Indexes already created, aborting.");
-                    return;
+                    _logger.LogInformation("====== Indexes already created, continues to the next index");
+                    continue;
                 }
 
                 var fieldsToAdd = GetFieldsFromIndex(index).ToList();
                 var postBody = CreateSchemaPostBody(fieldsToAdd);
-                CreateCoreSchema(postBody, index.Name);
+                await _solrService.PostSchemaAsync(index.Name, postBody);
 
-                await WaitUntilSchemaCreated(3, 500, index.Name, fieldsToAdd.Count);
+                await WaitUntilSchemaCreated(index.Name, fieldsToAdd.Count);
 
                 PostMockData(indexDir, index.Name);
             }
 
-            _logger.LogInformation("Index creation finished.");
+            _logger.LogInformation("Index creation finished");
         }
 
         private async Task<int> GetSchemaSize(string indexName)
         {
-            var url = Tools.GetSearchUrl().AppendPathSegments(indexName, "schema", "fields");
-            var response = await Policy
-                .HandleResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
-                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
-                .ExecuteAsync(() => _httpClient.GetAsync(url));
-            var result = JsonConvert.DeserializeObject<SchemaFieldsResponse>(await response.Content.ReadAsStringAsync());
+            SchemaFieldsResponse response = await _httpClient
+                .GetFromJsonAsync<SchemaFieldsResponse>(Url.Combine(indexName, "schema", "fields"));
 
-            return result.Fields.Count;
+            return response!.Fields.Count;
         }
 
-        private async Task WaitUntilSchemaCreated(int tryCount, int sleepPeriod, string indexName, int fieldCount)
-        {
-            for (int i = 0; i < tryCount; i++)
-            {
-                Thread.Sleep(sleepPeriod);
-                if (await IsSchemaCorrectSize(indexName, fieldCount))
-                {
-                    return;
-                }
-
-                sleepPeriod *= 2;
-            }
-
-            throw new SchemaNotCreatedException();
-        }
+        private async Task WaitUntilSchemaCreated(string indexName, int fieldCount)
+            => await IsSchemaCorrectSize(indexName, fieldCount);
 
         private async Task<bool> IsSchemaCorrectSize(string indexName, int fieldCount)
             => await GetSchemaSize(indexName) - DefaultIndexSize >= fieldCount;
-
-        private async void CreateCoreSchema(Dictionary<string, IEnumerable<ISolrField>> postBody, string indexName) {
-            var serializerSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
-            string postJson = JsonConvert.SerializeObject(postBody, serializerSettings);
-
-            using (StringContent data = new(postJson, Encoding.UTF8, "application/json"))
-            {
-                var indexUrl = Tools.GetSearchUrl().AppendPathSegments(indexName, "schema");
-                await _httpClient.PostAsync(indexUrl, data);
-            }
-        }
 
         private static Dictionary<string, IEnumerable<ISolrField>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
             new()
@@ -144,7 +114,8 @@ namespace SearchQueryService.Indexes
                 }
             };
 
-        private static IEnumerable<AddField> GetFieldsFromIndex(SearchIndex index) {
+        private static IEnumerable<AddField> GetFieldsFromIndex(SearchIndex index)
+        {
             var fields = index.Fields
                 .Where(field => !string.Equals(field.Name, "id", StringComparison.OrdinalIgnoreCase))
                 .Select(field => AddField.Create(field.Name, field));
@@ -158,41 +129,43 @@ namespace SearchQueryService.Indexes
             return fields.Concat(nestedFields);
         }
 
-        private void PostMockData(string dataDir, string indexName)
+        private async Task PostMockData(string dataDir, string indexName)
         {
             string dataFile = $"{dataDir}/mockData.json";
-            if (File.Exists(dataFile))
+            if (!File.Exists(dataFile))
             {
-                using (StreamReader r = new($"{dataDir}/mockData.json"))
-                {
-                    var deserialized = JsonConvert.DeserializeObject<List<ExpandoObject>>(r.ReadToEnd());
-                    foreach (var value in deserialized)
-                    {
-                        var map = (IDictionary<string, object>)value;
-                        if (map.ContainsKey("Id"))
-                        {
-                            map["id"] = map["Id"];
-                            map.Remove("Id");
-                        }
-                    }
-                    var serialized = JsonConvert.SerializeObject(deserialized);
+                return;
+            }
 
-                    using (var content = new StringContent(serialized, Encoding.UTF8, "application/json"))
+            using (StreamReader r = new($"{dataDir}/mockData.json"))
+            {
+                var deserialized = JsonConvert.DeserializeObject<List<ExpandoObject>>(await r.ReadToEndAsync());
+                foreach (var value in deserialized)
+                {
+                    var map = (IDictionary<string, object>)value;
+                    if (map.ContainsKey("Id"))
                     {
-                        Tools.PostDocuments(content, indexName, _httpClient);
+                        map["id"] = map["Id"];
+                        map.Remove("Id");
                     }
+                }
+                var serialized = JsonConvert.SerializeObject(deserialized);
+
+                using (var content = new StringContent(serialized, Encoding.UTF8, "application/json"))
+                {
+                    await _solrService.PostDocumentAsync(content, indexName);
                 }
             }
         }
 
-        private static SearchIndex ReadIndex(string indexDir)
+        private static async Task<SearchIndex> ReadIndex(string indexDir)
         {
             string file = $"{indexDir}/index.json";
             if (File.Exists(file))
             {
                 using (StreamReader r = new(file))
                 {
-                    string json = r.ReadToEnd();
+                    string json = await r.ReadToEndAsync();
                     return JsonConvert.DeserializeObject<SearchIndex>(json);
                 }
             }

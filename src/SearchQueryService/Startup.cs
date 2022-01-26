@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Polly;
+using SearchQueryService.Helpers;
 using SearchQueryService.Indexes;
 using SearchQueryService.Services;
+using System;
 
 namespace SearchQueryService
 {
@@ -21,6 +24,11 @@ namespace SearchQueryService
             services.AddTransient<IndexesProcessor>();
             services.AddTransient<ISearchQueryBuilder, SolrSearchQueryBuilder>();
             services.AddHttpClient();
+            services.AddHttpClient("solr", httpClient =>
+            {
+                httpClient.BaseAddress = Tools.GetSearchUrl();
+            }).AddTransientHttpErrorPolicy(policyBuilder =>
+                policyBuilder.WaitAndRetryAsync(10, _ => TimeSpan.FromMilliseconds(500)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
