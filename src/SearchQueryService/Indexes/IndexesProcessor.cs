@@ -53,8 +53,8 @@ namespace SearchQueryService.Indexes
 
                 if (await IsSchemaCorrectSize(index.Name, DefaultIndexSize + 1))
                 {
-                    _logger.LogInformation("Indexes already created, aborting.");
-                    return;
+                    _logger.LogInformation("====== Indexes already created, continues to the next index");
+                    continue;
                 }
 
                 var fieldsToAdd = GetFieldsFromIndex(index).ToList();
