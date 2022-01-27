@@ -156,7 +156,22 @@ namespace SearchQueryService.Indexes
             using StreamReader r = new($"{dataDir}/mockData.json");
             List<ExpandoObject> document = JsonSerializer.Deserialize<List<ExpandoObject>>(await r.ReadToEndAsync(), _jsonOptions);
 
+            FixIdCapitalization(document);
+
             await _solrService.PostDocumentAsync(document, indexName);
+        }
+
+        private static void FixIdCapitalization(List<ExpandoObject> document)
+        {
+            foreach (var value in document)
+            {
+                var map = (IDictionary<string, object>)value;
+                if (map.ContainsKey("Id"))
+                {
+                    map["id"] = map["Id"];
+                    map.Remove("Id");
+                }
+            }
         }
 
         private static async Task<SearchIndex> ReadIndexAsync(string indexDir)
