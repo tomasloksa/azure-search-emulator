@@ -31,6 +31,8 @@ namespace SearchQueryService
                 app.UseDeveloperExceptionPage();
             }
 
+            await indexes.ProcessDirectory();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -38,8 +40,6 @@ namespace SearchQueryService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-
-            await indexes.ProcessDirectory();
         }
     }
 }
