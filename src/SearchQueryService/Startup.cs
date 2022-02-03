@@ -31,8 +31,6 @@ namespace SearchQueryService
                 app.UseDeveloperExceptionPage();
             }
 
-            await indexes.ProcessDirectory();
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
