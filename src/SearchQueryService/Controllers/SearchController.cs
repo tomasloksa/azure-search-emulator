@@ -41,8 +41,8 @@ namespace SearchQueryService.Controllers
             [FromQuery(Name = "$top")] int? top,
             [FromQuery(Name = "$skip")] int? skip,
             [FromQuery] string search,
+            [FromQuery] string searchMode,
             [FromQuery(Name = "$filter")] string filter,
-            //string searchMode = "", TODO find out how to set
             [FromQuery(Name = "$orderby")] string orderBy,
             [FromServices] ISearchQueryBuilder searchQueryBuilder
         )
@@ -53,7 +53,8 @@ namespace SearchQueryService.Controllers
                 Skip = skip,
                 Search = search,
                 Filter = filter,
-                OrderBy = orderBy
+                OrderBy = orderBy,
+                SearchMode = searchMode
             };
 
             return Search(indexName, searchParams, searchQueryBuilder);
