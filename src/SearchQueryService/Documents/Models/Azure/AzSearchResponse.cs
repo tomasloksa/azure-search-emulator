@@ -12,18 +12,20 @@ namespace SearchQueryService.Documents.Models
         [JsonPropertyName("@odata.count")]
         public int Count { get; set; }
 
-        public List<AzDocument> Value { get; set; }
+        public List<Dictionary<string, dynamic>> Value { get; set; }
 
         public AzSearchResponse() { }
 
         public AzSearchResponse(Response solrResponse)
         {
             Count = solrResponse.NumFound - solrResponse.Start;
-            Value = new List<AzDocument>();
+            Value = new List<Dictionary<string, dynamic>>();
 
             foreach (var solrDoc in solrResponse.Docs)
             {
-                Value.Add(new AzDocument(solrDoc));
+                solrDoc.Remove("_version_");
+                solrDoc.Add("@search.score", 0);
+                Value.Add(solrDoc);
             }
         }
     }
