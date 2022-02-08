@@ -1,8 +1,8 @@
-﻿using SearchQueryService.Indexes.Models;
+﻿using SearchQueryService.Indexes.Models.Solr;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace SearchQueryService.Documents.Models
+namespace SearchQueryService.Documents.Models.Azure
 {
     /// <summary>
     /// Response format required by Azure.Search.Documents.

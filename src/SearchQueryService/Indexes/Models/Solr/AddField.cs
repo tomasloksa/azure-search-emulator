@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using SearchQueryService.Helpers;
+using SearchQueryService.Indexes.Models.Azure;
 
-namespace SearchQueryService.Indexes.Models
+namespace SearchQueryService.Indexes.Models.Solr
 {
     public class AddField : ISolrField
     {

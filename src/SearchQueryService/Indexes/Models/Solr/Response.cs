@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SearchQueryService.Indexes.Models
+namespace SearchQueryService.Indexes.Models.Solr
 {
     public class Response
     {
