@@ -1,7 +1,7 @@
-﻿namespace SearchQueryService.Documents.Models
+﻿namespace SearchQueryService.Documents.Models.Azure
 {
     /// <summary>
-    /// Search parameters recieved from Azure.Search.Docs.
+    /// Search parameters received from Azure.Search.Docs.
     /// </summary>
     public class AzSearchParams
     {

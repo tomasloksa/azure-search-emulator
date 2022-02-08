@@ -1,5 +1,6 @@
 ﻿using Flurl;
-using SearchQueryService.Documents.Models;
+using Kros.Extensions;
+using SearchQueryService.Documents.Models.Azure;
 using SearchQueryService.Helpers;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -8,7 +9,7 @@ namespace SearchQueryService.Services
 {
     public class SolrSearchQueryBuilder : ISearchQueryBuilder
     {
-        public static readonly Dictionary<string, string> _replacements = new()
+        private static readonly Dictionary<string, string> _replacements = new()
         {
             { @"(\w+)\s+ge\s+([^\s]+)", "$1:[$2 TO *]" },
             { @"(\w+)\s+gt\s+([^\s]+)", "$1:{$2 TO *}" },
@@ -16,7 +17,7 @@ namespace SearchQueryService.Services
             { @"(\w+)\s+lt\s+([^\s]+)", "$1:{* TO $2}" },
             { @"\(not\s(\w+)\)", "($1: false)" },
             { @"\((\w+)\)", "($1: true)" },
-            { @"(\w+)\s+ne", "NOT $1:" },
+            { @"(\w+)\s+ne", "NOT $1:" }
         };
 
         public string Build(string indexName, AzSearchParams searchParams)
@@ -25,14 +26,14 @@ namespace SearchQueryService.Services
             .SetQueryParam("q.op", searchParams.SearchMode == "all" ? "AND" : "OR")
             .SetQueryParams(new
             {
-                q = ConvertAZSearchQuery(searchParams.Search),
+                q = searchParams.Search.IsNullOrEmpty() ? "*:*" : ConvertAzSearchQuery(searchParams.Search),
                 rows = searchParams.Top,
                 start = searchParams.Skip,
-                fq = string.IsNullOrEmpty(searchParams.Filter) ? searchParams.Filter : ConvertAzFilterQuery(searchParams.Filter),
+                fq = searchParams.Filter.IsNullOrEmpty() ? searchParams.Filter : ConvertAzFilterQuery(searchParams.Filter),
                 sort = searchParams.OrderBy
             });
 
-        private string ConvertAZSearchQuery(string search) 
+        private static string ConvertAzSearchQuery(string search)
            => search.Replace("+", " AND ")
                     .Replace("|", " OR ")
                     .Replace("-", " NOT");

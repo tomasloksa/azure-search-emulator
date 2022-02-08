@@ -1,4 +1,4 @@
-﻿namespace SearchQueryService.Indexes.Models
+﻿namespace SearchQueryService.Indexes.Models.Solr
 {
     public class ResponseHeader
     {

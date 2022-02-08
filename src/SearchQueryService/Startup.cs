@@ -24,7 +24,7 @@ namespace SearchQueryService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IndexesProcessor indexes)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IndexesProcessor indexes)
         {
             if (env.IsDevelopment())
             {

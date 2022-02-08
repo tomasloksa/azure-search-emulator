@@ -1,4 +1,4 @@
-﻿namespace SearchQueryService.Indexes.Models
+﻿namespace SearchQueryService.Indexes.Models.Azure
 {
     /// <summary>
     /// Azure Index model, read from index files.

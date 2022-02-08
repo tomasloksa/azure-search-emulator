@@ -1,7 +1,7 @@
-﻿namespace SearchQueryService.Indexes.Models
+﻿namespace SearchQueryService.Indexes.Models.Solr
 {
     /// <summary>
-    /// Response recieved from Solr Search.
+    /// Response received from Solr Search.
     /// </summary>
     public class SearchResponse
     {

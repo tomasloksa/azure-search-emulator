@@ -8,9 +8,9 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SearchQueryService.Documents.Models;
-using SearchQueryService.Indexes.Models;
+using SearchQueryService.Documents.Models.Azure;
 using SearchQueryService.Helpers;
+using SearchQueryService.Indexes.Models.Solr;
 using SearchQueryService.Services;
 
 namespace SearchQueryService.Controllers
@@ -76,7 +76,7 @@ namespace SearchQueryService.Controllers
             try
             {
                 PostDocuments(indexName, newDocs);
-                _logger.LogInformation("Documents indexed succesfully.");
+                _logger.LogInformation("Documents indexed successfully");
                 return CreateAzSearchResponse(newDocs);
             }
             catch (HttpRequestException exception)

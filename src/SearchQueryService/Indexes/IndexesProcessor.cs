@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
-using SearchQueryService.Indexes.Models;
 using System.Threading;
 using SearchQueryService.Exceptions;
 using Flurl;
@@ -15,6 +14,7 @@ using SearchQueryService.Helpers;
 using Microsoft.Extensions.Logging;
 using System;
 using Polly;
+using SearchQueryService.Indexes.Models.Solr;
 
 namespace SearchQueryService.Indexes
 {
@@ -37,7 +37,7 @@ namespace SearchQueryService.Indexes
         {
             var indexDirectories = Directory.GetDirectories("../srv/data");
             _logger.LogInformation("Starting index creation process..");
-            _logger.LogInformation("Creating " + indexDirectories.Length + " indexes.");
+            _logger.LogInformation("Creating {IndexCount} indexes", indexDirectories.Length);
 
             foreach (string indexDir in indexDirectories)
             {
@@ -45,11 +45,11 @@ namespace SearchQueryService.Indexes
 
                 if (index == null)
                 {
-                    _logger.LogInformation("index.json not found in: \"" + indexDir + "\", skipping.");
+                    _logger.LogInformation("index.json not found in: \" {IndexDir} \", skipping", indexDir);
                     continue;
                 }
 
-                _logger.LogInformation("Creating index: " + index.Name);
+                _logger.LogInformation("Creating index: {Name}", index.Name);
 
                 if (await IsSchemaCorrectSize(index.Name, DefaultIndexSize + 1))
                 {
@@ -66,7 +66,7 @@ namespace SearchQueryService.Indexes
                 PostMockData(indexDir, index.Name);
             }
 
-            _logger.LogInformation("Index creation finished.");
+            _logger.LogInformation("Index creation finished");
         }
 
         private async Task<int> GetSchemaSize(string indexName)
