@@ -23,17 +23,8 @@ namespace SearchQueryService.Helpers
                 _ => throw new ArgumentOutOfRangeException($"Not expected index type value: {azType}")
             };
 
-        public static string GetSearchUrl()
-            => Environment.GetEnvironmentVariable("SEARCH_URL");
-
-        public static async void PostDocuments(StringContent content, string indexName, HttpClient httpClient)
-        {
-            var uri = GetSearchUrl()
-                .AppendPathSegments(indexName, "update", "json", "docs")
-                .SetQueryParam("commit", "true");
-
-            var response = await httpClient.PostAsync(uri, content);
-            response.EnsureSuccessStatusCode();
-        }
+        public static Uri GetSearchUrl()
+            => new(Environment.GetEnvironmentVariable("SEARCH_URL")
+                   ?? throw new InvalidOperationException("'SEARCH_URL' is required parameter."));
     }
 }

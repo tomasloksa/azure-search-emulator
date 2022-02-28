@@ -5,7 +5,7 @@ COPY ./cert/ ../srv/cert
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-ENV SEARCH_URL=http://solr:8983/solr
+ENV SEARCH_URL=http://solr:8983/solr/
 #For debugging requests
 #ENV http_proxy "http://host.docker.internal:8888/"
 #ENV https_proxy "https://host.docker.internal:8888/"

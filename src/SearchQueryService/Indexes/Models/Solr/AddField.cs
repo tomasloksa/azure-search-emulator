@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using SearchQueryService.Helpers;
+﻿using SearchQueryService.Helpers;
 using SearchQueryService.Indexes.Models.Azure;
+using System.Text.Json.Serialization;
 
 namespace SearchQueryService.Indexes.Models.Solr
 {

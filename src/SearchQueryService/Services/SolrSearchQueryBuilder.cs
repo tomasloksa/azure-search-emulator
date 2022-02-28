@@ -1,7 +1,6 @@
 ﻿using Flurl;
 using Kros.Extensions;
 using SearchQueryService.Documents.Models.Azure;
-using SearchQueryService.Helpers;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -21,8 +20,7 @@ namespace SearchQueryService.Services
         };
 
         public string Build(string indexName, AzSearchParams searchParams)
-            => Tools.GetSearchUrl()
-            .AppendPathSegments(indexName, "select")
+            => indexName.AppendPathSegments("select")
             .SetQueryParam("q.op", searchParams.SearchMode == "all" ? "AND" : "OR")
             .SetQueryParams(new
             {
@@ -30,7 +28,7 @@ namespace SearchQueryService.Services
                 rows = searchParams.Top,
                 start = searchParams.Skip,
                 fq = searchParams.Filter.IsNullOrEmpty() ? searchParams.Filter : ConvertAzFilterQuery(searchParams.Filter),
-                sort = AddDefaultSortDirection(searchParams.OrderBy)
+                sort = searchParams.OrderBy.IsNullOrEmpty() ? searchParams.OrderBy : AddDefaultSortDirection(searchParams.OrderBy)
             });
 
         private static string AddDefaultSortDirection(string orderBy)

@@ -3,8 +3,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Polly;
+using Polly.Extensions.Http;
+using SearchQueryService.Helpers;
 using SearchQueryService.Indexes;
 using SearchQueryService.Services;
+using System;
+using System.Net.Http;
 
 namespace SearchQueryService
 {
@@ -18,11 +23,26 @@ namespace SearchQueryService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddTransient<SolrService>();
             services.AddTransient<IndexesProcessor>();
-            services.AddTransient<ISearchQueryBuilder, SolrSearchQueryBuilder>();
+            services.AddSingleton<ISearchQueryBuilder, SolrSearchQueryBuilder>();
             services.AddHttpClient();
+            services.AddHttpClient<SolrService>(httpClient =>
+            {
+                httpClient.BaseAddress = Tools.GetSearchUrl();
+            }).AddPolicyHandler(GetRetryPolicy());
             services.AddHealthChecks();
         }
+
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+            => HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(10, retryAttempt =>
+                {
+                    Console.WriteLine($"====== Sending request to Solr. Attempt: {retryAttempt}");
+                    return TimeSpan.FromMilliseconds(500);
+                });
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -46,3 +66,4 @@ namespace SearchQueryService
         }
     }
 }
+
