@@ -31,6 +31,7 @@ namespace SearchQueryService
             {
                 httpClient.BaseAddress = Tools.GetSearchUrl();
             }).AddPolicyHandler(GetRetryPolicy());
+            services.AddHealthChecks();
         }
 
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
@@ -44,14 +45,12 @@ namespace SearchQueryService
                 });
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IndexesProcessor indexes)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            await indexes.ProcessDirectory();
 
             app.UseHttpsRedirection();
 
@@ -59,7 +58,11 @@ namespace SearchQueryService
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health");
+                endpoints.MapControllers();
+            });
         }
     }
 }

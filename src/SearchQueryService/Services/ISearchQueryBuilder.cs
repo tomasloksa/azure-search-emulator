@@ -1,4 +1,4 @@
-﻿using SearchQueryService.Documents.Models;
+﻿using SearchQueryService.Documents.Models.Azure;
 
 namespace SearchQueryService.Services
 {

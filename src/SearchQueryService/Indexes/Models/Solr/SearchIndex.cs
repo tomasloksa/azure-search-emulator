@@ -1,4 +1,6 @@
-﻿namespace SearchQueryService.Indexes.Models
+﻿using SearchQueryService.Indexes.Models.Azure;
+
+namespace SearchQueryService.Indexes.Models.Solr
 {
     public class SearchIndex
     {

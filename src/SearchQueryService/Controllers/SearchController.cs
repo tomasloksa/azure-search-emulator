@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SearchQueryService.Documents.Models;
-using SearchQueryService.Indexes.Models;
 using SearchQueryService.Services;
+using SearchQueryService.Documents.Models.Azure;
+using SearchQueryService.Indexes.Models.Solr;
 
 namespace SearchQueryService.Controllers
 {
@@ -39,8 +39,8 @@ namespace SearchQueryService.Controllers
             [FromQuery(Name = "$top")] int? top,
             [FromQuery(Name = "$skip")] int? skip,
             [FromQuery] string search,
+            [FromQuery] string searchMode,
             [FromQuery(Name = "$filter")] string filter,
-            //string searchMode = "", TODO find out how to set
             [FromQuery(Name = "$orderby")] string orderBy
         )
         {
@@ -50,7 +50,8 @@ namespace SearchQueryService.Controllers
                 Skip = skip,
                 Search = search,
                 Filter = filter,
-                OrderBy = orderBy
+                OrderBy = orderBy,
+                SearchMode = searchMode
             };
 
             return Search(indexName, searchParams);
@@ -67,11 +68,11 @@ namespace SearchQueryService.Controllers
             [FromRoute] string indexName,
             [FromBody] AzPost newDocs
         )
-        {
+        { 
             try
             {
                 await PostDocuments(indexName, newDocs);
-                _logger.LogInformation("Documents indexed successfully");
+                _logger.LogInformation("Documents indexed successfully.");
                 return CreateAzSearchResponse(newDocs);
             }
             catch (HttpRequestException exception)

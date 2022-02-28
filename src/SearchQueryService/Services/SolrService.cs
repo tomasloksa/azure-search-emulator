@@ -1,6 +1,6 @@
 ﻿using Flurl;
-using SearchQueryService.Documents.Models;
-using SearchQueryService.Indexes.Models;
+using SearchQueryService.Documents.Models.Azure;
+using SearchQueryService.Indexes.Models.Solr;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;

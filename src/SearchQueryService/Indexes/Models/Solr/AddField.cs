@@ -1,7 +1,8 @@
 ﻿using SearchQueryService.Helpers;
+using SearchQueryService.Indexes.Models.Azure;
 using System.Text.Json.Serialization;
 
-namespace SearchQueryService.Indexes.Models
+namespace SearchQueryService.Indexes.Models.Solr
 {
     public class AddField : ISolrField
     {

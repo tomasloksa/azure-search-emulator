@@ -3,13 +3,13 @@ using System.Text.Json;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using SearchQueryService.Indexes.Models;
 using System.Dynamic;
 using Microsoft.Extensions.Logging;
 using System;
 using SearchQueryService.Services;
 using Polly;
 using SearchQueryService.Exceptions;
+using SearchQueryService.Indexes.Models.Solr;
 
 namespace SearchQueryService.Indexes
 {
