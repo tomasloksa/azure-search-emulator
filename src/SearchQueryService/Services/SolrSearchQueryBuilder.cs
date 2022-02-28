@@ -33,10 +33,8 @@ namespace SearchQueryService.Services
                 sort = AddDefaultSortDirection(searchParams.OrderBy)
             });
 
-        private string AddDefaultSortDirection(string orderBy)
-        {
-            return Regex.Replace(orderBy, @"(\w+\b(?<!\basc|desc))(?!\b asc| desc)(?=,|$|\s)", "$1 asc");
-        }
+        private static string AddDefaultSortDirection(string orderBy)
+            => Regex.Replace(orderBy, @"(\w+\b(?<!\basc|desc))(?!\b asc| desc)(?=,|$|\s)", "$1 asc");
 
         private static string ConvertAzSearchQuery(string search)
            => search.Replace("+", " AND ")
