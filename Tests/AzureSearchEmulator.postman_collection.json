@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "aa84e247-ee27-4b35-8291-54768de98f0b",
+		"_postman_id": "3475eefa-c60b-419f-8eb6-d64f2af73cad",
 		"name": "AzureSearchEmulator",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -183,8 +183,8 @@
 							"        pm.expect(result[\"@odata.count\"]).to.equal(9);\r",
 							"    });\r",
 							"\r",
-							"    pm.test(\"Property 'Id' should be uppercase.\", function () {\r",
-							"        pm.expect(result.value[0].fields.Id).to.not.equal(undefined);\r",
+							"    pm.test(\"Property 'Id' should exist.\", function () {\r",
+							"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
 							"    });\r",
 							"});\r",
 							""
