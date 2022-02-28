@@ -21,10 +21,11 @@ namespace SearchQueryService
             services.AddTransient<IndexesProcessor>();
             services.AddTransient<ISearchQueryBuilder, SolrSearchQueryBuilder>();
             services.AddHttpClient();
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IndexesProcessor indexes)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -37,7 +38,11 @@ namespace SearchQueryService
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health");
+                endpoints.MapControllers();
+            });
         }
     }
 }

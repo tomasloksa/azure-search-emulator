@@ -82,7 +82,10 @@ Currently supports:
 An example can be found in the `demo` folder. It includes an example *docker-compose* and a `EshopDemo.Api` project, which 
 uses the *Azure.Search.Documents* library for indexing and searching documents.
 
-  
+## Health checks
+
+Helath checks can be viewed on the `/health` endpoint of the search service. E.g. `https://localhost:8000/health`
+
 ## Contributing
 
 Contributions are welcome.
