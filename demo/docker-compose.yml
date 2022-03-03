@@ -25,6 +25,7 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/srv/cert/testcert.pfx
+      #- Logging__Console__LogLevel__Microsoft=Information
     volumes:
       - "./indexes:/srv/data"
     restart: on-failure

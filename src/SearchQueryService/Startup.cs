@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +33,13 @@ namespace SearchQueryService
                 httpClient.BaseAddress = Tools.GetSearchUrl();
             }).AddPolicyHandler(GetRetryPolicy());
             services.AddHealthChecks();
+            services.AddHttpLogging(options =>
+            {
+                options.LoggingFields = HttpLoggingFields.ResponsePropertiesAndHeaders |
+                                        HttpLoggingFields.ResponseBody |
+                                        HttpLoggingFields.RequestPropertiesAndHeaders |
+                                        HttpLoggingFields.RequestBody;
+            });
         }
 
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
@@ -52,10 +60,9 @@ namespace SearchQueryService
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpLogging();
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/health");
