@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using SearchQueryService.Services;
 using SearchQueryService.Documents.Models.Azure;
 using SearchQueryService.Indexes.Models.Solr;
+using SearchQueryService.Documents.Models.Solr;
 
 namespace SearchQueryService.Controllers
 {
@@ -17,6 +18,7 @@ namespace SearchQueryService.Controllers
     [Route("indexes('{indexName}')/docs")]
     public class SearchController : ControllerBase
     {
+        private readonly string _searchAction = "@search.action";
         private readonly Dictionary<string, string> _valueReplacements = new()
         {
             { @"\+[0-9]{2}:[0-9]{2}", "Z" } // Date format
@@ -126,7 +128,52 @@ namespace SearchQueryService.Controllers
         }
 
         private async Task PostDocuments(string indexName, AzPost docs)
-            => await _solrService.PostDocumentAsync(ConvertAzDocs(docs), indexName);
+        {
+            var delete = new AzPost { Value = new List<Dictionary<string, JsonElement>>() };
+            var addOrUpdate = new AzPost { Value = new List<Dictionary<string, JsonElement>>() };
+
+            foreach (var doc in docs.Value)
+            {
+                if (doc[_searchAction].GetString() == "delete")
+                {
+                    delete.Value.Add(doc);
+                }
+                else
+                {
+                    addOrUpdate.Value.Add(doc);
+                }
+            }
+
+            if (delete.Value.Count > 0)
+            {
+                await _solrService.DeleteDocumentsAsync(ConvertAzDocsForDelete(delete), indexName);
+            }
+
+            if (addOrUpdate.Value.Count > 0)
+            {
+                await _solrService.PostDocumentsAsync(ConvertAzDocs(addOrUpdate), indexName);
+            }
+        }
+
+        private static List<SolrDelete> ConvertAzDocsForDelete(AzPost azDocs)
+        {
+            var parsedDocs = new List<SolrDelete>();
+            foreach (var doc in azDocs.Value)
+            {
+                var convertedDocument = new SolrDelete();
+                foreach (var kv in doc)
+                {
+                    if (string.Equals(kv.Key, "id", StringComparison.OrdinalIgnoreCase))
+                    {
+                        convertedDocument.Id = kv.Value.GetString();
+                        break;
+                    }
+                }
+                parsedDocs.Add(convertedDocument);
+            }
+
+            return parsedDocs;
+        }
 
         private List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
             => azDocs.Value.Select(ConvertDocument).ToList();
