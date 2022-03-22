@@ -25,11 +25,15 @@ namespace SearchQueryService.Services
             .SetQueryParam("q.op", searchParams.SearchMode == "all" ? "AND" : "OR")
             .SetQueryParams(new
             {
-                q = searchParams.Search.IsNullOrEmpty() ? "*:*" : ConvertAzSearchQuery(searchParams.Search, searchParams.SearchFields),
+                q = searchParams.Search.IsNullOrEmpty()
+                    ? "*:*"
+                    : ConvertAzSearchQuery(searchParams.Search, searchParams.SearchFields),
                 rows = searchParams.Top,
                 start = searchParams.Skip,
                 fq = searchParams.Filter.IsNullOrEmpty() ? searchParams.Filter : ConvertAzFilterQuery(searchParams.Filter),
-                sort = searchParams.OrderBy.IsNullOrEmpty() ? searchParams.OrderBy : AddDefaultSortDirection(searchParams.OrderBy)
+                sort = searchParams.OrderBy.IsNullOrEmpty()
+                    ? searchParams.OrderBy
+                    : AddDefaultSortDirection(searchParams.OrderBy)
             });
 
         private static string AddDefaultSortDirection(string orderBy)
