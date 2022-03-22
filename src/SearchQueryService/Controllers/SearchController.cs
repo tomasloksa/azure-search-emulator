@@ -18,7 +18,7 @@ namespace SearchQueryService.Controllers
     [Route("indexes('{indexName}')/docs")]
     public class SearchController : ControllerBase
     {
-        private readonly string _searchAction = "@search.action";
+        private const string SearchAction = "@search.action";
         private readonly Dictionary<string, string> _valueReplacements = new()
         {
             { @"\+[0-9]{2}:[0-9]{2}", "Z" } // Date format
@@ -134,7 +134,7 @@ namespace SearchQueryService.Controllers
 
             foreach (var doc in docs.Value)
             {
-                if (doc[_searchAction].GetString() == "delete")
+                if (doc[SearchAction].GetString() == "delete")
                 {
                     delete.Value.Add(doc);
                 }
@@ -146,30 +146,45 @@ namespace SearchQueryService.Controllers
 
             if (delete.Value.Count > 0)
             {
-                await _solrService.DeleteDocumentsAsync(ConvertAzDocsForDelete(delete), indexName);
+                try
+                {
+                    await _solrService.DeleteDocumentsAsync(ConvertAzDocsForDelete(delete), indexName);
+                }
+                catch (HttpRequestException exception)
+                {
+                    _logger.LogError("Document Deletion failed!", exception.Message);
+                }
             }
 
             if (addOrUpdate.Value.Count > 0)
             {
-                await _solrService.PostDocumentsAsync(ConvertAzDocs(addOrUpdate), indexName);
+                try
+                {
+                    await _solrService.PostDocumentsAsync(ConvertAzDocs(addOrUpdate), indexName);
+                }
+                catch (HttpRequestException exception)
+                {
+                    _logger.LogError("Document Post failed!", exception.Message);
+                }
             }
         }
 
-        private static List<SolrDelete> ConvertAzDocsForDelete(AzPost azDocs)
+        private IEnumerable<SolrDelete> ConvertAzDocsForDelete(AzPost azDocs)
         {
             var parsedDocs = new List<SolrDelete>();
             foreach (var doc in azDocs.Value)
             {
-                var convertedDocument = new SolrDelete();
-                foreach (var kv in doc)
+                try
                 {
-                    if (string.Equals(kv.Key, "id", StringComparison.OrdinalIgnoreCase))
-                    {
-                        convertedDocument.Id = kv.Value.GetString();
-                        break;
-                    }
+                    string id = doc.First(i => i.Key.ToLower() == "id").Value.GetString();
+                    var convertedDocument = new SolrDelete { Id = id };
+                    parsedDocs.Add(convertedDocument);
                 }
-                parsedDocs.Add(convertedDocument);
+                catch (InvalidOperationException exception)
+                {
+                    _logger.LogError("Document does not contain an Id and will not be deleted.", exception);
+                    throw;
+                }
             }
 
             return parsedDocs;

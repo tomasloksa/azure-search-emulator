@@ -35,7 +35,7 @@ namespace SearchQueryService.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task PostDocumentsAsync<TDocument>(List<TDocument> documents, string indexName)
+        public async Task PostDocumentsAsync<TDocument>(IEnumerable<TDocument> documents, string indexName)
         {
             Url uri = indexName
                 .AppendPathSegments("update", "json", "docs")
@@ -45,7 +45,7 @@ namespace SearchQueryService.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task DeleteDocumentsAsync(List<SolrDelete> documents, string indexName)
+        public async Task DeleteDocumentsAsync(IEnumerable<SolrDelete> documents, string indexName)
         {
             Url uri = indexName
                 .AppendPathSegments("update")
