@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using SearchQueryService.Services;
 using SearchQueryService.Documents.Models.Azure;
 using SearchQueryService.Indexes.Models.Solr;
+using SearchQueryService.Documents.Models.Solr;
 
 namespace SearchQueryService.Controllers
 {
@@ -17,6 +18,7 @@ namespace SearchQueryService.Controllers
     [Route("indexes('{indexName}')/docs")]
     public class SearchController : ControllerBase
     {
+        private const string SearchAction = "@search.action";
         private readonly Dictionary<string, string> _valueReplacements = new()
         {
             { @"\+[0-9]{2}:[0-9]{2}", "Z" } // Date format
@@ -126,7 +128,75 @@ namespace SearchQueryService.Controllers
         }
 
         private async Task PostDocuments(string indexName, AzPost docs)
-            => await _solrService.PostDocumentAsync(ConvertAzDocs(docs), indexName);
+        {
+            var delete = new AzPost { Value = new List<Dictionary<string, JsonElement>>() };
+            var addOrUpdate = new AzPost { Value = new List<Dictionary<string, JsonElement>>() };
+
+            foreach (var doc in docs.Value)
+            {
+                if (doc[SearchAction].GetString() == "delete")
+                {
+                    delete.Value.Add(doc);
+                }
+                else
+                {
+                    addOrUpdate.Value.Add(doc);
+                }
+            }
+
+            var exceptions = new List<Exception>();
+            if (delete.Value.Count > 0)
+            {
+                try
+                {
+                    await _solrService.DeleteDocumentsAsync(ConvertAzDocsForDelete(delete), indexName);
+                }
+                catch (HttpRequestException exception)
+                {
+                    _logger.LogError("Document Deletion failed!", exception.Message);
+                    exceptions.Add(exception);
+                }
+            }
+
+            if (addOrUpdate.Value.Count > 0)
+            {
+                try
+                {
+                    await _solrService.PostDocumentsAsync(ConvertAzDocs(addOrUpdate), indexName);
+                }
+                catch (HttpRequestException exception)
+                {
+                    _logger.LogError("Document Post failed!", exception.Message);
+                    exceptions.Add(exception);
+                }
+            }
+
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException("Document operations failed", exceptions);
+            }
+        }
+
+        private IEnumerable<SolrDelete> ConvertAzDocsForDelete(AzPost azDocs)
+        {
+            var parsedDocs = new List<SolrDelete>();
+            foreach (var doc in azDocs.Value)
+            {
+                try
+                {
+                    string id = doc.First(i => i.Key.ToLower() == "id").Value.GetString();
+                    var convertedDocument = new SolrDelete { Id = id };
+                    parsedDocs.Add(convertedDocument);
+                }
+                catch (InvalidOperationException exception)
+                {
+                    _logger.LogError("Document does not contain an Id and will not be deleted.", exception);
+                    throw;
+                }
+            }
+
+            return parsedDocs;
+        }
 
         private List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
             => azDocs.Value.Select(ConvertDocument).ToList();

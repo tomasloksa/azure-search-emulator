@@ -1,0 +1,526 @@
+{
+  "@odata.context": "https://esw-priceoffers-search.search.windows.net/$metadata#indexes/$entity",
+  "@odata.etag": "\"0x8D7680DB9610D20\"",
+  "name": "partners-index",
+  "defaultScoringProfile": "",
+  "fields": [
+    {
+      "name": "Id",
+      "type": "Edm.String",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "sortable": true,
+      "facetable": false,
+      "key": true,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "CompanyId",
+      "type": "Edm.Int64",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "Weight",
+      "type": "Edm.Int32",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "SearchName",
+      "type": "Edm.String",
+      "facetable": false,
+      "filterable": false,
+      "key": false,
+      "retrievable": true,
+      "searchable": true,
+      "sortable": false,
+      "analyzer": "clasic_asciifolding",
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "synonymMaps": [],
+      "fields": []
+    },
+    {
+      "name": "NameForOrdering",
+      "type": "Edm.String",
+      "facetable": false,
+      "filterable": false,
+      "key": false,
+      "retrievable": false,
+      "searchable": false,
+      "sortable": true,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "synonymMaps": [],
+      "fields": []
+    },
+    {
+      "name": "BusinessName",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": true,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "ContactName",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "Street",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "PostCode",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "standard.lucene",
+      "synonymMaps": []
+    },
+    {
+      "name": "City",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "Country",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "PostalAddressBusinessName",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "PostalAddressContactName",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "PostalAddressStreet",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "PostalAddressPostCode",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "standard.lucene",
+      "synonymMaps": []
+    },
+    {
+      "name": "PostalAddressCity",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "PostalAddressCountry",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "slovak_asciifolding",
+      "synonymMaps": []
+    },
+    {
+      "name": "RegistrationId",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "standard.lucene",
+      "synonymMaps": []
+    },
+    {
+      "name": "TaxId",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "standard.lucene",
+      "synonymMaps": []
+    },
+    {
+      "name": "VatId",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "standard.lucene",
+      "synonymMaps": []
+    },
+    {
+      "name": "PhoneNumber",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "standard.lucene",
+      "synonymMaps": []
+    },
+    {
+      "name": "Email",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "standard.lucene",
+      "synonymMaps": []
+    },
+    {
+      "name": "Web",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "standard.lucene",
+      "synonymMaps": []
+    },
+    {
+      "name": "CreatedTimestamp",
+      "type": "Edm.DateTimeOffset",
+      "searchable": false,
+      "filterable": false,
+      "retrievable": false,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "CreatedBy",
+      "type": "Edm.Int64",
+      "searchable": false,
+      "filterable": false,
+      "retrievable": false,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "LastModifiedTimestamp",
+      "type": "Edm.DateTimeOffset",
+      "searchable": false,
+      "filterable": false,
+      "retrievable": false,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "LastModifiedBy",
+      "type": "Edm.Int64",
+      "searchable": false,
+      "filterable": false,
+      "retrievable": false,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "DiscountPercent",
+      "type": "Edm.String",
+      "facetable": false,
+      "filterable": false,
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "sortable": false,
+      "analyzer": null,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "synonymMaps": [],
+      "fields": []
+    },
+    {
+      "name": "PaymentDue",
+      "type": "Edm.Int32",
+      "facetable": false,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "analyzer": null,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "synonymMaps": [],
+      "fields": []
+    },
+    {
+      "name": "AutomaticReminders",
+      "type": "Edm.Boolean",
+      "facetable": false,
+      "filterable": false,
+      "retrievable": true,
+      "sortable": false,
+      "analyzer": null,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "synonymMaps": [],
+      "fields": []
+    },
+    {
+      "name": "IsFree",
+      "type": "Edm.Boolean",
+      "searchable": false,
+      "facetable": false,
+      "filterable": true,
+      "retrievable": true,
+      "sortable": false,
+      "analyzer": null,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "synonymMaps": [],
+      "fields": []
+    },
+	  {
+      "name": "RowVersionAsLong",
+      "type": "Edm.Int64",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "synonymMaps": []
+    }
+  ],
+  "scoringProfiles": [
+    {
+      "name": "boostWeight",
+      "functionAggregation": null,
+      "functions": [
+        {
+          "type": "magnitude",
+          "fieldName": "Weight",
+          "boost": 2,
+          "interpolation": "linear",
+          "magnitude": {
+            "boostingRangeStart": 50,
+            "boostingRangeEnd": 100,
+            "constantBoostBeyondRange": false
+          }
+        }
+      ]
+    }
+  ],
+  "corsOptions": null,
+  "suggesters": [],
+  "analyzers": [
+    {
+      "@odata.type": "#Microsoft.Azure.Search.CustomAnalyzer",
+      "name": "slovak_asciifolding",
+      "tokenizer": "slovak_tokenizer",
+      "tokenFilters": [
+        "lowercase",
+        "asciifolding"
+      ],
+      "charFilters": [
+        "remove_dots"
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Azure.Search.CustomAnalyzer",
+      "name": "clasic_asciifolding",
+      "tokenizer": "clasic_tokenizer",
+      "tokenFilters": [
+        "lowercase",
+        "asciifolding"
+      ],
+      "charFilters": []
+    }
+  ],
+  "tokenizers": [
+    {
+      "@odata.type": "#Microsoft.Azure.Search.MicrosoftLanguageStemmingTokenizer",
+      "name": "slovak_tokenizer",
+      "maxTokenLength": 255,
+      "isSearchTokenizer": true,
+      "language": "slovak"
+    },
+    {
+      "@odata.type": "#Microsoft.Azure.Search.ClassicTokenizer",
+      "name": "clasic_tokenizer",
+      "maxTokenLength": 255
+    }
+  ],
+  "tokenFilters": [],
+  "charFilters": [
+    {
+      "name": "remove_dots",
+      "@odata.type": "#Microsoft.Azure.Search.MappingCharFilter",
+      "mappings": [
+        ".=>\\u0020"
+      ]
+    }
+  ]
+}
+

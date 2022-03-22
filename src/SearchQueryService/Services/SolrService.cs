@@ -1,5 +1,6 @@
 ﻿using Flurl;
 using SearchQueryService.Documents.Models.Azure;
+using SearchQueryService.Documents.Models.Solr;
 using SearchQueryService.Indexes.Models.Solr;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -34,19 +35,30 @@ namespace SearchQueryService.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task PostDocumentAsync<TDocument>(TDocument document, string indexName)
+        public async Task PostDocumentsAsync<TDocument>(IEnumerable<TDocument> documents, string indexName)
         {
             Url uri = indexName
                 .AppendPathSegments("update", "json", "docs")
                 .SetQueryParam("commit", "true");
 
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(uri, document, _jsonOptions);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(uri, documents, _jsonOptions);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteDocumentsAsync(IEnumerable<SolrDelete> documents, string indexName)
+        {
+            Url uri = indexName
+                .AppendPathSegments("update")
+                .SetQueryParam("commit", "true");
+
+            HttpResponseMessage response =
+                await _httpClient.PostAsJsonAsync(uri, new { delete = documents }, _jsonOptions);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task PostSchemaAsync(string indexName, Dictionary<string, IEnumerable<object>> schema)
         {
-            using HttpResponseMessage response = await _httpClient.PostAsJsonAsync(GetSchemeUrl(indexName), schema, _jsonOptions);
+            using HttpResponseMessage response = await _httpClient.PostAsJsonAsync(GetSchemaUrl(indexName), schema, _jsonOptions);
 
             response.EnsureSuccessStatusCode();
         }
@@ -54,7 +66,7 @@ namespace SearchQueryService.Services
         public async Task<int> GetSchemaSizeAsync(string indexName)
         {
             using HttpResponseMessage response = await _httpClient
-                .GetAsync(GetSchemeUrl(indexName, "fields"));
+                .GetAsync(GetSchemaUrl(indexName, "fields"));
 
             if (!response.IsSuccessStatusCode)
             {
@@ -66,7 +78,7 @@ namespace SearchQueryService.Services
             return schemaResponse!.Fields.Count;
         }
 
-        private static Url GetSchemeUrl(string indexName, string segment = "")
+        private static Url GetSchemaUrl(string indexName, string segment = "")
             => Url.Combine(indexName, "schema", segment);
 
         public async Task<SearchResponse> SearchAsync(string indexName, AzSearchParams searchParams)

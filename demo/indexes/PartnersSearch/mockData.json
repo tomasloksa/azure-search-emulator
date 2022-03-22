@@ -1,0 +1,23 @@
+﻿[
+  {
+    "Id": "21",
+    "CompanyId": 123,
+    "Weight": 123,
+    "SearchName": "kamion",
+    "NameForOrdering": "kamion"
+  },
+  {
+    "Id": "52",
+    "CompanyId": 123,
+    "Weight": 123,
+    "SearchName": "tomas",
+    "NameForOrdering": "tomas"
+  },
+  {
+    "Id": "98",
+    "CompanyId": 123,
+    "Weight": 123,
+    "SearchName": "kamion",
+    "NameForOrdering": "kamion"
+  }
+]
