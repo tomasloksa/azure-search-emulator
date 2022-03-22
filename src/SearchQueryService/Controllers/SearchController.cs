@@ -144,6 +144,7 @@ namespace SearchQueryService.Controllers
                 }
             }
 
+            var exceptions = new List<Exception>();
             if (delete.Value.Count > 0)
             {
                 try
@@ -153,6 +154,7 @@ namespace SearchQueryService.Controllers
                 catch (HttpRequestException exception)
                 {
                     _logger.LogError("Document Deletion failed!", exception.Message);
+                    exceptions.Add(exception);
                 }
             }
 
@@ -165,7 +167,13 @@ namespace SearchQueryService.Controllers
                 catch (HttpRequestException exception)
                 {
                     _logger.LogError("Document Post failed!", exception.Message);
+                    exceptions.Add(exception);
                 }
+            }
+
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException("Document operations failed", exceptions);
             }
         }
 
