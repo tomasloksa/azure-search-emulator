@@ -2,6 +2,7 @@
 using Kros.Extensions;
 using SearchQueryService.Documents.Models.Azure;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SearchQueryService.Services
@@ -24,7 +25,7 @@ namespace SearchQueryService.Services
             .SetQueryParam("q.op", searchParams.SearchMode == "all" ? "AND" : "OR")
             .SetQueryParams(new
             {
-                q = searchParams.Search.IsNullOrEmpty() ? "*:*" : ConvertAzSearchQuery(searchParams.Search),
+                q = searchParams.Search.IsNullOrEmpty() ? "*:*" : ConvertAzSearchQuery(searchParams.Search, searchParams.SearchFields),
                 rows = searchParams.Top,
                 start = searchParams.Skip,
                 fq = searchParams.Filter.IsNullOrEmpty() ? searchParams.Filter : ConvertAzFilterQuery(searchParams.Filter),
@@ -34,10 +35,20 @@ namespace SearchQueryService.Services
         private static string AddDefaultSortDirection(string orderBy)
             => Regex.Replace(orderBy, @"(\w+\b(?<!\basc|desc))(?!\b asc| desc)(?=,|$|\s)", "$1 asc");
 
-        private static string ConvertAzSearchQuery(string search)
-           => search.Replace("+", " AND ")
-                    .Replace("|", " OR ")
-                    .Replace("-", " NOT");
+        private static string ConvertAzSearchQuery(string search, string searchFields)
+        {
+            search = search.Replace("+", " AND ")
+                           .Replace("|", " OR ")
+                           .Replace("-", " NOT");
+
+            if (!string.IsNullOrWhiteSpace(searchFields))
+            {
+                string[] fields = searchFields.Replace(" ", "").Split(",");
+                return string.Join(" OR ", fields.Select(field => $"{field}: ({search})"));
+            }
+
+            return search;
+        }
 
         private static string ConvertAzFilterQuery(string filter)
         {

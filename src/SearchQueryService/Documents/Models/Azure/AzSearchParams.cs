@@ -8,6 +8,7 @@
         public string Search { get; set; }
 
         public string SearchMode { get; set; }
+        public string SearchFields { get; set; }
 
         public int? Skip { get; set; }
 

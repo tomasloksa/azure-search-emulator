@@ -42,6 +42,7 @@ namespace SearchQueryService.Controllers
             [FromQuery(Name = "$skip")] int? skip,
             [FromQuery] string search,
             [FromQuery] string searchMode,
+            [FromQuery] string searchFields,
             [FromQuery(Name = "$filter")] string filter,
             [FromQuery(Name = "$orderby")] string orderBy
         )
@@ -53,7 +54,8 @@ namespace SearchQueryService.Controllers
                 Search = search,
                 Filter = filter,
                 OrderBy = orderBy,
-                SearchMode = searchMode
+                SearchMode = searchMode,
+                SearchFields = searchFields
             };
 
             return Search(indexName, searchParams);
@@ -70,7 +72,7 @@ namespace SearchQueryService.Controllers
             [FromRoute] string indexName,
             [FromBody] AzPost newDocs
         )
-        { 
+        {
             try
             {
                 await PostDocuments(indexName, newDocs);
@@ -84,9 +86,7 @@ namespace SearchQueryService.Controllers
             }
         }
 
-        private async Task<AzSearchResponse> Search(
-           string indexName,
-           AzSearchParams searchParams)
+        private async Task<AzSearchResponse> Search(string indexName, AzSearchParams searchParams)
         {
             SearchResponse searchResult = await _solrService.SearchAsync(indexName, searchParams);
 
