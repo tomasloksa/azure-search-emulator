@@ -37,13 +37,17 @@ namespace SearchQueryService.Services
             });
 
         private static string AddDefaultSortDirection(string orderBy)
-            => Regex.Replace(orderBy, @"(\w+\b(?<!\basc|desc))(?!\b asc| desc)(?=,|$|\s)", "$1 asc");
+            => Regex.Replace(orderBy, @"(\w+\b(?<!\basc|desc))(?!\b asc| desc)(?=,|$|\s)", "$1 asc")
+                    .Replace("Id", "id");
 
         private static string ConvertAzSearchQuery(string search, string searchFields)
         {
             search = search.Replace("+", " AND ")
                            .Replace("|", " OR ")
-                           .Replace("-", " NOT");
+                           .Replace("/.*", "*")
+                           .Replace(".*/", "*");
+
+            search = Regex.Replace(search, @"(?<!\\)-", " NOT ");
 
             if (!string.IsNullOrWhiteSpace(searchFields))
             {
