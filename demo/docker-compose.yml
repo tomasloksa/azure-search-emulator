@@ -11,7 +11,8 @@ services:
     entrypoint:
      - "bash"
      - "-c"
-     - "precreate-core catalog-internal-index; precreate-core invoicingindex; precreate-core partners-index; exec solr -f"
+     - "precreate-core catalog-internal-index; precreate-core invoicingindex; precreate-core partners-index;
+        precreate-core transactions-index; exec solr -f"
 
   searchqueryservice:
     image: ${DOCKER_REGISTRY-}searchqueryservice

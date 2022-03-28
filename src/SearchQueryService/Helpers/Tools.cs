@@ -9,7 +9,7 @@ namespace SearchQueryService.Helpers
         public static string GetSolrType(string azType)
             => azType switch
             {
-                "Edm.String" => "text_general",
+                "Edm.String" => "string",
                 "Edm.Int32" => "pint",
                 "Edm.Int64" => "plong",
                 "Edm.Boolean" => "boolean",

@@ -43,9 +43,7 @@ namespace SearchQueryService.Services
         private static string ConvertAzSearchQuery(string search, string searchFields)
         {
             search = search.Replace("+", " AND ")
-                           .Replace("|", " OR ")
-                           .Replace("/.*", "*")
-                           .Replace(".*/", "*");
+                           .Replace("|", " OR ");
 
             search = Regex.Replace(search, @"(?<!\\)-", " NOT ");
 

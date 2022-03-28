@@ -104,6 +104,20 @@ namespace SearchQueryService.Indexes
         private static Dictionary<string, IEnumerable<object>> CreateSchemaPostBody(IEnumerable<AddField> fieldsToAdd) =>
             new()
             {
+                { "replace-field",
+                    new[]
+                    {
+                        new AddField
+                        {
+                            Name = "_text_",
+                            Type = "string",
+                            Indexed = true,
+                            Searchable = true,
+                            MultiValued = true,
+                            Stored = false
+                        }
+                    }
+                },
                 { "add-field", fieldsToAdd },
                 {
                     "add-copy-field",
