@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net.Http;
-using Flurl;
 
 namespace SearchQueryService.Helpers
 {
@@ -9,7 +7,7 @@ namespace SearchQueryService.Helpers
         public static string GetSolrType(string azType)
             => azType switch
             {
-                "Edm.String" => "string",
+                "Edm.String" => "text_general",
                 "Edm.Int32" => "pint",
                 "Edm.Int64" => "plong",
                 "Edm.Boolean" => "boolean",
