@@ -18,7 +18,7 @@ namespace SearchQueryService.Documents.Models.Azure
 
         public AzSearchResponse(Response solrResponse)
         {
-            Count = solrResponse.NumFound - solrResponse.Start;
+            Count = solrResponse.NumFound;
             Value = new List<Dictionary<string, dynamic>>();
 
             foreach (var solrDoc in solrResponse.Docs)
