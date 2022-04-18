@@ -13,6 +13,7 @@ namespace SearchQueryService.Helpers
                 "Edm.Boolean" => "boolean",
                 "Edm.Double" => "pdouble",
                 "Edm.DateTimeOffset" => "pdate",
+                "Edm.ComplexType" => "string",
                 "Collection(Edm.ComplexType)" => "string",
                 "Collection(Edm.Int64)" => "plongs",
                 "Collection(Edm.Int32)" => "pints",
