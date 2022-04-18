@@ -110,11 +110,12 @@ namespace SearchQueryService.Controllers
         private static object CreateAzSearchResponse(AzPost newDocs)
         {
             var list = new List<object>();
+            
             foreach (var doc in newDocs.Value)
             {
                 list.Add(new
                 {
-                    key = doc["Id"],
+                    key = doc.ContainsKey("Id")? doc["Id"] : doc["id"],
                     status = true,
                     errorMessage = "",
                     StatusCode = 201
