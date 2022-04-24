@@ -1,12 +1,12 @@
-﻿using Flurl;
-using SearchQueryService.Documents.Models.Azure;
-using SearchQueryService.Documents.Models.Solr;
-using SearchQueryService.Indexes.Models.Solr;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Flurl;
+using SearchQueryService.Documents.Models.Azure;
+using SearchQueryService.Documents.Models.Solr;
+using SearchQueryService.Indexes.Models.Solr;
 
 namespace SearchQueryService.Services
 {

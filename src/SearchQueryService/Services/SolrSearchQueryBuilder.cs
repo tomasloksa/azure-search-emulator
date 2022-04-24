@@ -1,9 +1,9 @@
-﻿using Flurl;
-using Kros.Extensions;
-using SearchQueryService.Documents.Models.Azure;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Flurl;
+using Kros.Extensions;
+using SearchQueryService.Documents.Models.Azure;
 
 namespace SearchQueryService.Services
 {

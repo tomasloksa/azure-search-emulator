@@ -1,6 +1,6 @@
-﻿using SearchQueryService.Indexes.Models.Solr;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using SearchQueryService.Indexes.Models.Solr;
 
 namespace SearchQueryService.Documents.Models.Azure
 {

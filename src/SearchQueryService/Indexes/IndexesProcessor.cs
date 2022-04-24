@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Dynamic;
 using Microsoft.Extensions.Logging;
-using System;
-using SearchQueryService.Services;
 using Polly;
+using SearchQueryService.Services;
 using SearchQueryService.Exceptions;
 using SearchQueryService.Indexes.Models.Solr;
 
