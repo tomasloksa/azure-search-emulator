@@ -17,7 +17,8 @@ namespace SearchQueryService.Services
             { @"(\w+)\s+lt\s+([^\s]+)", "$1:{* TO $2}" },
             { @"\(not\s(\w+)\)", "($1: false)" },
             { @"\((\w+)\)", "($1: true)" },
-            { @"(\w+)\s+ne", "NOT $1:" }
+            { @"(\w+)\s+ne", "NOT $1:" },
+            { @"\(Id:\s?'(\d*)'\)", "(id: $1)" }
         };
 
         public string Build(string indexName, AzSearchParams searchParams)
@@ -58,16 +59,17 @@ namespace SearchQueryService.Services
 
         private static string ConvertAzFilterQuery(string filter)
         {
+            filter = filter.Replace(" eq", ":")
+                           .Replace(" and ", " AND ")
+                           .Replace(" or ", " OR ")
+                           .Replace(" not ", " NOT ");
+
             foreach (var kv in _replacements)
             {
                 filter = Regex.Replace(filter, kv.Key, kv.Value);
             }
 
-            return filter.Replace(" eq", ":")
-                         .Replace(" and ", " AND ")
-                         .Replace(" or ", " OR ")
-                         .Replace(" not ", " NOT ")
-                         .Replace("(Id:", "(id:");
+            return filter;
         }
     }
 }
