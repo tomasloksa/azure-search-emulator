@@ -66,7 +66,8 @@ namespace SearchQueryService.Services
             return filter.Replace(" eq", ":")
                          .Replace(" and ", " AND ")
                          .Replace(" or ", " OR ")
-                         .Replace(" not ", " NOT ");
+                         .Replace(" not ", " NOT ")
+                         .Replace("(Id:", "(id:");
         }
     }
 }
