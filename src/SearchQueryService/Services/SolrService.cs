@@ -45,6 +45,17 @@ namespace SearchQueryService.Services
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task UpdateDocumentsAsync<TDocument>(IEnumerable<TDocument> documents, string indexName)
+        {
+            Url uri = indexName
+                .AppendPathSegments("update", "json")
+                .SetQueryParam("commit", "true");
+
+            System.Console.WriteLine(JsonSerializer.Serialize(documents));
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(uri, documents);
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task DeleteDocumentsAsync(IEnumerable<SolrDelete> documents, string indexName)
         {
             Url uri = indexName

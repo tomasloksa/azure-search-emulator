@@ -86,6 +86,62 @@ namespace SearchQueryService.Controllers
             }
         }
 
+        [HttpPatch("search.index")]
+        public async Task<object> Patch(
+            [FromRoute] string indexName,
+            [FromBody] AzPost newDocs
+        )
+        {
+            try
+            {
+                var transformed = new AzPostFlattened
+                {
+                    Value = newDocs.Value.Select(doc => Flatten(doc)).ToList()
+                };
+
+                await UpdateDocuments(indexName, transformed);
+                _logger.LogInformation("Documents updated successfully.");
+                return CreateAzSearchResponse(newDocs);
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogError("Document updating failed!", exception.Message);
+                throw;
+            }
+        }
+
+        private static Dictionary<string, List<JsonElement>> Flatten(Dictionary<string, JsonElement> json)
+        {
+            var result = new Dictionary<string, List<JsonElement>>();
+            foreach (var kv in json)
+            {
+                if (kv.Value.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var arrayItem in kv.Value.EnumerateArray())
+                    {
+                        foreach (var property in arrayItem.EnumerateObject())
+                        {
+                            string propName = kv.Key + "." + property.Name;
+                            if (result.ContainsKey(propName))
+                            {
+                                result[propName].Add(property.Value);
+                            }
+                            else
+                            {
+                                result.Add(propName, new List<JsonElement>() { property.Value });
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    result.Add(kv.Key, new List<JsonElement>() { kv.Value });
+                }
+            }
+
+            return result;
+        }
+
         private async Task<AzSearchResponse> Search(string indexName, AzSearchParams searchParams)
         {
             SearchResponse searchResult = await _solrService.SearchAsync(indexName, searchParams);
@@ -178,6 +234,20 @@ namespace SearchQueryService.Controllers
             }
         }
 
+
+        private async Task UpdateDocuments(string indexName, AzPostFlattened newDocs)
+        {
+            try
+            {
+                await _solrService.UpdateDocumentsAsync(ConvertAzDocsForUpdate(newDocs), indexName);
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogError("Document Post failed!", exception.Message);
+                throw;
+            }
+        }
+
         private IEnumerable<SolrDelete> ConvertAzDocsForDelete(AzPost azDocs)
         {
             var parsedDocs = new List<SolrDelete>();
@@ -199,6 +269,38 @@ namespace SearchQueryService.Controllers
             return parsedDocs;
         }
 
+        private List<Dictionary<string, object>> ConvertAzDocsForUpdate(AzPostFlattened azDocs)
+        {
+            var parsedDocs = new List<Dictionary<string, object>>();
+            foreach (var doc in azDocs.Value)
+            {
+                parsedDocs.Add(ConvertDocumentForUpdate(doc));
+            }
+
+            return parsedDocs;
+        }
+
+        private Dictionary<string, object> ConvertDocumentForUpdate(IDictionary<string, List<JsonElement>> document)
+        {
+            var convertedDocument = new Dictionary<string, object>();
+            foreach (var kv in document)
+            {
+                if (string.Equals(kv.Key, "id", StringComparison.OrdinalIgnoreCase))
+                {
+                    convertedDocument["id"] = kv.Value;
+                }
+                else
+                {
+                    convertedDocument[kv.Key] = new
+                    {
+                        set = kv.Value.Select(val => ConvertValue(val))
+                    };
+                }
+            }
+
+            return convertedDocument;
+        }
+
         private List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
             => azDocs.Value.Select(ConvertDocument).ToList();
 
@@ -213,14 +315,14 @@ namespace SearchQueryService.Controllers
                 }
                 else
                 {
-                    convertedDocument[kv.Key] = ConvertValues(kv.Value);
+                    convertedDocument[kv.Key] = ConvertValue(kv.Value);
                 }
             }
 
             return convertedDocument;
         }
 
-        private dynamic ConvertValues(JsonElement value)
+        private dynamic ConvertValue(JsonElement value)
         {
             if (value.ValueKind == JsonValueKind.String)
             {
