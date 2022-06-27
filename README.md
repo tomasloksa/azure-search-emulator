@@ -8,7 +8,7 @@ It is insecure and should never be used in production! It even has a localhost s
 
 It consists of a simple .NET 5.0 Web API, which translates and forwards Azure Search Queries to Solr.
 
-Has been tested with Solr 7 and 8.11 .
+Has been tested with Solr 7 and 8.11.
 Currently doesn't work with Solr 9 (latest).
 
 

@@ -11,7 +11,6 @@ using SearchQueryService.Services;
 using SearchQueryService.Documents.Models.Azure;
 using SearchQueryService.Documents.Models.Solr;
 using SearchQueryService.Indexes.Models.Solr;
-using System.Text.Json.Serialization;
 
 namespace SearchQueryService.Controllers
 {
@@ -172,7 +171,7 @@ namespace SearchQueryService.Controllers
                 try
                 {
                     var transformed = addOrUpdate.Value.Select(doc => ConvertAzDocsForAddOrUpdate(doc));
-                    await _solrService.UpdateDocumentsAsync(transformed, indexName);
+                    await _solrService.AddOrUpdateDocumentsAsync(transformed, indexName);
                 }
                 catch (HttpRequestException exception)
                 {
@@ -185,7 +184,7 @@ namespace SearchQueryService.Controllers
             {
                 try
                 {
-                    await _solrService.PostDocumentsAsync(ConvertAzDocsForAdd(add), indexName);
+                    await _solrService.AddDocumentsAsync(ConvertAzDocsForAdd(add), indexName);
                 }
                 catch (HttpRequestException exception)
                 {
@@ -237,7 +236,7 @@ namespace SearchQueryService.Controllers
                     {
                         item.Value[i] = ConvertValue(item.Value[i]);
                     }
-                    converted[item.Key] = JsonSerializer.SerializeToElement(new SetProperty(item.Value));
+                    converted[item.Key] = JsonSerializer.SerializeToElement(new SolrSetProperty(item.Value));
                 }
             }
 
@@ -276,26 +275,15 @@ namespace SearchQueryService.Controllers
             return flattened;
         }
 
-        class SetProperty
-        {
-            public SetProperty(List<JsonElement> value)
-            {
-                Values = value;
-            }
-
-            [JsonPropertyName("set")]
-            public List<JsonElement> Values { get; set; }
-        }
-
         private List<Dictionary<string, JsonElement>> ConvertAzDocsForAdd(AzPost azDocs)
         {
             foreach (var doc in azDocs.Value)
             {
                 FixPrimaryKeyForAdd(doc);
 
-                foreach (var pair in doc)
+                foreach (var prop in doc)
                 {
-                    doc[pair.Key] = ConvertValue(pair.Value);
+                    doc[prop.Key] = ConvertValue(prop.Value);
                 }
             }
 
