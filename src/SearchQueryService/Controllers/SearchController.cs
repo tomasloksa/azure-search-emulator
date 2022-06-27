@@ -9,8 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SearchQueryService.Services;
 using SearchQueryService.Documents.Models.Azure;
-using SearchQueryService.Indexes.Models.Solr;
 using SearchQueryService.Documents.Models.Solr;
+using SearchQueryService.Indexes.Models.Solr;
+using System.Text.Json.Serialization;
 
 namespace SearchQueryService.Controllers
 {
@@ -86,62 +87,6 @@ namespace SearchQueryService.Controllers
             }
         }
 
-        [HttpPatch("search.index")]
-        public async Task<object> Patch(
-            [FromRoute] string indexName,
-            [FromBody] AzPost newDocs
-        )
-        {
-            try
-            {
-                var transformed = new AzPostFlattened
-                {
-                    Value = newDocs.Value.Select(doc => Flatten(doc)).ToList()
-                };
-
-                await UpdateDocuments(indexName, transformed);
-                _logger.LogInformation("Documents updated successfully.");
-                return CreateAzSearchResponse(newDocs);
-            }
-            catch (HttpRequestException exception)
-            {
-                _logger.LogError("Document updating failed!", exception.Message);
-                throw;
-            }
-        }
-
-        private static Dictionary<string, List<JsonElement>> Flatten(Dictionary<string, JsonElement> json)
-        {
-            var result = new Dictionary<string, List<JsonElement>>();
-            foreach (var kv in json)
-            {
-                if (kv.Value.ValueKind == JsonValueKind.Array)
-                {
-                    foreach (var arrayItem in kv.Value.EnumerateArray())
-                    {
-                        foreach (var property in arrayItem.EnumerateObject())
-                        {
-                            string propName = kv.Key + "." + property.Name;
-                            if (result.ContainsKey(propName))
-                            {
-                                result[propName].Add(property.Value);
-                            }
-                            else
-                            {
-                                result.Add(propName, new List<JsonElement>() { property.Value });
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    result.Add(kv.Key, new List<JsonElement>() { kv.Value });
-                }
-            }
-
-            return result;
-        }
-
         private async Task<AzSearchResponse> Search(string indexName, AzSearchParams searchParams)
         {
             SearchResponse searchResult = await _solrService.SearchAsync(indexName, searchParams);
@@ -171,7 +116,7 @@ namespace SearchQueryService.Controllers
             {
                 list.Add(new
                 {
-                    key = doc.ContainsKey("Id")? doc["Id"] : doc["id"],
+                    key = doc.ContainsKey("Id") ? doc["Id"] : doc["id"],
                     status = true,
                     errorMessage = "",
                     StatusCode = 201
@@ -187,17 +132,24 @@ namespace SearchQueryService.Controllers
         private async Task PostDocuments(string indexName, AzPost docs)
         {
             var delete = new AzPost { Value = new List<Dictionary<string, JsonElement>>() };
+            var add = new AzPost { Value = new List<Dictionary<string, JsonElement>>() };
             var addOrUpdate = new AzPost { Value = new List<Dictionary<string, JsonElement>>() };
 
             foreach (var doc in docs.Value)
             {
-                if (doc[SearchAction].GetString() == "delete")
+                switch (doc[SearchAction].GetString())
                 {
-                    delete.Value.Add(doc);
-                }
-                else
-                {
-                    addOrUpdate.Value.Add(doc);
+                    case "delete":
+                        delete.Value.Add(doc);
+                        break;
+
+                    case "mergeOrUpload":
+                        addOrUpdate.Value.Add(doc);
+                        break;
+
+                    default:
+                        add.Value.Add(doc);
+                        break;
                 }
             }
 
@@ -210,7 +162,7 @@ namespace SearchQueryService.Controllers
                 }
                 catch (HttpRequestException exception)
                 {
-                    _logger.LogError("Document Deletion failed!", exception.Message);
+                    _logger.LogError("Document Delete failed!", exception.Message);
                     exceptions.Add(exception);
                 }
             }
@@ -219,11 +171,25 @@ namespace SearchQueryService.Controllers
             {
                 try
                 {
-                    await _solrService.PostDocumentsAsync(ConvertAzDocs(addOrUpdate), indexName);
+                    var transformed = addOrUpdate.Value.Select(doc => ConvertAzDocsForAddOrUpdate(doc));
+                    await _solrService.UpdateDocumentsAsync(transformed, indexName);
                 }
                 catch (HttpRequestException exception)
                 {
-                    _logger.LogError("Document Post failed!", exception.Message);
+                    _logger.LogError("Document AddOrUpdate failed!", exception.Message);
+                    exceptions.Add(exception);
+                }
+            }
+
+            if (add.Value.Count > 0)
+            {
+                try
+                {
+                    await _solrService.PostDocumentsAsync(ConvertAzDocsForAdd(add), indexName);
+                }
+                catch (HttpRequestException exception)
+                {
+                    _logger.LogError("Document Add failed!", exception.Message);
                     exceptions.Add(exception);
                 }
             }
@@ -231,20 +197,6 @@ namespace SearchQueryService.Controllers
             if (exceptions.Count > 0)
             {
                 throw new AggregateException("Document operations failed", exceptions);
-            }
-        }
-
-
-        private async Task UpdateDocuments(string indexName, AzPostFlattened newDocs)
-        {
-            try
-            {
-                await _solrService.UpdateDocumentsAsync(ConvertAzDocsForUpdate(newDocs), indexName);
-            }
-            catch (HttpRequestException exception)
-            {
-                _logger.LogError("Document Post failed!", exception.Message);
-                throw;
             }
         }
 
@@ -269,60 +221,97 @@ namespace SearchQueryService.Controllers
             return parsedDocs;
         }
 
-        private List<Dictionary<string, object>> ConvertAzDocsForUpdate(AzPostFlattened azDocs)
+        private Dictionary<string, JsonElement> ConvertAzDocsForAddOrUpdate(Dictionary<string, JsonElement> json)
         {
-            var parsedDocs = new List<Dictionary<string, object>>();
+            var converted = new Dictionary<string, JsonElement>();
+
+            foreach (var item in Flatten(json))
+            {
+                if (item.Value is SetProperty property)
+                {
+                    foreach (var value in property.Values)
+                    {
+                        ConvertValue(value);
+                    }
+                }
+
+                converted[item.Key] = JsonSerializer.SerializeToElement(item.Value);
+            }
+
+            FixPrimaryKey(converted);
+
+            return converted;
+        }
+
+        private static Dictionary<string, SetProperty> Flatten(Dictionary<string, JsonElement> json)
+        {
+            var flattened = new Dictionary<string, object>();
+            foreach (var kv in json)
+            {
+                if (kv.Value.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var arrayItem in kv.Value.EnumerateArray())
+                    {
+                        foreach (var property in arrayItem.EnumerateObject())
+                        {
+                            string propName = kv.Key + "." + property.Name;
+                            if (flattened.ContainsKey(propName))
+                            {
+                                ((SetProperty)flattened[propName]).Values.Add(property.Value);
+                            }
+                            else
+                            {
+                                flattened.Add(propName, new SetProperty(property.Value));
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    flattened.Add(kv.Key, new SetProperty(kv.Value));
+                }
+            }
+
+            return flattened;
+        }
+
+        class SetProperty
+        {
+            public SetProperty(JsonElement value)
+            {
+                Values = new List<JsonElement>() { value };
+            }
+
+            [JsonPropertyName("set")]
+            public List<JsonElement> Values { get; set; }
+        }
+
+        private List<Dictionary<string, JsonElement>> ConvertAzDocsForAdd(AzPost azDocs)
+        {
             foreach (var doc in azDocs.Value)
             {
-                parsedDocs.Add(ConvertDocumentForUpdate(doc));
+                FixPrimaryKey(doc);
+
+                foreach (var value in doc.Values)
+                {
+                    ConvertValue(value);
+                }
             }
 
-            return parsedDocs;
+            return azDocs.Value;
         }
 
-        private Dictionary<string, object> ConvertDocumentForUpdate(IDictionary<string, List<JsonElement>> document)
+        private static void FixPrimaryKey(Dictionary<string, JsonElement> document)
         {
-            var convertedDocument = new Dictionary<string, object>();
-            foreach (var kv in document)
+            if (document.ContainsKey("Id"))
             {
-                if (string.Equals(kv.Key, "id", StringComparison.OrdinalIgnoreCase))
-                {
-                    convertedDocument["id"] = kv.Value;
-                }
-                else
-                {
-                    convertedDocument[kv.Key] = new
-                    {
-                        set = kv.Value.Select(val => ConvertValue(val))
-                    };
-                }
+                JsonElement id = document["Id"];
+                document.Remove("Id");
+                document["id"] = id;
             }
-
-            return convertedDocument;
         }
 
-        private List<Dictionary<string, object>> ConvertAzDocs(AzPost azDocs)
-            => azDocs.Value.Select(ConvertDocument).ToList();
-
-        private Dictionary<string, object> ConvertDocument(Dictionary<string, JsonElement> document)
-        {
-            var convertedDocument = new Dictionary<string, object>();
-            foreach (var kv in document)
-            {
-                if (string.Equals(kv.Key, "id", StringComparison.OrdinalIgnoreCase))
-                {
-                    convertedDocument["id"] = kv.Value;
-                }
-                else
-                {
-                    convertedDocument[kv.Key] = ConvertValue(kv.Value);
-                }
-            }
-
-            return convertedDocument;
-        }
-
-        private dynamic ConvertValue(JsonElement value)
+        private JsonElement ConvertValue(JsonElement value)
         {
             if (value.ValueKind == JsonValueKind.String)
             {
@@ -331,7 +320,7 @@ namespace SearchQueryService.Controllers
                 {
                     newVal = Regex.Replace(newVal, kv.Key, kv.Value);
                 }
-                return newVal;
+                return JsonSerializer.SerializeToElement(newVal);
             }
 
             return value;

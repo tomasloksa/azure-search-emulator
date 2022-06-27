@@ -41,6 +41,7 @@ namespace SearchQueryService.Services
                 .AppendPathSegments("update", "json", "docs")
                 .SetQueryParam("commit", "true");
 
+            System.Console.WriteLine(JsonSerializer.Serialize(documents));
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync(uri, documents, _jsonOptions);
             response.EnsureSuccessStatusCode();
         }
