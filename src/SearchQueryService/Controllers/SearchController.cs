@@ -227,25 +227,26 @@ namespace SearchQueryService.Controllers
 
             foreach (var item in Flatten(json))
             {
-                if (item.Value is SetProperty property)
+                if (string.Equals(item.Key, "id", StringComparison.OrdinalIgnoreCase))
                 {
-                    foreach (var value in property.Values)
-                    {
-                        ConvertValue(value);
-                    }
+                    converted["id"] = JsonSerializer.SerializeToElement(item.Value[0]);
                 }
-
-                converted[item.Key] = JsonSerializer.SerializeToElement(item.Value);
+                else
+                {
+                    for (int i = 0; i < item.Value.Count; i++)
+                    {
+                        item.Value[i] = ConvertValue(item.Value[i]);
+                    }
+                    converted[item.Key] = JsonSerializer.SerializeToElement(new SetProperty(item.Value));
+                }
             }
-
-            FixPrimaryKey(converted);
 
             return converted;
         }
 
-        private static Dictionary<string, SetProperty> Flatten(Dictionary<string, JsonElement> json)
+        private static Dictionary<string, List<JsonElement>> Flatten(Dictionary<string, JsonElement> json)
         {
-            var flattened = new Dictionary<string, object>();
+            var flattened = new Dictionary<string, List<JsonElement>>();
             foreach (var kv in json)
             {
                 if (kv.Value.ValueKind == JsonValueKind.Array)
@@ -257,18 +258,18 @@ namespace SearchQueryService.Controllers
                             string propName = kv.Key + "." + property.Name;
                             if (flattened.ContainsKey(propName))
                             {
-                                ((SetProperty)flattened[propName]).Values.Add(property.Value);
+                                flattened[propName].Add(property.Value);
                             }
                             else
                             {
-                                flattened.Add(propName, new SetProperty(property.Value));
+                                flattened.Add(propName, new List<JsonElement>() { property.Value });
                             }
                         }
                     }
                 }
                 else
                 {
-                    flattened.Add(kv.Key, new SetProperty(kv.Value));
+                    flattened.Add(kv.Key, new List<JsonElement>() { kv.Value });
                 }
             }
 
@@ -277,9 +278,9 @@ namespace SearchQueryService.Controllers
 
         class SetProperty
         {
-            public SetProperty(JsonElement value)
+            public SetProperty(List<JsonElement> value)
             {
-                Values = new List<JsonElement>() { value };
+                Values = value;
             }
 
             [JsonPropertyName("set")]
@@ -290,18 +291,18 @@ namespace SearchQueryService.Controllers
         {
             foreach (var doc in azDocs.Value)
             {
-                FixPrimaryKey(doc);
+                FixPrimaryKeyForAdd(doc);
 
-                foreach (var value in doc.Values)
+                foreach (var pair in doc)
                 {
-                    ConvertValue(value);
+                    doc[pair.Key] = ConvertValue(pair.Value);
                 }
             }
 
             return azDocs.Value;
         }
 
-        private static void FixPrimaryKey(Dictionary<string, JsonElement> document)
+        private static void FixPrimaryKeyForAdd(Dictionary<string, JsonElement> document)
         {
             if (document.ContainsKey("Id"))
             {
