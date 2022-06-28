@@ -81,7 +81,7 @@ namespace SearchQueryService.Controllers
             }
             catch (HttpRequestException exception)
             {
-                _logger.LogError("Document indexing failed!", exception.Message);
+                _logger.LogError(exception, "Document indexing failed!");
                 throw;
             }
         }
@@ -161,7 +161,7 @@ namespace SearchQueryService.Controllers
                 }
                 catch (HttpRequestException exception)
                 {
-                    _logger.LogError("Document Delete failed!", exception.Message);
+                    _logger.LogError(exception, "Document Delete failed!");
                     exceptions.Add(exception);
                 }
             }
@@ -175,7 +175,7 @@ namespace SearchQueryService.Controllers
                 }
                 catch (HttpRequestException exception)
                 {
-                    _logger.LogError("Document AddOrUpdate failed!", exception.Message);
+                    _logger.LogError(exception, "Document AddOrUpdate failed!");
                     exceptions.Add(exception);
                 }
             }
@@ -188,7 +188,7 @@ namespace SearchQueryService.Controllers
                 }
                 catch (HttpRequestException exception)
                 {
-                    _logger.LogError("Document Add failed!", exception.Message);
+                    _logger.LogError(exception, "Document Add failed!");
                     exceptions.Add(exception);
                 }
             }

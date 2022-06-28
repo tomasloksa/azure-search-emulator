@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace SearchQueryService.Documents.Models.Solr
 {
-    class SolrSetProperty
+    internal class SolrSetProperty
     {
         public SolrSetProperty(List<JsonElement> value)
         {
