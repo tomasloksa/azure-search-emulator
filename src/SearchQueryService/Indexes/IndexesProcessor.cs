@@ -172,7 +172,7 @@ namespace SearchQueryService.Indexes
 
             FixIdCapitalization(documents);
 
-            await _solrService.PostDocumentsAsync(documents, indexName);
+            await _solrService.AddDocumentsAsync(documents, indexName);
         }
 
         private static void FixIdCapitalization(List<ExpandoObject> documents)
