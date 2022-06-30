@@ -33,13 +33,28 @@ jobs:
         with:
           proj-path: ./src/SearchQueryService/SearchQueryService.csproj
 
+      - name: Check if tag exists
+        shell: pwsh
+        run: |
+          function Docker-Tag-Exists {
+            Try {
+              Invoke-RestMethod "https://index.docker.io/v1/repositories/tomee/azure-search-emulator/tags/${{ steps.get-version.outputs.version }}-preview"
+            } Catch {} # Assume image does not exist on erroneous response
+            return $?
+          }
+
+          if (Docker-Tag-Exists) {
+            echo "IMAGE_EXISTS=True" >> $Env:GITHUB_ENV
+          }
+
       - name: Build and push
+        if: env.IMAGE_EXISTS == 'True'
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           context: ./src/SearchQueryService
           push: true
-          tags: tomee/azure-search-emulator:${{ steps.get-version.outputs.version }}-preview
+          tags: tomee/azure-search-emulator:${{ steps.get-version.outputs.version }}-preview , tomee/azure-search-emulator:latest-preview
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
