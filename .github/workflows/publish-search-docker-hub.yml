@@ -56,4 +56,5 @@ jobs:
           tags: tomee/azure-search-emulator:${{ steps.get-version.outputs.version }} , tomee/azure-search-emulator:latest
 
       - name: Image digest
+        if: env.IMAGE_EXISTS == 'False'
         run: echo ${{ steps.docker_build.outputs.digest }}
