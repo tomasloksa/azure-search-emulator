@@ -4,17 +4,17 @@ namespace SearchQueryService.Helpers
 {
     public static class Tools
     {
-        public static string GetSolrType(string azType)
+        public static string GetSolrType(string azType, bool nested)
             => azType switch
             {
                 "Edm.String" => "text_general",
-                "Edm.Int32" => "pint",
-                "Edm.Int64" => "plong",
-                "Edm.Boolean" => "boolean",
-                "Edm.Double" => "pdouble",
-                "Edm.DateTimeOffset" => "pdate",
-                "Edm.ComplexType" => "string",
-                "Collection(Edm.ComplexType)" => "string",
+                "Edm.Int32" => nested ? "pints" : "pint",
+                "Edm.Int64" => nested ? "plongs" : "plong",
+                "Edm.Boolean" => nested ? "booleans" : "boolean",
+                "Edm.Double" => nested ? "pdoubles" : "pdouble",
+                "Edm.DateTimeOffset" => nested ? "pdates" : "pdate",
+                "Edm.ComplexType" => nested ? "strings" : "string",
+                "Collection(Edm.ComplexType)" => "strings",
                 "Collection(Edm.Int64)" => "plongs",
                 "Collection(Edm.Int32)" => "pints",
                 "Collection(Edm.Double)" => "pdoubles",

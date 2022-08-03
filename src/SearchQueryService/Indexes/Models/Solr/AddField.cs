@@ -30,11 +30,6 @@ namespace SearchQueryService.Indexes.Models.Solr
         public bool Indexed { get; set; }
 
         /// <summary>
-        /// Whether the field can contain multiple values.
-        /// </summary>
-        public bool MultiValued { get; set; }
-
-        /// <summary>
         /// Whether search should return value even if stored=false. All basic field types are docValues=true by default.
         /// </summary>
         public bool UseDocValuesAsStored { get; set; }
@@ -43,11 +38,10 @@ namespace SearchQueryService.Indexes.Models.Solr
             => new()
             {
                 Name = name,
-                Type = Tools.GetSolrType(field.Type),
+                Type = Tools.GetSolrType(field.Type, name.Contains('.')),
                 Stored = field.Retrievable,
                 Searchable = field.Searchable,
                 Indexed = field.Searchable || field.Filterable,
-                MultiValued = name.Contains("."),
                 UseDocValuesAsStored = false
             };
     }

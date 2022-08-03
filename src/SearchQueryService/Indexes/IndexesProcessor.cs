@@ -110,10 +110,9 @@ namespace SearchQueryService.Indexes
                         new AddField
                         {
                             Name = "_text_",
-                            Type = "string",
+                            Type = "strings",
                             Indexed = true,
                             Searchable = true,
-                            MultiValued = true,
                             Stored = false
                         }
                     }
@@ -135,7 +134,6 @@ namespace SearchQueryService.Indexes
                         {
                             Name = "*",
                             Type = "text_general",
-                            MultiValued = true,
                             Indexed = false,
                             Stored = false,
                             UseDocValuesAsStored = false

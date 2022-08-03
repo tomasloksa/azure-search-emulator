@@ -252,17 +252,25 @@ namespace SearchQueryService.Controllers
                 {
                     foreach (var arrayItem in kv.Value.EnumerateArray())
                     {
-                        foreach (var property in arrayItem.EnumerateObject())
+                        if (arrayItem.ValueKind == JsonValueKind.Object)
                         {
-                            string propName = kv.Key + "." + property.Name;
-                            if (flattened.ContainsKey(propName))
+                            foreach (var property in arrayItem.EnumerateObject())
                             {
-                                flattened[propName].Add(property.Value);
+                                string propName = kv.Key + "." + property.Name;
+                                if (flattened.ContainsKey(propName))
+                                {
+                                    flattened[propName].Add(property.Value);
+                                }
+                                else
+                                {
+                                    flattened.Add(propName, new List<JsonElement>() { property.Value });
+                                }
                             }
-                            else
-                            {
-                                flattened.Add(propName, new List<JsonElement>() { property.Value });
-                            }
+                        }
+                        else
+                        {
+                            flattened.Add(kv.Key, kv.Value.Deserialize<List<JsonElement>>());
+                            break;
                         }
                     }
                 }
