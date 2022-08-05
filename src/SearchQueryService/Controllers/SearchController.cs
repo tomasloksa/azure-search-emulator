@@ -11,6 +11,7 @@ using SearchQueryService.Services;
 using SearchQueryService.Documents.Models.Azure;
 using SearchQueryService.Documents.Models.Solr;
 using SearchQueryService.Indexes.Models.Solr;
+using SearchQueryService.Helpers;
 
 namespace SearchQueryService.Controllers
 {
@@ -90,6 +91,8 @@ namespace SearchQueryService.Controllers
         {
             SearchResponse searchResult = await _solrService.SearchAsync(indexName, searchParams);
 
+            searchResult.Response.Docs = searchResult.Response.Docs.Select(Tools.JsonUnflatten);
+
             FixIdCapitalization(searchResult);
 
             return new AzSearchResponse(searchResult.Response);
@@ -105,6 +108,8 @@ namespace SearchQueryService.Controllers
                     retrievedDoc.Remove("id");
                 }
             }
+
+            searchResult.Response.Docs = docs;
         }
 
         private static object CreateAzSearchResponse(AzPost newDocs)
@@ -224,7 +229,7 @@ namespace SearchQueryService.Controllers
         {
             var converted = new Dictionary<string, JsonElement>();
 
-            foreach (var item in Flatten(json))
+            foreach (var item in Tools.JsonFlatten(json))
             {
                 if (string.Equals(item.Key, "id", StringComparison.OrdinalIgnoreCase))
                 {
@@ -241,46 +246,6 @@ namespace SearchQueryService.Controllers
             }
 
             return converted;
-        }
-
-        private static Dictionary<string, List<JsonElement>> Flatten(Dictionary<string, JsonElement> json)
-        {
-            var flattened = new Dictionary<string, List<JsonElement>>();
-            foreach (var kv in json)
-            {
-                if (kv.Value.ValueKind == JsonValueKind.Array)
-                {
-                    foreach (var arrayItem in kv.Value.EnumerateArray())
-                    {
-                        if (arrayItem.ValueKind == JsonValueKind.Object)
-                        {
-                            foreach (var property in arrayItem.EnumerateObject())
-                            {
-                                string propName = kv.Key + "." + property.Name;
-                                if (flattened.ContainsKey(propName))
-                                {
-                                    flattened[propName].Add(property.Value);
-                                }
-                                else
-                                {
-                                    flattened.Add(propName, new List<JsonElement>() { property.Value });
-                                }
-                            }
-                        }
-                        else
-                        {
-                            flattened.Add(kv.Key, kv.Value.Deserialize<List<JsonElement>>());
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    flattened.Add(kv.Key, new List<JsonElement>() { kv.Value });
-                }
-            }
-
-            return flattened;
         }
 
         private List<Dictionary<string, JsonElement>> ConvertAzDocsForAdd(AzPost azDocs)

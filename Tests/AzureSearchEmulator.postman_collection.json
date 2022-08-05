@@ -1,9 +1,10 @@
 {
-    "info": {
-        "_postman_id": "3475eefa-c60b-419f-8eb6-d64f2af73cad",
-        "name": "AzureSearchEmulator",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-    },
+	"info": {
+		"_postman_id": "142712f5-495c-4008-a146-b8734220e1b4",
+		"name": "AzureSearchEmulator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8467650"
+	},
 	"item": [
 		{
 			"name": "Index created correctly",
@@ -186,6 +187,14 @@
 							"    pm.test(\"Property 'Id' should exist.\", function () {\r",
 							"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
 							"    });\r",
+							"\r",
+							"    pm.test(\"Nested items should have correct format.\", function () {\r",
+							"        pm.expect(result.value[8].Items).to.not.equal(undefined);\r",
+							"    })\r",
+							"\r",
+							"    pm.test(\"Nested items should have correct format.\", function () {\r",
+							"        pm.expect(result.value[8][\"Items.Name\"]).to.equal(undefined);\r",
+							"    })\r",
 							"});\r",
 							""
 						],
@@ -293,11 +302,6 @@
 							"\r",
 							"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
 							"        pm.expect(result[\"@odata.count\"]).to.equal(8);\r",
-							"        \r",
-							"    });\r",
-							"\r",
-							"    pm.test(\"Document with Id 1 should not exist.\", function () {\r",
-							"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
 							"    });\r",
 							"});"
 						],
@@ -421,7 +425,7 @@
 							"    var document = result[\"value\"][0];\r",
 							"\r",
 							"    pm.test(\"Document should have correct number of properties\", function () {\r",
-							"        pm.expect(Object.keys(document).length).to.equal(23);\r",
+							"        pm.expect(Object.keys(document).length).to.equal(24);\r",
 							"    });\r",
 							"\r",
 							"    pm.test(\"Document should have updated values\", function () {\r",
@@ -479,7 +483,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.environment.set(\"Temp.AzureSearch.UpdateId\", 289);\r",
+							"pm.environment.set(\"Temp.AzureSearch.OverwriteId\", 203);\r",
 							"pm.environment.set(\"Temp.AzureSearch.UpdateCompanyId\", 170);\r",
 							"pm.environment.set(\"Temp.AzureSearch.UpdateNumberingSequence\", \"DF\");"
 						],
@@ -503,7 +507,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n   \"value\":\r\n    [\r\n        {\r\n            \"@search.action\":\"upload\",\r\n            \"VariableSymbol\":\"NewSymbol\",\r\n            \"Id\":\"{{Temp.AzureSearch.UpdateId}}\",\r\n            \"DeliveryDate\":\"2021-11-03T10:22:37.4500000\\u002B00:00\"\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n   \"value\":\r\n    [\r\n        {\r\n            \"@search.action\":\"upload\",\r\n            \"VariableSymbol\":\"NewSymbol\",\r\n            \"Id\":\"{{Temp.AzureSearch.OverwriteId}}\",\r\n            \"DeliveryDate\":\"2021-11-03T10:22:37.4500000\\u002B00:00\"\r\n        }\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

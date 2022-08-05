@@ -42,17 +42,18 @@ namespace SearchQueryService.Indexes.Models.Solr
 
         public static AddField Create(string name, AzField field)
         {
+            bool isNested = name.Contains('.');
             var newField = new AddField()
             {
                 Name = name,
-                Type = Tools.GetSolrType(field.Type, name.Contains('.')),
+                Type = Tools.GetSolrType(field.Type, isNested),
                 Stored = field.Retrievable,
                 Searchable = field.Searchable,
                 Indexed = field.Searchable || field.Filterable,
                 UseDocValuesAsStored = false
             };
 
-            if (newField.Type == "text_general")
+            if (newField.Type == "text_general" && !isNested)
             {
                 newField.MultiValued = false;
             }
