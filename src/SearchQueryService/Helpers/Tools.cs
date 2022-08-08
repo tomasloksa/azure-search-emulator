@@ -68,37 +68,41 @@ namespace SearchQueryService.Helpers
             return flattened;
         }
 
-        public static Dictionary<string, object> JsonUnflatten(Dictionary<string, object> dotNotation)
+        public static Dictionary<string, object> JsonUnflatten(Dictionary<string, object> jsonDoc)
         {
-            var root = new Dictionary<string, object>();
+            var unflattened = new Dictionary<string, object>();
 
-            foreach (var dotObject in dotNotation)
+            foreach (var property in jsonDoc)
             {
-                var hierarcy = dotObject.Key.Split('.');
-
-                Dictionary<string, object> current = root;
-
-                for (int i = 0; i < hierarcy.Length; i++)
+                if (!property.Key.Contains('.'))
                 {
-                    var key = hierarcy[i];
+                    unflattened.Add(property.Key, property.Value);
+                    continue;
+                }
 
-                    if (i == hierarcy.Length - 1) // Last key
+                var parts = property.Key.Split('.');
+
+                if (!unflattened.ContainsKey(parts[0]))
+                {
+                    unflattened.Add(parts[0], new List<Dictionary<string, object>>());
+                }
+
+                if (property.Value is JsonElement val && val.ValueKind == JsonValueKind.Array)
+                {
+                    var dest = unflattened[parts[0]] as List<Dictionary<string, object>>;
+                    int i = 0;
+                    foreach (var value in val.EnumerateArray())
                     {
-                        current.Add(key, dotObject.Value);
-                    }
-                    else
-                    {
-                        if (!current.ContainsKey(key))
+                        if (i >= dest.Count)
                         {
-                            current.Add(key, new Dictionary<string, object>());
+                            dest.Add(new Dictionary<string, object>());
                         }
-
-                        current = (Dictionary<string, object>)current[key];
+                        dest[i++].Add(parts[1], value);
                     }
                 }
             }
 
-            return root;
+            return unflattened;
         }
     }
 }
