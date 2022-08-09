@@ -10,8 +10,9 @@ using Microsoft.Extensions.Logging;
 using SearchQueryService.Services;
 using SearchQueryService.Documents.Models.Azure;
 using SearchQueryService.Documents.Models.Solr;
-using SearchQueryService.Indexes.Models.Solr;
 using SearchQueryService.Helpers;
+using SearchQueryService.Indexes;
+using SearchQueryService.Indexes.Models.Solr;
 
 namespace SearchQueryService.Controllers
 {
@@ -27,13 +28,16 @@ namespace SearchQueryService.Controllers
 
         private readonly ILogger _logger;
         private readonly SolrService _solrService;
+        private readonly SchemaMemory _schemaMemory;
 
         public SearchController(
             ILogger<SearchController> logger,
+            SchemaMemory schemaMemory,
             SolrService solrService)
         {
             _logger = logger;
             _solrService = solrService;
+            _schemaMemory = schemaMemory;
         }
 
         [HttpGet]
@@ -175,7 +179,7 @@ namespace SearchQueryService.Controllers
             {
                 try
                 {
-                    var transformed = addOrUpdate.Value.Select(doc => ConvertAzDocsForAddOrUpdate(doc));
+                    var transformed = addOrUpdate.Value.Select(doc => ConvertAzDocsForAddOrUpdate(doc, indexName));
                     await _solrService.AddOrUpdateDocumentsAsync(transformed, indexName);
                 }
                 catch (HttpRequestException exception)
@@ -225,11 +229,11 @@ namespace SearchQueryService.Controllers
             return parsedDocs;
         }
 
-        private Dictionary<string, JsonElement> ConvertAzDocsForAddOrUpdate(Dictionary<string, JsonElement> json)
+        private Dictionary<string, JsonElement> ConvertAzDocsForAddOrUpdate(Dictionary<string, JsonElement> json, string indexName)
         {
             var converted = new Dictionary<string, JsonElement>();
 
-            foreach (var item in Tools.JsonFlatten(json))
+            foreach (var item in Tools.JsonFlatten(json, _schemaMemory.GetNestedItemsInIndex(indexName)))
             {
                 if (string.Equals(item.Key, "id", StringComparison.OrdinalIgnoreCase))
                 {

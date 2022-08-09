@@ -28,13 +28,25 @@ namespace SearchQueryService.Helpers
             => new(Environment.GetEnvironmentVariable("SEARCH_URL")
                    ?? throw new InvalidOperationException("'SEARCH_URL' is required parameter."));
 
-        public static Dictionary<string, List<JsonElement>> JsonFlatten(Dictionary<string, JsonElement> json)
+        public static Dictionary<string, List<JsonElement>> JsonFlatten(
+            Dictionary<string, JsonElement> json,
+            Dictionary<string, List<string>> nestedSchema)
         {
             var flattened = new Dictionary<string, List<JsonElement>>();
             foreach (var kv in json)
             {
                 if (kv.Value.ValueKind == JsonValueKind.Array)
                 {
+                    if (kv.Value.GetArrayLength() == 0 && nestedSchema.TryGetValue(kv.Key, out List<string> nestedItems))
+                    {
+                        foreach (var nestedItem in nestedItems)
+                        {
+                            flattened.Add(nestedItem, new List<JsonElement>());
+                        }
+
+                        continue;
+                    }
+
                     foreach (var arrayItem in kv.Value.EnumerateArray())
                     {
                         if (arrayItem.ValueKind == JsonValueKind.Object)

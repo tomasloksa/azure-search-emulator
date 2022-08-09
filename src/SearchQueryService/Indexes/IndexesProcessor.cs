@@ -19,13 +19,16 @@ namespace SearchQueryService.Indexes
 
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         private readonly SolrService _solrService;
+        private readonly SchemaMemory _schemaMemory;
         private readonly ILogger _logger;
 
         public IndexesProcessor(
             SolrService solrService,
+            SchemaMemory schemaMemory,
             ILogger<IndexesProcessor> logger)
         {
             _solrService = solrService;
+            _schemaMemory = schemaMemory;
             _logger = logger;
         }
 
@@ -48,12 +51,14 @@ namespace SearchQueryService.Indexes
                 }
 
                 _logger.LogInformation($"====== Creating index: {index.Name}");
+
+                var fieldsToAdd = GetFieldsFromIndex(index).ToList();
+
                 if (!await CanCreateIndex(index))
                 {
                     continue;
                 }
 
-                var fieldsToAdd = GetFieldsFromIndex(index).ToList();
                 var postBody = CreateSchemaPostBody(fieldsToAdd);
                 await _solrService.PostSchemaAsync(index.Name, postBody);
 
@@ -142,19 +147,21 @@ namespace SearchQueryService.Indexes
                 }
             };
 
-        private static IEnumerable<AddField> GetFieldsFromIndex(SearchIndex index)
+        private IEnumerable<AddField> GetFieldsFromIndex(SearchIndex index)
         {
             var fields = index.Fields
                 .Where(field => !string.Equals(field.Name, "id", StringComparison.OrdinalIgnoreCase))
                 .Select(field => AddField.Create(field.Name, field));
 
-            var nestedFields = index.Fields
-                .Where(field => field.Fields is not null)
-                .SelectMany(field => field.Fields
-                    .Select(nestedField =>
-                        AddField.Create(field.Name + "." + nestedField.Name, nestedField)));
+            var rootNestedFields = index.Fields.Where(field => field.Fields is not null);
 
-            return fields.Concat(nestedFields);
+            _schemaMemory.AddNestedItemToIndex(index.Name,
+                rootNestedFields
+                    .ToDictionary(field => field.Name, field => field.Fields.Select(nestedField => nestedField.Name).ToList()));
+
+            return fields.Concat(rootNestedFields.SelectMany(field =>
+                field.Fields.Select(nestedField =>
+                    AddField.Create(field.Name + "." + nestedField.Name, nestedField))));
         }
 
         private async Task PostMockDataAsync(string dataDir, string indexName)
