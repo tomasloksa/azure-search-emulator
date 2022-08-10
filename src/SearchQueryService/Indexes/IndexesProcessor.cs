@@ -155,9 +155,7 @@ namespace SearchQueryService.Indexes
 
             var rootNestedFields = index.Fields.Where(field => field.Fields is not null);
 
-            _schemaMemory.AddNestedItemToIndex(index.Name,
-                rootNestedFields
-                    .ToDictionary(field => field.Name, field => field.Fields.Select(nestedField => nestedField.Name).ToList()));
+            rootNestedFields.ForEach(field => _schemaMemory.AddNestedItemToIndex(index.Name, field));
 
             return fields.Concat(rootNestedFields.SelectMany(field =>
                 field.Fields.Select(nestedField =>

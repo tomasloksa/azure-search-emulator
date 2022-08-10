@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SearchQueryService.Indexes.Models.Azure;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -30,18 +31,18 @@ namespace SearchQueryService.Helpers
 
         public static Dictionary<string, List<JsonElement>> JsonFlatten(
             Dictionary<string, JsonElement> json,
-            Dictionary<string, List<string>> nestedSchema)
+            Dictionary<string, AzField> nestedSchema)
         {
             var flattened = new Dictionary<string, List<JsonElement>>();
             foreach (var kv in json)
             {
                 if (kv.Value.ValueKind == JsonValueKind.Array)
                 {
-                    if (kv.Value.GetArrayLength() == 0 && nestedSchema.TryGetValue(kv.Key, out List<string> nestedItems))
+                    if (kv.Value.GetArrayLength() == 0 && nestedSchema.TryGetValue(kv.Key, out AzField root))
                     {
-                        foreach (var nestedItem in nestedItems)
+                        foreach (var nestedItem in root.Fields)
                         {
-                            flattened.Add(nestedItem, new List<JsonElement>());
+                            flattened.Add(kv.Key + "." + nestedItem.Name, new List<JsonElement>());
                         }
 
                         continue;
