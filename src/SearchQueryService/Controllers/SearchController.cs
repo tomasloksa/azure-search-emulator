@@ -98,8 +98,24 @@ namespace SearchQueryService.Controllers
             searchResult.Response.Docs = searchResult.Response.Docs.Select(Tools.JsonUnflatten);
 
             FixIdCapitalization(searchResult);
+            AddEmptyNestedFields(indexName, searchResult);
 
             return new AzSearchResponse(searchResult.Response);
+        }
+
+        private void AddEmptyNestedFields(string indexName, SearchResponse searchResult)
+        {
+            foreach (var retrievedDoc in searchResult.Response.Docs)
+            {
+                foreach (var nested in _schemaMemory.GetNestedItemsInIndex(indexName))
+                {
+                    if (!retrievedDoc.ContainsKey(nested.Key))
+                    {
+                        retrievedDoc.Add(nested.Key, new List<object>());
+                    }
+                }
+            }
+
         }
 
         private static void FixIdCapitalization(SearchResponse searchResult) {

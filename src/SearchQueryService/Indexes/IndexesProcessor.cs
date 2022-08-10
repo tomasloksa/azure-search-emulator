@@ -149,13 +149,20 @@ namespace SearchQueryService.Indexes
 
         private IEnumerable<AddField> GetFieldsFromIndex(SearchIndex index)
         {
+            var rootNestedFields = index.Fields.Where(field => field.Fields is not null);
+
+            foreach (var field in rootNestedFields)
+            {
+                if (field.Fields.Any(f => f.Retrievable))
+                {
+                    _schemaMemory.AddNestedItemToIndex(index.Name, field);
+                    field.Retrievable = true;
+                }
+            }
+
             var fields = index.Fields
                 .Where(field => !string.Equals(field.Name, "id", StringComparison.OrdinalIgnoreCase))
                 .Select(field => AddField.Create(field.Name, field));
-
-            var rootNestedFields = index.Fields.Where(field => field.Fields is not null);
-
-            rootNestedFields.ForEach(field => _schemaMemory.AddNestedItemToIndex(index.Name, field));
 
             return fields.Concat(rootNestedFields.SelectMany(field =>
                 field.Fields.Select(nestedField =>

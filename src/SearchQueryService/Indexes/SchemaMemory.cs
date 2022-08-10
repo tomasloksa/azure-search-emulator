@@ -5,21 +5,21 @@ namespace SearchQueryService.Indexes
 {
     public class SchemaMemory
     {
-        public Dictionary<string, Dictionary<string, AzField>> NestedItems = new();
+        private readonly Dictionary<string, Dictionary<string, AzField>> _nestedItems = new();
 
         public void AddNestedItemToIndex(string index, AzField field)
         {
-            if (!NestedItems.ContainsKey(index))
+            if (!_nestedItems.ContainsKey(index))
             {
-                NestedItems.Add(index, new Dictionary<string, AzField>());
+                _nestedItems.Add(index, new Dictionary<string, AzField>());
             }
 
-            NestedItems[index].Add(field.Name, field);
+            _nestedItems[index].Add(field.Name, field);
         }
 
         public Dictionary<string, AzField> GetNestedItemsInIndex(string index)
         {
-            return NestedItems[index];
+            return _nestedItems.GetValueOrDefault(index);
         }
     }
 }
