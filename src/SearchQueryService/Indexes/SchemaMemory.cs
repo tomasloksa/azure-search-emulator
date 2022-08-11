@@ -17,9 +17,7 @@ namespace SearchQueryService.Indexes
             _nestedItems[index].Add(field.Name, field);
         }
 
-        public Dictionary<string, AzField> GetNestedItemsInIndex(string index)
-        {
-            return _nestedItems.GetValueOrDefault(index);
-        }
+        public Dictionary<string, AzField> GetNestedItemsOrDefault(string index)
+            => _nestedItems.GetValueOrDefault(index);
     }
 }

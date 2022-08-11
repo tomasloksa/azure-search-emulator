@@ -189,10 +189,7 @@
 							"    });\r",
 							"\r",
 							"    pm.test(\"Nested items should have correct format.\", function () {\r",
-							"        pm.expect(result.value[8].Items).to.not.equal(undefined);\r",
-							"    })\r",
-							"\r",
-							"    pm.test(\"Nested items should have correct format.\", function () {\r",
+							"        pm.expect(result.value[8].Items[0]).to.not.equal(undefined);\r",
 							"        pm.expect(result.value[8][\"Items.Name\"]).to.equal(undefined);\r",
 							"    })\r",
 							"});\r",
@@ -232,6 +229,74 @@
 					"port": "8000",
 					"path": [
 						"indexes('invoicingindex')",
+						"docs",
+						"search.post.search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search all documents in schema without nested fields",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Search should retrieve correct documents.\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var result = pm.response.json();\r",
+							"\r",
+							"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
+							"        pm.expect(result[\"@odata.count\"]).to.equal(9);\r",
+							"    });\r",
+							"\r",
+							"    pm.test(\"Property 'Id' should exist.\", function () {\r",
+							"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
+							"    });\r",
+							"\r",
+							"    pm.test(\"Nested items should have correct format.\", function () {\r",
+							"        pm.expect(result.value[8].Items[0]).to.not.equal(undefined);\r",
+							"        pm.expect(result.value[8][\"Items.Name\"]).to.equal(undefined);\r",
+							"    })\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"search\":\"*:*\", \"top\": 10}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8000/indexes('partners-index')/docs/search.post.search",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"indexes('partners-index')",
 						"docs",
 						"search.post.search"
 					]
@@ -555,7 +620,7 @@
 							"    var document = result[\"value\"][0];\r",
 							"\r",
 							"    pm.test(\"Document should have correct number of properties\", function () {\r",
-							"        pm.expect(Object.keys(document).length).to.equal(3);\r",
+							"        pm.expect(Object.keys(document).length).to.equal(5);\r",
 							"    });\r",
 							"});"
 						],
@@ -577,7 +642,129 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"search\":\"*:*\", \"top\": 10, \"filter\":\"(Id: '{{Temp.AzureSearch.UpdateId}}')\"}",
+					"raw": "{\"search\":\"*:*\", \"top\": 10, \"filter\":\"(Id: '{{Temp.AzureSearch.OverwriteId}}')\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.post.search",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"indexes('invoicingindex')",
+						"docs",
+						"search.post.search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete nested items",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"Temp.AzureSearch.DeleteItemsId\", 291);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Search should update document succesfully.\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"value\":\r\n    [\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\":\"{{Temp.AzureSearch.DeleteItemsId}}\",\r\n            \"Items\": []\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.index?api-version=2020-06-30",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"indexes('invoicingindex')",
+						"docs",
+						"search.index"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2020-06-30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check items deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Search should delete nested items.\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var result = pm.response.json();\r",
+							"\r",
+							"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
+							"        pm.expect(result[\"@odata.count\"]).to.equal(1);\r",
+							"    });\r",
+							"\r",
+							"    var document = result[\"value\"][0];\r",
+							"\r",
+							"    pm.test(\"Nested items should be empty\", function () {\r",
+							"        pm.expect(document.Items).to.be.empty;\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"search\":\"*:*\", \"top\": 10, \"filter\":\"(Id: '{{Temp.AzureSearch.DeleteItemsId}}')\"}",
 					"options": {
 						"raw": {
 							"language": "json"

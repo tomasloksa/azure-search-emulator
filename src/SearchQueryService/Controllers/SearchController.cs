@@ -105,17 +105,20 @@ namespace SearchQueryService.Controllers
 
         private void AddEmptyNestedFields(string indexName, SearchResponse searchResult)
         {
-            foreach (var retrievedDoc in searchResult.Response.Docs)
+            var nestedItemsSchema = _schemaMemory.GetNestedItemsOrDefault(indexName);
+            if (nestedItemsSchema != default)
             {
-                foreach (var nested in _schemaMemory.GetNestedItemsInIndex(indexName))
+                foreach (var retrievedDoc in searchResult.Response.Docs)
                 {
-                    if (!retrievedDoc.ContainsKey(nested.Key))
+                    foreach (var nested in nestedItemsSchema)
                     {
-                        retrievedDoc.Add(nested.Key, new List<object>());
+                        if (!retrievedDoc.ContainsKey(nested.Key))
+                        {
+                            retrievedDoc.Add(nested.Key, new List<object>());
+                        }
                     }
                 }
             }
-
         }
 
         private static void FixIdCapitalization(SearchResponse searchResult) {
@@ -249,7 +252,7 @@ namespace SearchQueryService.Controllers
         {
             var converted = new Dictionary<string, JsonElement>();
 
-            foreach (var item in Tools.JsonFlatten(json, _schemaMemory.GetNestedItemsInIndex(indexName)))
+            foreach (var item in Tools.JsonFlatten(json, _schemaMemory.GetNestedItemsOrDefault(indexName)))
             {
                 if (string.Equals(item.Key, "id", StringComparison.OrdinalIgnoreCase))
                 {
