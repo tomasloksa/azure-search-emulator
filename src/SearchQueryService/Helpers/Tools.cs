@@ -38,7 +38,8 @@ namespace SearchQueryService.Helpers
             {
                 if (kv.Value.ValueKind == JsonValueKind.Array)
                 {
-                    if (kv.Value.GetArrayLength() == 0 && nestedSchema.TryGetValue(kv.Key, out AzField root))
+                    var root = nestedSchema?.GetValueOrDefault(kv.Key);
+                    if (kv.Value.GetArrayLength() == 0 && root != default) 
                     {
                         foreach (var nestedItem in root.Fields)
                         {
