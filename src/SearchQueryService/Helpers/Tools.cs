@@ -127,16 +127,16 @@ namespace SearchQueryService.Helpers
 
                 if (property.Value is JsonElement val && val.ValueKind == JsonValueKind.Array)
                 {
-                    UnFlattenArray(val, parts[0], unflattened);
+                    UnFlattenArray(val, parts, unflattened);
                 }
             }
 
             return unflattened;
         }
 
-        private static void UnFlattenArray(JsonElement val, string key, Dictionary<string, object> unflattened)
+        private static void UnFlattenArray(JsonElement val, string[] keyParts, Dictionary<string, object> unflattened)
         {
-            var dest = unflattened[key] as List<Dictionary<string, object>>;
+            var dest = unflattened[keyParts[0]] as List<Dictionary<string, object>>;
             int i = 0;
             foreach (var value in val.EnumerateArray())
             {
@@ -144,7 +144,7 @@ namespace SearchQueryService.Helpers
                 {
                     dest.Add(new Dictionary<string, object>());
                 }
-                dest[i++].Add(key, value);
+                dest[i++].Add(keyParts[1], value);
             }
         }
     }
