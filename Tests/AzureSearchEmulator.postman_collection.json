@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "142712f5-495c-4008-a146-b8734220e1b4",
+		"_postman_id": "2b9114b4-108b-4b61-ae4e-b41c25224724",
 		"name": "AzureSearchEmulator",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "8467650"
@@ -249,17 +249,12 @@
 							"    var result = pm.response.json();\r",
 							"\r",
 							"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
-							"        pm.expect(result[\"@odata.count\"]).to.equal(9);\r",
+							"        pm.expect(result[\"@odata.count\"]).to.equal(3);\r",
 							"    });\r",
 							"\r",
 							"    pm.test(\"Property 'Id' should exist.\", function () {\r",
 							"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
 							"    });\r",
-							"\r",
-							"    pm.test(\"Nested items should have correct format.\", function () {\r",
-							"        pm.expect(result.value[8].Items[0]).to.not.equal(undefined);\r",
-							"        pm.expect(result.value[8][\"Items.Name\"]).to.equal(undefined);\r",
-							"    })\r",
 							"});\r",
 							""
 						],

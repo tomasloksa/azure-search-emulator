@@ -34,53 +34,78 @@ namespace SearchQueryService.Helpers
             Dictionary<string, AzField> nestedSchema)
         {
             var flattened = new Dictionary<string, List<JsonElement>>();
-            foreach (var kv in json)
+            foreach (var rootField in json)
             {
-                if (kv.Value.ValueKind == JsonValueKind.Array)
+                if (rootField.Value.ValueKind == JsonValueKind.Array)
                 {
-                    var root = nestedSchema?.GetValueOrDefault(kv.Key);
-                    if (kv.Value.GetArrayLength() == 0 && root != default) 
-                    {
-                        foreach (var nestedItem in root.Fields)
-                        {
-                            flattened.Add(kv.Key + "." + nestedItem.Name, new List<JsonElement>());
-                        }
-
-                        continue;
-                    }
-
-                    foreach (var arrayItem in kv.Value.EnumerateArray())
-                    {
-                        if (arrayItem.ValueKind == JsonValueKind.Object)
-                        {
-                            foreach (var property in arrayItem.EnumerateObject())
-                            {
-                                string propName = kv.Key + "." + property.Name;
-                                if (flattened.ContainsKey(propName))
-                                {
-                                    flattened[propName].Add(property.Value);
-                                }
-                                else
-                                {
-                                    flattened.Add(propName, new List<JsonElement>() { property.Value });
-                                }
-                            }
-                        }
-                        else
-                        {
-                            flattened.Add(kv.Key, kv.Value.Deserialize<List<JsonElement>>());
-                            break;
-                        }
-                    }
+                    FlattenArray(rootField, flattened, nestedSchema);
                 }
                 else
                 {
-                    flattened.Add(kv.Key, new List<JsonElement>() { kv.Value });
+                    flattened.Add(rootField.Key, new List<JsonElement>() { rootField.Value });
                 }
             }
 
             return flattened;
         }
+
+        private static void FlattenArray(
+            KeyValuePair<string, JsonElement> rootField,
+            Dictionary<string, List<JsonElement>> flattened,
+            Dictionary<string, AzField> nestedSchema)
+        {
+            AddEmptyNestedFieldValues(rootField, flattened, nestedSchema);
+
+            foreach (var arrayItem in rootField.Value.EnumerateArray())
+            {
+                if (arrayItem.ValueKind == JsonValueKind.Object)
+                {
+                    FlattenNestedObject(rootField.Key, arrayItem, flattened);
+                }
+                else
+                {
+                    flattened.Add(rootField.Key, rootField.Value.Deserialize<List<JsonElement>>());
+                    return;
+                }
+            }
+        }
+
+        private static void AddEmptyNestedFieldValues(
+            KeyValuePair<string, JsonElement> kv,
+            Dictionary<string, List<JsonElement>> flattened,
+            Dictionary<string, AzField> nestedSchema)
+        {
+            var root = nestedSchema?.GetValueOrDefault(kv.Key);
+            if (kv.Value.GetArrayLength() == 0 && root != default)
+            {
+                foreach (var nestedItem in root.Fields)
+                {
+                    flattened.Add(kv.Key + "." + nestedItem.Name, new List<JsonElement>());
+                }
+
+                return;
+            }
+        }
+
+        private static void FlattenNestedObject(
+            string rootKey,
+            JsonElement arrayItem,
+            Dictionary<string, List<JsonElement>> flattened)
+        {
+            foreach (var property in arrayItem.EnumerateObject())
+            {
+                string propName = rootKey + "." + property.Name;
+                if (flattened.ContainsKey(propName))
+                {
+                    flattened[propName].Add(property.Value);
+                }
+                else
+                {
+                    flattened.Add(propName, new List<JsonElement>() { property.Value });
+                }
+            }
+        }
+
 
         public static Dictionary<string, object> JsonUnflatten(Dictionary<string, object> jsonDoc)
         {
