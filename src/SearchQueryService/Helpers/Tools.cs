@@ -106,7 +106,6 @@ namespace SearchQueryService.Helpers
             }
         }
 
-
         public static Dictionary<string, object> JsonUnflatten(Dictionary<string, object> jsonDoc)
         {
             var unflattened = new Dictionary<string, object>();
@@ -128,20 +127,25 @@ namespace SearchQueryService.Helpers
 
                 if (property.Value is JsonElement val && val.ValueKind == JsonValueKind.Array)
                 {
-                    var dest = unflattened[parts[0]] as List<Dictionary<string, object>>;
-                    int i = 0;
-                    foreach (var value in val.EnumerateArray())
-                    {
-                        if (i >= dest.Count)
-                        {
-                            dest.Add(new Dictionary<string, object>());
-                        }
-                        dest[i++].Add(parts[1], value);
-                    }
+                    UnFlattenArray(val, parts[0], unflattened);
                 }
             }
 
             return unflattened;
+        }
+
+        private static void UnFlattenArray(JsonElement val, string key, Dictionary<string, object> unflattened)
+        {
+            var dest = unflattened[key] as List<Dictionary<string, object>>;
+            int i = 0;
+            foreach (var value in val.EnumerateArray())
+            {
+                if (i >= dest.Count)
+                {
+                    dest.Add(new Dictionary<string, object>());
+                }
+                dest[i++].Add(key, value);
+            }
         }
     }
 }
