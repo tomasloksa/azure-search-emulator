@@ -24,9 +24,13 @@ namespace SearchQueryService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
             services.AddTransient<SolrService>();
             services.AddTransient<IndexesProcessor>();
+
             services.AddSingleton<ISearchQueryBuilder, SolrSearchQueryBuilder>();
+            services.AddSingleton<SchemaMemory>();
+
             services.AddHttpClient();
             services.AddHttpClient<SolrService>(httpClient =>
             {

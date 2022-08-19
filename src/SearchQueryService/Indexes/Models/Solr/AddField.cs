@@ -32,7 +32,8 @@ namespace SearchQueryService.Indexes.Models.Solr
         /// <summary>
         /// Whether the field can contain multiple values.
         /// </summary>
-        public bool MultiValued { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? MultiValued { get; set; }
 
         /// <summary>
         /// Whether search should return value even if stored=false. All basic field types are docValues=true by default.
@@ -40,15 +41,24 @@ namespace SearchQueryService.Indexes.Models.Solr
         public bool UseDocValuesAsStored { get; set; }
 
         public static AddField Create(string name, AzField field)
-            => new()
+        {
+            bool isNested = name.Contains('.');
+            var newField = new AddField()
             {
                 Name = name,
-                Type = Tools.GetSolrType(field.Type),
+                Type = Tools.GetSolrType(field.Type, isNested),
                 Stored = field.Retrievable,
                 Searchable = field.Searchable,
                 Indexed = field.Searchable || field.Filterable,
-                MultiValued = name.Contains("."),
                 UseDocValuesAsStored = false
             };
+
+            if (newField.Type == "text_general" && !isNested)
+            {
+                newField.MultiValued = false;
+            }
+
+            return newField;
+        }
     }
 }

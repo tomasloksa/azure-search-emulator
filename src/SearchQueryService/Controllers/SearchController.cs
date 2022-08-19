@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using SearchQueryService.Services;
 using SearchQueryService.Documents.Models.Azure;
 using SearchQueryService.Documents.Models.Solr;
+using SearchQueryService.Helpers;
+using SearchQueryService.Indexes;
 using SearchQueryService.Indexes.Models.Solr;
 
 namespace SearchQueryService.Controllers
@@ -26,13 +28,16 @@ namespace SearchQueryService.Controllers
 
         private readonly ILogger _logger;
         private readonly SolrService _solrService;
+        private readonly SchemaMemory _schemaMemory;
 
         public SearchController(
             ILogger<SearchController> logger,
+            SchemaMemory schemaMemory,
             SolrService solrService)
         {
             _logger = logger;
             _solrService = solrService;
+            _schemaMemory = schemaMemory;
         }
 
         [HttpGet]
@@ -90,9 +95,30 @@ namespace SearchQueryService.Controllers
         {
             SearchResponse searchResult = await _solrService.SearchAsync(indexName, searchParams);
 
+            searchResult.Response.Docs = searchResult.Response.Docs.Select(Tools.JsonUnflatten);
+
             FixIdCapitalization(searchResult);
+            AddEmptyNestedFields(indexName, searchResult);
 
             return new AzSearchResponse(searchResult.Response);
+        }
+
+        private void AddEmptyNestedFields(string indexName, SearchResponse searchResult)
+        {
+            var nestedItemsSchema = _schemaMemory.GetNestedItemsOrDefault(indexName);
+            if (nestedItemsSchema != default)
+            {
+                foreach (var retrievedDoc in searchResult.Response.Docs)
+                {
+                    foreach (var nested in nestedItemsSchema)
+                    {
+                        if (!retrievedDoc.ContainsKey(nested.Key))
+                        {
+                            retrievedDoc.Add(nested.Key, new List<object>());
+                        }
+                    }
+                }
+            }
         }
 
         private static void FixIdCapitalization(SearchResponse searchResult) {
@@ -105,6 +131,8 @@ namespace SearchQueryService.Controllers
                     retrievedDoc.Remove("id");
                 }
             }
+
+            searchResult.Response.Docs = docs;
         }
 
         private static object CreateAzSearchResponse(AzPost newDocs)
@@ -170,7 +198,7 @@ namespace SearchQueryService.Controllers
             {
                 try
                 {
-                    var transformed = addOrUpdate.Value.Select(doc => ConvertAzDocsForAddOrUpdate(doc));
+                    var transformed = addOrUpdate.Value.Select(doc => ConvertAzDocsForAddOrUpdate(doc, indexName));
                     await _solrService.AddOrUpdateDocumentsAsync(transformed, indexName);
                 }
                 catch (HttpRequestException exception)
@@ -220,11 +248,11 @@ namespace SearchQueryService.Controllers
             return parsedDocs;
         }
 
-        private Dictionary<string, JsonElement> ConvertAzDocsForAddOrUpdate(Dictionary<string, JsonElement> json)
+        private Dictionary<string, JsonElement> ConvertAzDocsForAddOrUpdate(Dictionary<string, JsonElement> json, string indexName)
         {
             var converted = new Dictionary<string, JsonElement>();
 
-            foreach (var item in Flatten(json))
+            foreach (var item in Tools.JsonFlatten(json, _schemaMemory.GetNestedItemsOrDefault(indexName)))
             {
                 if (string.Equals(item.Key, "id", StringComparison.OrdinalIgnoreCase))
                 {
@@ -241,38 +269,6 @@ namespace SearchQueryService.Controllers
             }
 
             return converted;
-        }
-
-        private static Dictionary<string, List<JsonElement>> Flatten(Dictionary<string, JsonElement> json)
-        {
-            var flattened = new Dictionary<string, List<JsonElement>>();
-            foreach (var kv in json)
-            {
-                if (kv.Value.ValueKind == JsonValueKind.Array)
-                {
-                    foreach (var arrayItem in kv.Value.EnumerateArray())
-                    {
-                        foreach (var property in arrayItem.EnumerateObject())
-                        {
-                            string propName = kv.Key + "." + property.Name;
-                            if (flattened.ContainsKey(propName))
-                            {
-                                flattened[propName].Add(property.Value);
-                            }
-                            else
-                            {
-                                flattened.Add(propName, new List<JsonElement>() { property.Value });
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    flattened.Add(kv.Key, new List<JsonElement>() { kv.Value });
-                }
-            }
-
-            return flattened;
         }
 
         private List<Dictionary<string, JsonElement>> ConvertAzDocsForAdd(AzPost azDocs)
