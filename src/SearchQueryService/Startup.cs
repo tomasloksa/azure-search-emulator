@@ -36,7 +36,10 @@ namespace SearchQueryService
             {
                 httpClient.BaseAddress = Tools.GetSearchUrl();
             }).AddPolicyHandler(GetRetryPolicy());
-            services.AddHealthChecks();
+            services
+                .AddHealthChecks()
+                .AddCheck<SolrHealthCheck>("Solr");
+
             services.AddHttpLogging(options =>
             {
                 options.LoggingFields = HttpLoggingFields.ResponsePropertiesAndHeaders |
