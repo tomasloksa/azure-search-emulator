@@ -88,10 +88,24 @@ namespace SearchQueryService.Services
             return schemaResponse!.Fields.Count;
         }
 
+        public async Task<bool> IsHealthy()
+        {
+            SolrStatus result = await _httpClient.GetFromJsonAsync<SolrStatus>("admin/cores?action=STATUS");
+
+            return result.InitFailures.Count == 0;
+        }
+
         private static Url GetSchemaUrl(string indexName, string segment = "")
             => Url.Combine(indexName, "schema", segment);
 
         public async Task<SearchResponse> SearchAsync(string indexName, AzSearchParams searchParams)
             => await _httpClient.GetFromJsonAsync<SearchResponse>(_searchQueryBuilder.Build(indexName, searchParams));
+
+        public class SolrStatus
+        {
+            public Dictionary<string, object> Status { get; set; }
+
+            public Dictionary<string, object> InitFailures { get; set; }
+        }
     }
 }
