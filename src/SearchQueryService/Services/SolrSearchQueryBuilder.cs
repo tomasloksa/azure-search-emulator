@@ -11,10 +11,10 @@ namespace SearchQueryService.Services
     {
         private static readonly Dictionary<string, string> _replacements = new()
         {
-            { @"(\w+)\s+ge\s+([^\s]+)", "$1:[$2 TO *]" },
-            { @"(\w+)\s+gt\s+([^\s]+)", "$1:{$2 TO *}" },
-            { @"(\w+)\s+le\s+([^\s]+)", "$1:[* TO $2]" },
-            { @"(\w+)\s+lt\s+([^\s]+)", "$1:{* TO $2}" },
+            { @"(\w+)\s+ge\s+([^\s)]+)", "$1:[$2 TO *]" },
+            { @"(\w+)\s+gt\s+([^\s)]+)", "$1:{$2 TO *}" },
+            { @"(\w+)\s+le\s+([^\s)]+)", "$1:[* TO $2]" },
+            { @"(\w+)\s+lt\s+([^\s)]+)", "$1:{* TO $2}" },
             { @"\(not\s(\w+)\)", "($1: false)" },
             { @"\((\w+)\)", "($1: true)" },
             { @"(\w+)\s+ne", "NOT $1:" },
