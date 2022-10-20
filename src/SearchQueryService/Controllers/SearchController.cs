@@ -93,6 +93,7 @@ namespace SearchQueryService.Controllers
 
         private async Task<AzSearchResponse> Search(string indexName, AzSearchParams searchParams)
         {
+            await Task.Delay(5000, HttpContext.RequestAborted);
             SearchResponse searchResult = await _solrService.SearchAsync(indexName, searchParams);
 
             searchResult.Response.Docs = searchResult.Response.Docs.Select(Tools.JsonUnflatten);
