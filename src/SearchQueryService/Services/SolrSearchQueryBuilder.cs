@@ -18,7 +18,8 @@ namespace SearchQueryService.Services
             { @"\(not\s(\w+)\)", "($1: false)" },
             { @"\((\w+)\)", "($1: true)" },
             { @"(\w+)\s+ne", "NOT $1:" },
-            { @"\(Id:\s?'(\d*)'\)", "(id: $1)" }
+            { @"\(Id:\s?'(\d*)'\)", "(id: $1)" },
+            { @"(\w+:)\s?''", "-$1['' TO * ]" }
         };
 
         public string Build(string indexName, AzSearchParams searchParams)
