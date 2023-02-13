@@ -99,10 +99,7 @@ namespace SearchQueryService.Services
             => Url.Combine(indexName, "schema", segment);
 
         public async Task<SearchResponse> SearchAsync(string indexName, AzSearchParams searchParams)
-        {
-            var query = _searchQueryBuilder.Build(indexName, searchParams);
-            return await _httpClient.GetFromJsonAsync<SearchResponse>(query);
-        }
+            => await _httpClient.GetFromJsonAsync<SearchResponse>(_searchQueryBuilder.Build(indexName, searchParams));
 
         public class SolrStatus
         {
