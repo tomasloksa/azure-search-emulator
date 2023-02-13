@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+  solr:
+    image: solr:8
+    container_name: SolrService
+    ports:
+     - "8983:8983"
+    volumes:
+     - data:/var/solr
+    entrypoint:
+     - "bash"
+     - "-c"
+     - "precreate-core catalog-internal-index; precreate-core invoicingindex; precreate-core partners-index;
+        precreate-core transactions-index; exec solr -f"
+
+  searchqueryservice:
+    image: ${DOCKER_REGISTRY-}searchqueryservice
+    build:
+      context: ../src/SearchQueryService
+    ports:
+      - "8000:443"
+      - "8001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/srv/cert/testcert.pfx
+      #- Logging__Console__LogLevel__Microsoft=Information
+    volumes:
+      - "./indexes:/srv/data"
+    restart: on-failure
+    depends_on:
+      - solr
+
+volumes:
+  data:

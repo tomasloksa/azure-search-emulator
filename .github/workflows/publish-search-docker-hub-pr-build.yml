@@ -12,6 +12,26 @@ jobs:
       - name: Check Out Repo
         uses: actions/checkout@v2
 
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+      - name: Login to Postman CLI
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+
+      - name: Start Containers
+        run:
+          docker compose -f demo/docker-compose-postman.yml up
+
+      - name: Run API test
+        run: |
+          postman collection run tests/AzureSearchEmulator.postman_collection.json
+
+      - name: Stop Containers
+        if: always()
+        run: |
+          docker compose -f demo/docker-compose-dev-mode.yml down
+
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
