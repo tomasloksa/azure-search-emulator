@@ -29,7 +29,7 @@ jobs:
 
       - name: Run API test
         run: |
-          postman collection run Tests/AzureSearchEmulator.postman_collection.json
+          postman collection run Tests/AzureSearchEmulator.postman_collection.json --insecure
 
       - name: Stop Containers
         if: always()
