@@ -30,6 +30,8 @@ jobs:
       - name: Stop Containers
         if: always()
         run: |
+          ls -la
+          pwd
           docker compose -f demo/docker-compose-postman.yml down
 
       - name: Login to Docker Hub
