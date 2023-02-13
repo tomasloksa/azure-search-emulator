@@ -7,297 +7,558 @@
 	},
 	"item": [
 		{
-			"name": "Index created correctly",
-			"event": [
+			"name": "Seed",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Index should be created correctly.\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"\r",
-							"    var schema = pm.response.json();\r",
-							"\r",
-							"    pm.test(\"Schema should have correct number of fields.\", function () {\r",
-							"        pm.expect(schema.fields.length).to.equal(106);\r",
-							"    });\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8983/solr/invoicingindex/schema/fields",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8983",
-					"path": [
-						"solr",
-						"invoicingindex",
-						"schema",
-						"fields"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Post new data",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n   \"value\":\r\n    [\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"InvoiceType\":1,\r\n            \"Iban\":\"ES8070805074662500710460\",\r\n            \"Swift\":\"Original\",\r\n            \"VariableSymbol\":\"Original\",\r\n            \"DeliveryDateStringSk\":\"03.11.2021\",\r\n            \"DeliveryDate\":\"2021-11-03T10:22:37.4500000\\u002B00:00\",\r\n            \"DueDateStringSk\":\"02.11.2021\",\r\n            \"DueDate\":\"2021-11-02T23:51:55.1800000\\u002B00:00\",\r\n            \"PaymentType\":\"Prevodom\",\r\n            \"DeliveryType\":\"Po\\u0161tou\",\r\n            \"OrderNumber\":\"SAS\",\r\n            \"PaymentStatus\":1,\r\n            \"OriginalSumForPayment\":0.43278260,\r\n            \"SumForPayment\":\"0.43278260\",\r\n            \"OriginalSumOfPayments\":0.87296250,\r\n            \"SumOfPayments\":\"0.87296250\",\r\n            \"CountOfPayments\":-140151413,\r\n            \"SentStatus\":0,\r\n            \"ReminderStatus\":1,\r\n            \"ReminderCount\":-1436631189,\r\n            \"IsDeleted\":false,\r\n            \"DocumentNumber\":\"20200477\",\r\n            \"NumberingSequence\":\"Locks\",\r\n            \"TotalPrice\":\"94.93255107\",\r\n            \"OriginalTotalPrice\":94.93255107,\r\n            \"TotalPriceInclVat\":\"0.96511391\",\r\n            \"TotalPriceInclVatNum\":0.96511391,\r\n            \"OriginalTotalPriceInclVat\":0.96511391,\r\n            \"SupplierRegistrationId\":\"361120394\",\r\n            \"SupplierTaxId\":\"442790031\",\r\n            \"SupplierVatId\":\"SK557842717\",\r\n            \"SupplierPhoneNumber\":\"080 7983 8644\",\r\n            \"SupplierEmail\":\"Zofia.Podhradsky97@zoznam.sk\",\r\n            \"SupplierWeb\":\"zdenko.org\",\r\n            \"SupplierBusinessName\":\"Heretik a.s.\",\r\n            \"SupplierContactName\":\"Imrich \\u0160vehla\",\r\n            \"SupplierStreet\":\"T\\u00E1borsk\\u00E1\",\r\n            \"SupplierPostCode\":\"610 01\",\r\n            \"SupplierCity\":\"Bratislava III\",\r\n            \"SupplierCountry\":\"Sud\\u00E1nska republika\",\r\n            \"SupplierPostalAddressBusinessName\":\"Z\\u00E1borsk\\u00E1, Jane\\u010Dek and Sklenka\",\r\n            \"SupplierPostalAddressContactName\":\"Nikola Haldov\\u00E1\",\r\n            \"SupplierPostalAddressStreet\":\"Partiz\\u00E1nska\",\r\n            \"SupplierPostalAddressPostCode\":\"33 519\",\r\n            \"SupplierPostalAddressCity\":\"Svidn\\u00EDk\",\r\n            \"SupplierPostalAddressCountry\":\"Sv. Vincent a Grenad\\u00EDny\",\r\n            \"PurchaserId\":0,\r\n            \"PurchaserRegistrationId\":\"679316249\",\r\n            \"PurchaserTaxId\":\"390075813\",\r\n            \"PurchaserVatId\":\"SK572037951\",\r\n            \"PurchaserPhoneNumber\":\"0945 140 254\",\r\n            \"PurchaserEmail\":\"Demeter.Paska@azet.sk\",\r\n            \"PurchaserWeb\":\"valent\\u00EDn.net\",\r\n            \"PurchaserBusinessName\":\"Fabi\\u00E1nov\\u00E1 - Bahna\",\r\n            \"PurchaserBusinessNameNormalized\":\"fabianova - bahna\",\r\n            \"PurchaserContactName\":\"J\\u00E1n Marcinko\",\r\n            \"PurchaserStreet\":\"Mal\\u00E1\",\r\n            \"PurchaserPostCode\":\"904 16\",\r\n            \"PurchaserCity\":\"Nov\\u00E9 Mesto n.V\\u00E1hom\",\r\n            \"PurchaserCountry\":\"Alb\\u00E1nska republika\",\r\n            \"PurchaserPostalAddressBusinessName\":\"Nitra - Hric\",\r\n            \"PurchaserPostalAddressContactName\":\"Vanesa Fajnorov\\u00E1\",\r\n            \"PurchaserPostalAddressStreet\":\"Elektr\\u00E1rensk\\u00E1\",\r\n            \"PurchaserPostalAddressPostCode\":\"10 191\",\r\n            \"PurchaserPostalAddressCity\":\"Snina\",\r\n            \"PurchaserPostalAddressCountry\":\"Arm\\u00E9nska republika\",\r\n            \"IssueDateStringSk\":\"02.11.2021\",\r\n            \"IssueDate\":\"2021-11-02T20:39:16.6700000\\u002B00:00\",\r\n            \"OpeningText\":\"Est provident eos rerum.\",\r\n            \"ClosingText\":\"Nesciunt hic ipsam tempora rem non qui ad sint.\",\r\n            \"RegistrationCourtText\":\"Quibusdam debitis sit ipsam provident autem facere.\",\r\n            \"Culture\":\"sk\",\r\n            \"LockType\":2,\r\n            \"Items\":[\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":1,\r\n                \"Ordinal\":-1007933036,\r\n                \"Name\":\"Tasty Wooden Tuna\",\r\n                \"Amount\":\"654.89000000\",\r\n                \"MeasureUnit\":\"mobile\",\r\n                \"UnitPrice\":\"701.79667542\",\r\n                \"TotalPrice\":\"160.90718571\",\r\n                \"Description\":\"Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \\u0026 sandals\",\r\n                \"ItemCode\":\"96346648\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":2,\r\n                \"Ordinal\":1560119669,\r\n                \"Name\":\"Tasty Steel Chips\",\r\n                \"Amount\":\"214.80000000\",\r\n                \"MeasureUnit\":\"Incredible\",\r\n                \"UnitPrice\":\"306.49572904\",\r\n                \"TotalPrice\":\"796.14428793\",\r\n                \"Description\":\"Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support\",\r\n                \"ItemCode\":\"06887001\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":3,\r\n                \"Ordinal\":1972087762,\r\n                \"Name\":\"Sleek Cotton Towels\",\r\n                \"Amount\":\"439.16000000\",\r\n                \"MeasureUnit\":\"override\",\r\n                \"UnitPrice\":\"851.11425763\",\r\n                \"TotalPrice\":\"984.14602874\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"89186909\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":4,\r\n                \"Ordinal\":-1285085088,\r\n                \"Name\":\"Small Rubber Bike\",\r\n                \"Amount\":\"585.54000000\",\r\n                \"MeasureUnit\":\"Guyana Dollar\",\r\n                \"UnitPrice\":\"534.89953164\",\r\n                \"TotalPrice\":\"874.86049527\",\r\n                \"Description\":\"Carbonite web goalkeeper gloves are ergonomically designed to give easy fit\",\r\n                \"ItemCode\":\"33807980\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":5,\r\n                \"Ordinal\":460660821,\r\n                \"Name\":\"Refined Plastic Gloves\",\r\n                \"Amount\":\"324.11000000\",\r\n                \"MeasureUnit\":\"orchestrate\",\r\n                \"UnitPrice\":\"951.68983654\",\r\n                \"TotalPrice\":\"220.30622010\",\r\n                \"Description\":\"The slim \\u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality\",\r\n                \"ItemCode\":\"99390419\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":6,\r\n                \"Ordinal\":1839251070,\r\n                \"Name\":\"Fantastic Granite Tuna\",\r\n                \"Amount\":\"333.77000000\",\r\n                \"MeasureUnit\":\"Persistent\",\r\n                \"UnitPrice\":\"177.39548216\",\r\n                \"TotalPrice\":\"733.80995901\",\r\n                \"Description\":\"The slim \\u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality\",\r\n                \"ItemCode\":\"05010141\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":7,\r\n                \"Ordinal\":232735062,\r\n                \"Name\":\"Sleek Plastic Computer\",\r\n                \"Amount\":\"472.48000000\",\r\n                \"MeasureUnit\":\"Toys\",\r\n                \"UnitPrice\":\"173.10612097\",\r\n                \"TotalPrice\":\"881.36450754\",\r\n                \"Description\":\"The Football Is Good For Training And Recreational Purposes\",\r\n                \"ItemCode\":\"47113466\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":8,\r\n                \"Ordinal\":-708997806,\r\n                \"Name\":\"Refined Cotton Cheese\",\r\n                \"Amount\":\"578.46000000\",\r\n                \"MeasureUnit\":\"Tools\",\r\n                \"UnitPrice\":\"213.75617115\",\r\n                \"TotalPrice\":\"960.09201088\",\r\n                \"Description\":\"The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J\",\r\n                \"ItemCode\":\"29217496\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":9,\r\n                \"Ordinal\":1222022279,\r\n                \"Name\":\"Handmade Concrete Computer\",\r\n                \"Amount\":\"914.23000000\",\r\n                \"MeasureUnit\":\"Handmade\",\r\n                \"UnitPrice\":\"690.07056192\",\r\n                \"TotalPrice\":\"945.18364823\",\r\n                \"Description\":\"The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J\",\r\n                \"ItemCode\":\"60981592\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":10,\r\n                \"Ordinal\":123005728,\r\n                \"Name\":\"Practical Concrete Mouse\",\r\n                \"Amount\":\"256.23000000\",\r\n                \"MeasureUnit\":\"Sleek Soft Salad\",\r\n                \"UnitPrice\":\"313.48092309\",\r\n                \"TotalPrice\":\"754.33904899\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"38679148\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":11,\r\n                \"Ordinal\":-1608929900,\r\n                \"Name\":\"Gorgeous Soft Bike\",\r\n                \"Amount\":\"927.99000000\",\r\n                \"MeasureUnit\":\"exuding\",\r\n                \"UnitPrice\":\"831.13520351\",\r\n                \"TotalPrice\":\"908.10908745\",\r\n                \"Description\":\"Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \\u0026 sandals\",\r\n                \"ItemCode\":\"80515036\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":12,\r\n                \"Ordinal\":257551032,\r\n                \"Name\":\"Gorgeous Cotton Pizza\",\r\n                \"Amount\":\"740.22000000\",\r\n                \"MeasureUnit\":\"strategize\",\r\n                \"UnitPrice\":\"205.81355607\",\r\n                \"TotalPrice\":\"680.03347128\",\r\n                \"Description\":\"Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \\u0026 sandals\",\r\n                \"ItemCode\":\"33066837\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":13,\r\n                \"Ordinal\":226466477,\r\n                \"Name\":\"Small Metal Cheese\",\r\n                \"Amount\":\"158.24000000\",\r\n                \"MeasureUnit\":\"Bedfordshire\",\r\n                \"UnitPrice\":\"683.12394185\",\r\n                \"TotalPrice\":\"324.53990882\",\r\n                \"Description\":\"The Football Is Good For Training And Recreational Purposes\",\r\n                \"ItemCode\":\"18969634\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":14,\r\n                \"Ordinal\":-222449384,\r\n                \"Name\":\"Practical Granite Gloves\",\r\n                \"Amount\":\"776.42000000\",\r\n                \"MeasureUnit\":\"Auto Loan Account\",\r\n                \"UnitPrice\":\"692.16775274\",\r\n                \"TotalPrice\":\"257.47363840\",\r\n                \"Description\":\"Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support\",\r\n                \"ItemCode\":\"13017682\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":15,\r\n                \"Ordinal\":-1658844277,\r\n                \"Name\":\"Ergonomic Frozen Keyboard\",\r\n                \"Amount\":\"887.84000000\",\r\n                \"MeasureUnit\":\"impactful\",\r\n                \"UnitPrice\":\"946.43088613\",\r\n                \"TotalPrice\":\"916.60324107\",\r\n                \"Description\":\"Carbonite web goalkeeper gloves are ergonomically designed to give easy fit\",\r\n                \"ItemCode\":\"34461976\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":16,\r\n                \"Ordinal\":-1893774517,\r\n                \"Name\":\"Awesome Metal Computer\",\r\n                \"Amount\":\"900.76000000\",\r\n                \"MeasureUnit\":\"Auto Loan Account\",\r\n                \"UnitPrice\":\"668.79060197\",\r\n                \"TotalPrice\":\"457.40981886\",\r\n                \"Description\":\"The Football Is Good For Training And Recreational Purposes\",\r\n                \"ItemCode\":\"89214190\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":17,\r\n                \"Ordinal\":616749087,\r\n                \"Name\":\"Licensed Plastic Tuna\",\r\n                \"Amount\":\"529.04000000\",\r\n                \"MeasureUnit\":\"motivating\",\r\n                \"UnitPrice\":\"277.82191814\",\r\n                \"TotalPrice\":\"827.37221653\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"62153386\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":18,\r\n                \"Ordinal\":-177323629,\r\n                \"Name\":\"Ergonomic Concrete Bike\",\r\n                \"Amount\":\"804.00000000\",\r\n                \"MeasureUnit\":\"Expressway\",\r\n                \"UnitPrice\":\"645.46338685\",\r\n                \"TotalPrice\":\"490.04268017\",\r\n                \"Description\":\"Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support\",\r\n                \"ItemCode\":\"86568203\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":19,\r\n                \"Ordinal\":1352438341,\r\n                \"Name\":\"Licensed Plastic Shirt\",\r\n                \"Amount\":\"454.95000000\",\r\n                \"MeasureUnit\":\"ivory\",\r\n                \"UnitPrice\":\"613.15400135\",\r\n                \"TotalPrice\":\"190.79242609\",\r\n                \"Description\":\"Boston\\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles\",\r\n                \"ItemCode\":\"85523890\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":20,\r\n                \"Ordinal\":281969059,\r\n                \"Name\":\"Licensed Fresh Ball\",\r\n                \"Amount\":\"977.78000000\",\r\n                \"MeasureUnit\":\"neural\",\r\n                \"UnitPrice\":\"167.40022933\",\r\n                \"TotalPrice\":\"433.12791522\",\r\n                \"Description\":\"The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive\",\r\n                \"ItemCode\":\"56437874\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":21,\r\n                \"Ordinal\":-598469039,\r\n                \"Name\":\"Generic Metal Pizza\",\r\n                \"Amount\":\"43.39000000\",\r\n                \"MeasureUnit\":\"Iranian Rial\",\r\n                \"UnitPrice\":\"163.46085870\",\r\n                \"TotalPrice\":\"405.71089852\",\r\n                \"Description\":\"The Football Is Good For Training And Recreational Purposes\",\r\n                \"ItemCode\":\"61819283\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":22,\r\n                \"Ordinal\":1587578444,\r\n                \"Name\":\"Small Wooden Keyboard\",\r\n                \"Amount\":\"715.04000000\",\r\n                \"MeasureUnit\":\"payment\",\r\n                \"UnitPrice\":\"41.26589002\",\r\n                \"TotalPrice\":\"1.26769486\",\r\n                \"Description\":\"Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support\",\r\n                \"ItemCode\":\"60103949\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":23,\r\n                \"Ordinal\":-1033950723,\r\n                \"Name\":\"Generic Cotton Car\",\r\n                \"Amount\":\"624.05000000\",\r\n                \"MeasureUnit\":\"Concrete\",\r\n                \"UnitPrice\":\"480.21242883\",\r\n                \"TotalPrice\":\"213.11386777\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"25473766\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":24,\r\n                \"Ordinal\":463178317,\r\n                \"Name\":\"Practical Concrete Shoes\",\r\n                \"Amount\":\"365.34000000\",\r\n                \"MeasureUnit\":\"backing up\",\r\n                \"UnitPrice\":\"418.18162864\",\r\n                \"TotalPrice\":\"788.04944632\",\r\n                \"Description\":\"The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive\",\r\n                \"ItemCode\":\"79712095\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":25,\r\n                \"Ordinal\":295849995,\r\n                \"Name\":\"Incredible Concrete Car\",\r\n                \"Amount\":\"287.69000000\",\r\n                \"MeasureUnit\":\"Tennessee\",\r\n                \"UnitPrice\":\"614.78828481\",\r\n                \"TotalPrice\":\"110.60400172\",\r\n                \"Description\":\"New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart\",\r\n                \"ItemCode\":\"54647619\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":26,\r\n                \"Ordinal\":-53214841,\r\n                \"Name\":\"Incredible Plastic Computer\",\r\n                \"Amount\":\"78.57000000\",\r\n                \"MeasureUnit\":\"THX\",\r\n                \"UnitPrice\":\"493.10631421\",\r\n                \"TotalPrice\":\"619.54860790\",\r\n                \"Description\":\"The slim \\u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality\",\r\n                \"ItemCode\":\"72978528\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":27,\r\n                \"Ordinal\":382560855,\r\n                \"Name\":\"Refined Frozen Computer\",\r\n                \"Amount\":\"856.76000000\",\r\n                \"MeasureUnit\":\"dynamic\",\r\n                \"UnitPrice\":\"760.27606230\",\r\n                \"TotalPrice\":\"283.00011357\",\r\n                \"Description\":\"The slim \\u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality\",\r\n                \"ItemCode\":\"57061764\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":28,\r\n                \"Ordinal\":1968802352,\r\n                \"Name\":\"Unbranded Steel Shirt\",\r\n                \"Amount\":\"219.93000000\",\r\n                \"MeasureUnit\":\"Analyst\",\r\n                \"UnitPrice\":\"285.77702598\",\r\n                \"TotalPrice\":\"593.73145485\",\r\n                \"Description\":\"New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart\",\r\n                \"ItemCode\":\"09726789\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":29,\r\n                \"Ordinal\":85251970,\r\n                \"Name\":\"Incredible Rubber Soap\",\r\n                \"Amount\":\"429.62000000\",\r\n                \"MeasureUnit\":\"quantifying\",\r\n                \"UnitPrice\":\"236.40006186\",\r\n                \"TotalPrice\":\"502.00056587\",\r\n                \"Description\":\"The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive\",\r\n                \"ItemCode\":\"35976318\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":30,\r\n                \"Ordinal\":517605162,\r\n                \"Name\":\"Refined Steel Table\",\r\n                \"Amount\":\"809.53000000\",\r\n                \"MeasureUnit\":\"bluetooth\",\r\n                \"UnitPrice\":\"513.48755253\",\r\n                \"TotalPrice\":\"838.73366370\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"29285037\"\r\n                }\r\n            ],\r\n            \"CreatedTimestamp\":\"2021-11-03T13:02:06.9400000\\u002B00:00\",\r\n            \"DiscountTotalPrice\":\"0.68046940\",\r\n            \"DiscountTotalPriceInclVat\":\"0.02403450\",\r\n            \"OriginalDiscountTotalPrice\":0.68046940,\r\n            \"OriginalDiscountTotalPriceInclVat\":0.02403450,\r\n            \"Note\":\"Animi qui magnam consequatur incidunt quo corporis tenetur.\",\r\n            \"Id\":\"1\",\r\n            \"OriginalId\":1,\r\n            \"CompanyId\":1,\r\n            \"RowVersion\":\"AAAAAAAAB9I=\",\r\n            \"TriggeredLastModifiedTimeStamp\":\"2021-11-03T13:02:07.0033333\\u002B00:00\",\r\n            \"RowVersionAsLong\":-3312679000907710464\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.index?api-version=2020-06-30",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "8000",
-					"path": [
-						"indexes('invoicingindex')",
-						"docs",
-						"search.index"
-					],
-					"query": [
+					"name": "Index created correctly",
+					"event": [
 						{
-							"key": "api-version",
-							"value": "2020-06-30"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Index should be created correctly.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    var schema = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Schema should have correct number of fields.\", function () {\r",
+									"        pm.expect(schema.fields.length).to.equal(106);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Documents indexed correctly",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Documents should be indexed correctly.\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"\r",
-							"    var result = pm.response.json();\r",
-							"\r",
-							"    pm.test(\"Correct number of docs should be indexed.\", function () {\r",
-							"        pm.expect(result.response.numFound).to.equal(9);\r",
-							"    });\r",
-							"\r",
-							"    pm.test(\"Documents should be indexed in correct format.\", function () {\r",
-							"        pm.expect(result.response.docs[8].id).to.equal(\"1\");\r",
-							"        pm.expect(Object.keys(result.response.docs[8]).length).to.be.greaterThan(2);\r",
-							"    });\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8983/solr/{{index}}/schema/fields",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8983",
+							"path": [
+								"solr",
+								"{{index}}",
+								"schema",
+								"fields"
+							]
+						}
+					},
+					"response": []
 				},
 				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"setTimeout(function(){}, [1000]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8983/solr/invoicingindex/select?indent=true&q.op=OR&q=*%3A*&rows=30",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8983",
-					"path": [
-						"solr",
-						"invoicingindex",
-						"select"
-					],
-					"query": [
+					"name": "Delete all documents",
+					"event": [
 						{
-							"key": "indent",
-							"value": "true"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Documents should be indexed correctly.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
 						},
 						{
-							"key": "q.op",
-							"value": "OR"
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, [1000]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<add><delete><query>*:*</query></delete></add>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8983/solr/{{index}}/update?commitWithin=1000",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8983",
+							"path": [
+								"solr",
+								"{{index}}",
+								"update"
+							],
+							"query": [
+								{
+									"key": "commitWithin",
+									"value": "1000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post new data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"value\":\r\n    [\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"InvoiceType\":1,\r\n            \"Iban\":\"ES8070805074662500710460\",\r\n            \"Swift\":\"Original\",\r\n            \"VariableSymbol\":\"Original\",\r\n            \"DeliveryDateStringSk\":\"03.11.2021\",\r\n            \"DeliveryDate\":\"2021-11-03T10:22:37.4500000\\u002B00:00\",\r\n            \"DueDateStringSk\":\"02.11.2021\",\r\n            \"DueDate\":\"2021-11-02T23:51:55.1800000\\u002B00:00\",\r\n            \"PaymentType\":\"Prevodom\",\r\n            \"DeliveryType\":\"Po\\u0161tou\",\r\n            \"OrderNumber\":\"SAS\",\r\n            \"PaymentStatus\":1,\r\n            \"OriginalSumForPayment\":0.43278260,\r\n            \"SumForPayment\":\"0.43278260\",\r\n            \"OriginalSumOfPayments\":0.87296250,\r\n            \"SumOfPayments\":\"0.87296250\",\r\n            \"CountOfPayments\":-140151413,\r\n            \"SentStatus\":0,\r\n            \"ReminderStatus\":1,\r\n            \"ReminderCount\":-1436631189,\r\n            \"IsDeleted\":false,\r\n            \"DocumentNumber\":\"20200477\",\r\n            \"NumberingSequence\":\"Locks\",\r\n            \"TotalPrice\":\"94.93255107\",\r\n            \"OriginalTotalPrice\":94.93255107,\r\n            \"TotalPriceInclVat\":\"0.96511391\",\r\n            \"TotalPriceInclVatNum\":0.96511391,\r\n            \"OriginalTotalPriceInclVat\":0.96511391,\r\n            \"SupplierRegistrationId\":\"361120394\",\r\n            \"SupplierTaxId\":\"442790031\",\r\n            \"SupplierVatId\":\"SK557842717\",\r\n            \"SupplierPhoneNumber\":\"080 7983 8644\",\r\n            \"SupplierEmail\":\"Zofia.Podhradsky97@zoznam.sk\",\r\n            \"SupplierWeb\":\"zdenko.org\",\r\n            \"SupplierBusinessName\":\"Heretik a.s.\",\r\n            \"SupplierContactName\":\"Imrich \\u0160vehla\",\r\n            \"SupplierStreet\":\"T\\u00E1borsk\\u00E1\",\r\n            \"SupplierPostCode\":\"610 01\",\r\n            \"SupplierCity\":\"Bratislava III\",\r\n            \"SupplierCountry\":\"Sud\\u00E1nska republika\",\r\n            \"SupplierPostalAddressBusinessName\":\"Z\\u00E1borsk\\u00E1, Jane\\u010Dek and Sklenka\",\r\n            \"SupplierPostalAddressContactName\":\"Nikola Haldov\\u00E1\",\r\n            \"SupplierPostalAddressStreet\":\"Partiz\\u00E1nska\",\r\n            \"SupplierPostalAddressPostCode\":\"33 519\",\r\n            \"SupplierPostalAddressCity\":\"Svidn\\u00EDk\",\r\n            \"SupplierPostalAddressCountry\":\"Sv. Vincent a Grenad\\u00EDny\",\r\n            \"PurchaserId\":0,\r\n            \"PurchaserRegistrationId\":\"679316249\",\r\n            \"PurchaserTaxId\":\"390075813\",\r\n            \"PurchaserVatId\":\"SK572037951\",\r\n            \"PurchaserPhoneNumber\":\"0945 140 254\",\r\n            \"PurchaserEmail\":\"Demeter.Paska@azet.sk\",\r\n            \"PurchaserWeb\":\"valent\\u00EDn.net\",\r\n            \"PurchaserBusinessName\":\"Fabi\\u00E1nov\\u00E1 - Bahna\",\r\n            \"PurchaserBusinessNameNormalized\":\"fabianova - bahna\",\r\n            \"PurchaserContactName\":\"J\\u00E1n Marcinko\",\r\n            \"PurchaserStreet\":\"Mal\\u00E1\",\r\n            \"PurchaserPostCode\":\"904 16\",\r\n            \"PurchaserCity\":\"Nov\\u00E9 Mesto n.V\\u00E1hom\",\r\n            \"PurchaserCountry\":\"Alb\\u00E1nska republika\",\r\n            \"PurchaserPostalAddressBusinessName\":\"Nitra - Hric\",\r\n            \"PurchaserPostalAddressContactName\":\"Vanesa Fajnorov\\u00E1\",\r\n            \"PurchaserPostalAddressStreet\":\"Elektr\\u00E1rensk\\u00E1\",\r\n            \"PurchaserPostalAddressPostCode\":\"10 191\",\r\n            \"PurchaserPostalAddressCity\":\"Snina\",\r\n            \"PurchaserPostalAddressCountry\":\"Arm\\u00E9nska republika\",\r\n            \"IssueDateStringSk\":\"02.11.2021\",\r\n            \"IssueDate\":\"2021-11-02T20:39:16.6700000\\u002B00:00\",\r\n            \"OpeningText\":\"Est provident eos rerum.\",\r\n            \"ClosingText\":\"Nesciunt hic ipsam tempora rem non qui ad sint.\",\r\n            \"RegistrationCourtText\":\"Quibusdam debitis sit ipsam provident autem facere.\",\r\n            \"Culture\":\"sk\",\r\n            \"LockType\":2,\r\n            \"Items\":[\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":1,\r\n                \"Ordinal\":-1007933036,\r\n                \"Name\":\"Tasty Wooden Tuna\",\r\n                \"Amount\":\"654.89000000\",\r\n                \"MeasureUnit\":\"mobile\",\r\n                \"UnitPrice\":\"701.79667542\",\r\n                \"TotalPrice\":\"160.90718571\",\r\n                \"Description\":\"Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \\u0026 sandals\",\r\n                \"ItemCode\":\"96346648\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":2,\r\n                \"Ordinal\":1560119669,\r\n                \"Name\":\"Tasty Steel Chips\",\r\n                \"Amount\":\"214.80000000\",\r\n                \"MeasureUnit\":\"Incredible\",\r\n                \"UnitPrice\":\"306.49572904\",\r\n                \"TotalPrice\":\"796.14428793\",\r\n                \"Description\":\"Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support\",\r\n                \"ItemCode\":\"06887001\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":3,\r\n                \"Ordinal\":1972087762,\r\n                \"Name\":\"Sleek Cotton Towels\",\r\n                \"Amount\":\"439.16000000\",\r\n                \"MeasureUnit\":\"override\",\r\n                \"UnitPrice\":\"851.11425763\",\r\n                \"TotalPrice\":\"984.14602874\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"89186909\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":4,\r\n                \"Ordinal\":-1285085088,\r\n                \"Name\":\"Small Rubber Bike\",\r\n                \"Amount\":\"585.54000000\",\r\n                \"MeasureUnit\":\"Guyana Dollar\",\r\n                \"UnitPrice\":\"534.89953164\",\r\n                \"TotalPrice\":\"874.86049527\",\r\n                \"Description\":\"Carbonite web goalkeeper gloves are ergonomically designed to give easy fit\",\r\n                \"ItemCode\":\"33807980\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":5,\r\n                \"Ordinal\":460660821,\r\n                \"Name\":\"Refined Plastic Gloves\",\r\n                \"Amount\":\"324.11000000\",\r\n                \"MeasureUnit\":\"orchestrate\",\r\n                \"UnitPrice\":\"951.68983654\",\r\n                \"TotalPrice\":\"220.30622010\",\r\n                \"Description\":\"The slim \\u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality\",\r\n                \"ItemCode\":\"99390419\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":6,\r\n                \"Ordinal\":1839251070,\r\n                \"Name\":\"Fantastic Granite Tuna\",\r\n                \"Amount\":\"333.77000000\",\r\n                \"MeasureUnit\":\"Persistent\",\r\n                \"UnitPrice\":\"177.39548216\",\r\n                \"TotalPrice\":\"733.80995901\",\r\n                \"Description\":\"The slim \\u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality\",\r\n                \"ItemCode\":\"05010141\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":7,\r\n                \"Ordinal\":232735062,\r\n                \"Name\":\"Sleek Plastic Computer\",\r\n                \"Amount\":\"472.48000000\",\r\n                \"MeasureUnit\":\"Toys\",\r\n                \"UnitPrice\":\"173.10612097\",\r\n                \"TotalPrice\":\"881.36450754\",\r\n                \"Description\":\"The Football Is Good For Training And Recreational Purposes\",\r\n                \"ItemCode\":\"47113466\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":8,\r\n                \"Ordinal\":-708997806,\r\n                \"Name\":\"Refined Cotton Cheese\",\r\n                \"Amount\":\"578.46000000\",\r\n                \"MeasureUnit\":\"Tools\",\r\n                \"UnitPrice\":\"213.75617115\",\r\n                \"TotalPrice\":\"960.09201088\",\r\n                \"Description\":\"The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J\",\r\n                \"ItemCode\":\"29217496\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":9,\r\n                \"Ordinal\":1222022279,\r\n                \"Name\":\"Handmade Concrete Computer\",\r\n                \"Amount\":\"914.23000000\",\r\n                \"MeasureUnit\":\"Handmade\",\r\n                \"UnitPrice\":\"690.07056192\",\r\n                \"TotalPrice\":\"945.18364823\",\r\n                \"Description\":\"The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J\",\r\n                \"ItemCode\":\"60981592\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":10,\r\n                \"Ordinal\":123005728,\r\n                \"Name\":\"Practical Concrete Mouse\",\r\n                \"Amount\":\"256.23000000\",\r\n                \"MeasureUnit\":\"Sleek Soft Salad\",\r\n                \"UnitPrice\":\"313.48092309\",\r\n                \"TotalPrice\":\"754.33904899\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"38679148\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":11,\r\n                \"Ordinal\":-1608929900,\r\n                \"Name\":\"Gorgeous Soft Bike\",\r\n                \"Amount\":\"927.99000000\",\r\n                \"MeasureUnit\":\"exuding\",\r\n                \"UnitPrice\":\"831.13520351\",\r\n                \"TotalPrice\":\"908.10908745\",\r\n                \"Description\":\"Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \\u0026 sandals\",\r\n                \"ItemCode\":\"80515036\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":12,\r\n                \"Ordinal\":257551032,\r\n                \"Name\":\"Gorgeous Cotton Pizza\",\r\n                \"Amount\":\"740.22000000\",\r\n                \"MeasureUnit\":\"strategize\",\r\n                \"UnitPrice\":\"205.81355607\",\r\n                \"TotalPrice\":\"680.03347128\",\r\n                \"Description\":\"Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \\u0026 sandals\",\r\n                \"ItemCode\":\"33066837\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":13,\r\n                \"Ordinal\":226466477,\r\n                \"Name\":\"Small Metal Cheese\",\r\n                \"Amount\":\"158.24000000\",\r\n                \"MeasureUnit\":\"Bedfordshire\",\r\n                \"UnitPrice\":\"683.12394185\",\r\n                \"TotalPrice\":\"324.53990882\",\r\n                \"Description\":\"The Football Is Good For Training And Recreational Purposes\",\r\n                \"ItemCode\":\"18969634\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":14,\r\n                \"Ordinal\":-222449384,\r\n                \"Name\":\"Practical Granite Gloves\",\r\n                \"Amount\":\"776.42000000\",\r\n                \"MeasureUnit\":\"Auto Loan Account\",\r\n                \"UnitPrice\":\"692.16775274\",\r\n                \"TotalPrice\":\"257.47363840\",\r\n                \"Description\":\"Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support\",\r\n                \"ItemCode\":\"13017682\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":15,\r\n                \"Ordinal\":-1658844277,\r\n                \"Name\":\"Ergonomic Frozen Keyboard\",\r\n                \"Amount\":\"887.84000000\",\r\n                \"MeasureUnit\":\"impactful\",\r\n                \"UnitPrice\":\"946.43088613\",\r\n                \"TotalPrice\":\"916.60324107\",\r\n                \"Description\":\"Carbonite web goalkeeper gloves are ergonomically designed to give easy fit\",\r\n                \"ItemCode\":\"34461976\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":16,\r\n                \"Ordinal\":-1893774517,\r\n                \"Name\":\"Awesome Metal Computer\",\r\n                \"Amount\":\"900.76000000\",\r\n                \"MeasureUnit\":\"Auto Loan Account\",\r\n                \"UnitPrice\":\"668.79060197\",\r\n                \"TotalPrice\":\"457.40981886\",\r\n                \"Description\":\"The Football Is Good For Training And Recreational Purposes\",\r\n                \"ItemCode\":\"89214190\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":17,\r\n                \"Ordinal\":616749087,\r\n                \"Name\":\"Licensed Plastic Tuna\",\r\n                \"Amount\":\"529.04000000\",\r\n                \"MeasureUnit\":\"motivating\",\r\n                \"UnitPrice\":\"277.82191814\",\r\n                \"TotalPrice\":\"827.37221653\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"62153386\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":18,\r\n                \"Ordinal\":-177323629,\r\n                \"Name\":\"Ergonomic Concrete Bike\",\r\n                \"Amount\":\"804.00000000\",\r\n                \"MeasureUnit\":\"Expressway\",\r\n                \"UnitPrice\":\"645.46338685\",\r\n                \"TotalPrice\":\"490.04268017\",\r\n                \"Description\":\"Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support\",\r\n                \"ItemCode\":\"86568203\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":19,\r\n                \"Ordinal\":1352438341,\r\n                \"Name\":\"Licensed Plastic Shirt\",\r\n                \"Amount\":\"454.95000000\",\r\n                \"MeasureUnit\":\"ivory\",\r\n                \"UnitPrice\":\"613.15400135\",\r\n                \"TotalPrice\":\"190.79242609\",\r\n                \"Description\":\"Boston\\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles\",\r\n                \"ItemCode\":\"85523890\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":20,\r\n                \"Ordinal\":281969059,\r\n                \"Name\":\"Licensed Fresh Ball\",\r\n                \"Amount\":\"977.78000000\",\r\n                \"MeasureUnit\":\"neural\",\r\n                \"UnitPrice\":\"167.40022933\",\r\n                \"TotalPrice\":\"433.12791522\",\r\n                \"Description\":\"The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive\",\r\n                \"ItemCode\":\"56437874\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":21,\r\n                \"Ordinal\":-598469039,\r\n                \"Name\":\"Generic Metal Pizza\",\r\n                \"Amount\":\"43.39000000\",\r\n                \"MeasureUnit\":\"Iranian Rial\",\r\n                \"UnitPrice\":\"163.46085870\",\r\n                \"TotalPrice\":\"405.71089852\",\r\n                \"Description\":\"The Football Is Good For Training And Recreational Purposes\",\r\n                \"ItemCode\":\"61819283\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":22,\r\n                \"Ordinal\":1587578444,\r\n                \"Name\":\"Small Wooden Keyboard\",\r\n                \"Amount\":\"715.04000000\",\r\n                \"MeasureUnit\":\"payment\",\r\n                \"UnitPrice\":\"41.26589002\",\r\n                \"TotalPrice\":\"1.26769486\",\r\n                \"Description\":\"Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support\",\r\n                \"ItemCode\":\"60103949\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":23,\r\n                \"Ordinal\":-1033950723,\r\n                \"Name\":\"Generic Cotton Car\",\r\n                \"Amount\":\"624.05000000\",\r\n                \"MeasureUnit\":\"Concrete\",\r\n                \"UnitPrice\":\"480.21242883\",\r\n                \"TotalPrice\":\"213.11386777\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"25473766\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":24,\r\n                \"Ordinal\":463178317,\r\n                \"Name\":\"Practical Concrete Shoes\",\r\n                \"Amount\":\"365.34000000\",\r\n                \"MeasureUnit\":\"backing up\",\r\n                \"UnitPrice\":\"418.18162864\",\r\n                \"TotalPrice\":\"788.04944632\",\r\n                \"Description\":\"The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive\",\r\n                \"ItemCode\":\"79712095\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":25,\r\n                \"Ordinal\":295849995,\r\n                \"Name\":\"Incredible Concrete Car\",\r\n                \"Amount\":\"287.69000000\",\r\n                \"MeasureUnit\":\"Tennessee\",\r\n                \"UnitPrice\":\"614.78828481\",\r\n                \"TotalPrice\":\"110.60400172\",\r\n                \"Description\":\"New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart\",\r\n                \"ItemCode\":\"54647619\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":26,\r\n                \"Ordinal\":-53214841,\r\n                \"Name\":\"Incredible Plastic Computer\",\r\n                \"Amount\":\"78.57000000\",\r\n                \"MeasureUnit\":\"THX\",\r\n                \"UnitPrice\":\"493.10631421\",\r\n                \"TotalPrice\":\"619.54860790\",\r\n                \"Description\":\"The slim \\u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality\",\r\n                \"ItemCode\":\"72978528\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":27,\r\n                \"Ordinal\":382560855,\r\n                \"Name\":\"Refined Frozen Computer\",\r\n                \"Amount\":\"856.76000000\",\r\n                \"MeasureUnit\":\"dynamic\",\r\n                \"UnitPrice\":\"760.27606230\",\r\n                \"TotalPrice\":\"283.00011357\",\r\n                \"Description\":\"The slim \\u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality\",\r\n                \"ItemCode\":\"57061764\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":28,\r\n                \"Ordinal\":1968802352,\r\n                \"Name\":\"Unbranded Steel Shirt\",\r\n                \"Amount\":\"219.93000000\",\r\n                \"MeasureUnit\":\"Analyst\",\r\n                \"UnitPrice\":\"285.77702598\",\r\n                \"TotalPrice\":\"593.73145485\",\r\n                \"Description\":\"New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart\",\r\n                \"ItemCode\":\"09726789\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":29,\r\n                \"Ordinal\":85251970,\r\n                \"Name\":\"Incredible Rubber Soap\",\r\n                \"Amount\":\"429.62000000\",\r\n                \"MeasureUnit\":\"quantifying\",\r\n                \"UnitPrice\":\"236.40006186\",\r\n                \"TotalPrice\":\"502.00056587\",\r\n                \"Description\":\"The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive\",\r\n                \"ItemCode\":\"35976318\"\r\n                },\r\n                {\r\n                \"InvoiceId\":1,\r\n                \"Id\":30,\r\n                \"Ordinal\":517605162,\r\n                \"Name\":\"Refined Steel Table\",\r\n                \"Amount\":\"809.53000000\",\r\n                \"MeasureUnit\":\"bluetooth\",\r\n                \"UnitPrice\":\"513.48755253\",\r\n                \"TotalPrice\":\"838.73366370\",\r\n                \"Description\":\"New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \\u0026 J 2016\",\r\n                \"ItemCode\":\"29285037\"\r\n                }\r\n            ],\r\n            \"CreatedTimestamp\":\"2021-11-03T13:02:06.9400000\\u002B00:00\",\r\n            \"DiscountTotalPrice\":\"0.68046940\",\r\n            \"DiscountTotalPriceInclVat\":\"0.02403450\",\r\n            \"OriginalDiscountTotalPrice\":0.68046940,\r\n            \"OriginalDiscountTotalPriceInclVat\":0.02403450,\r\n            \"Note\":\"Animi qui magnam consequatur incidunt quo corporis tenetur.\",\r\n            \"Id\":\"1\",\r\n            \"OriginalId\":1,\r\n            \"CompanyId\":1,\r\n            \"RowVersion\":\"AAAAAAAAB9I=\",\r\n            \"TriggeredLastModifiedTimeStamp\":\"2021-11-03T13:02:07.0033333\\u002B00:00\",\r\n            \"RowVersionAsLong\":-3312679000907710464\r\n        },\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\": \"203\",\r\n            \"DocumentNumber\":\"\",\r\n            \"CompanyId\": \"160\",\r\n            \"NumberingSequence\": \"OF\",\r\n            \"TotalPrice\": \"0.00000000\",\r\n            \"CreatedTimestamp\": \"2019-08-05T08:48:40.420Z\",\r\n            \"CreatedBy\": \"3\",\r\n            \"LastModifiedTimestamp\": \"2019-08-05T08:48:40.420Z\",\r\n            \"LastModifiedBy\": \"3\",\r\n            \"IsDeleted\": \"False\",\r\n            \"SupplierRegistrationId\": \"\",\r\n            \"SupplierTaxId\": \"\",\r\n            \"SupplierVatId\": \"\",\r\n            \"SupplierPhoneNumber\": \"\",\r\n            \"SupplierEmail\": \"\",\r\n            \"SupplierWeb\": \"\",\r\n            \"SupplierBusinessName\": \"\",\r\n            \"SupplierContactName\": \"\",\r\n            \"SupplierStreet\": \"\",\r\n            \"SupplierPostCode\": \"\",\r\n            \"SupplierCity\": \"\",\r\n            \"SupplierCountry\": \"\",\r\n            \"PurchaserRegistrationId\": \"\",\r\n            \"PurchaserTaxId\": \"\",\r\n            \"PurchaserVatId\": \"\",\r\n            \"PurchaserPhoneNumber\": \"\",\r\n            \"PurchaserEmail\": \"\",\r\n            \"PurchaserWeb\": \"\",\r\n            \"PurchaserBusinessName\": \"\",\r\n            \"PurchaserContactName\": \"\",\r\n            \"PurchaserStreet\": \"\",\r\n            \"PurchaserPostCode\": \"\",\r\n            \"PurchaserCity\": \"\",\r\n            \"PurchaserCountry\": \"\",\r\n            \"Iban\": \"\",\r\n            \"Swift\": \"\",\r\n            \"VariableSymbol\": \"\",\r\n            \"IssueDate\": \"2019-08-05T08:48:39.090Z\",\r\n            \"DeliveryDate\": \"0001-01-01T00:00:00.000Z\",\r\n            \"DueDate\": \"2021-08-05T08:48:39.090Z\",\r\n            \"PaymentType\": \"\",\r\n            \"DeliveryType\": \"\",\r\n            \"OrderNumber\": \"\",\r\n            \"OpeningText\": \"\",\r\n            \"ClosingText\": \"\",\r\n            \"RegistrationCourtText\": \"\",\r\n            \"RowVersion\": \"AAAAAAAhDsY=\",\r\n            \"PurchaserId\": \"0\",\r\n            \"PaymentStatus\": \"0\",\r\n            \"SupplierPostalAddressBusinessName\": \"\",\r\n            \"SupplierPostalAddressContactName\": \"\",\r\n            \"SupplierPostalAddressStreet\": \"\",\r\n            \"SupplierPostalAddressPostCode\": \"\",\r\n            \"SupplierPostalAddressCity\": \"\",\r\n            \"SupplierPostalAddressCountry\": \"\",\r\n            \"PurchaserPostalAddressBusinessName\": \"\",\r\n            \"PurchaserPostalAddressContactName\": \"\",\r\n            \"PurchaserPostalAddressStreet\": \"\",\r\n            \"PurchaserPostalAddressPostCode\": \"\",\r\n            \"PurchaserPostalAddressCity\": \"\",\r\n            \"PurchaserPostalAddressCountry\": \"\",\r\n            \"VatPayerType\": \"0\",\r\n            \"IsTotalPriceInclVat\": \"0\",\r\n            \"IsUnitPriceInclVat\": \"0\",\r\n            \"VatTotalPrice\": \"0.00000000\",\r\n            \"TotalPriceInclVat\": \"0.00000000\",\r\n            \"DiscountType\": \"0\",\r\n            \"DiscountPercent\": \"0.00000000\",\r\n            \"DiscountTotalPrice\": \"0.00000000\",\r\n            \"DiscountTotalPriceInclVat\": \"0.00000000\",\r\n            \"TotalPriceBeforeDiscount\": \"0.00000000\",\r\n            \"TotalPriceInclVatBeforeDiscount\": \"0.00000000\",\r\n            \"AdvancePaymentDeduction\": \"0.00000000\",\r\n            \"SumForPayment\": \"0.00000000\",\r\n            \"InvoiceType\": \"0\",\r\n            \"LinkedDocumentNumber\": \"\",\r\n            \"SumOfPayments\": \"0.00000000\",\r\n            \"SentStatus\": \"0\",\r\n            \"ReminderStatus\": \"0\",\r\n            \"ReminderCount\": \"0\",\r\n            \"CountOfPayments\": \"0\",\r\n            \"MandatoryTextType\": \"0\",\r\n            \"MandatoryText\": \"\",\r\n            \"UseParagraph7or7a\": \"False\",\r\n            \"Culture\": \"sk-SK\",\r\n            \"LockType\": \"0\",\r\n            \"MigrationSystemType\": \"\",\r\n            \"MigrationSystemId\": \"\",\r\n            \"MigratedAt\": null,\r\n            \"TriggeredLastModifiedTimeStamp\": \"2019-08-05T08:48:40.420Z\",\r\n            \"UserCustomFields\": \"\",\r\n            \"LastExportRelevantChangedTimeStamp\": \"2019-08-05T08:48:40.420Z\",\r\n            \"HideStamp\": \"False\",\r\n            \"CustomTextFields\": \"\",\r\n            \"OssTaxState\": \"0\",\r\n            \"SupplierOssTaxState\": \"0\",\r\n            \"Note\": \"\",\r\n            \"IssueDateStringSk\": \"05.08.2019\",\r\n            \"DeliveryDateStringSk\": \"01.01.0001\",\r\n            \"DueDateStringSk\": \"01.01.0001\",\r\n            \"Items\": null\r\n        },\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\": \"289\",\r\n            \"CompanyId\": \"254\",\r\n            \"DocumentNumber\": \"001\",\r\n            \"NumberingSequence\": \"OF\",\r\n            \"TotalPrice\": \"0.00000000\",\r\n            \"CreatedTimestamp\": \"2019-08-06T05:26:20.25000Z\",\r\n            \"CreatedBy\": \"25\",\r\n            \"LastModifiedTimestamp\": \"2019-08-06T05:26:20.25000Z\",\r\n            \"LastModifiedBy\": \"25\",\r\n            \"IsDeleted\": \"True\",\r\n            \"SupplierRegistrationId\": \"\",\r\n            \"SupplierTaxId\": \"\",\r\n            \"SupplierVatId\": \"\",\r\n            \"SupplierPhoneNumber\": \"\",\r\n            \"SupplierEmail\": \"\",\r\n            \"SupplierWeb\": \"\",\r\n            \"SupplierBusinessName\": \"\",\r\n            \"SupplierContactName\": \"\",\r\n            \"SupplierStreet\": \"\",\r\n            \"SupplierPostCode\": \"\",\r\n            \"SupplierCity\": \"\",\r\n            \"SupplierCountry\": \"\",\r\n            \"PurchaserRegistrationId\": \"\",\r\n            \"PurchaserTaxId\": \"\",\r\n            \"PurchaserVatId\": \"\",\r\n            \"PurchaserPhoneNumber\": \"\",\r\n            \"PurchaserEmail\": \"\",\r\n            \"PurchaserWeb\": \"\",\r\n            \"PurchaserBusinessName\": \"abc\",\r\n            \"PurchaserContactName\": \"\",\r\n            \"PurchaserStreet\": \"\",\r\n            \"PurchaserPostCode\": \"\",\r\n            \"PurchaserCity\": \"\",\r\n            \"PurchaserCountry\": \"\",\r\n            \"Iban\": \"\",\r\n            \"Swift\": \"\",\r\n            \"VariableSymbol\": \"\",\r\n            \"IssueDate\": \"2019-08-06T05:23:48.700Z\",\r\n            \"DeliveryDate\": \"0001-01-01T00:00:00.0000000Z\",\r\n            \"DueDate\": \"2021-08-06T05:23:48.700Z\",\r\n            \"PaymentType\": \"\",\r\n            \"DeliveryType\": \"\",\r\n            \"OrderNumber\": \"\",\r\n            \"OpeningText\": \"\",\r\n            \"ClosingText\": \"\",\r\n            \"RegistrationCourtText\": \"\",\r\n            \"RowVersion\": \"AAAAAAAhDsc=\",\r\n            \"PurchaserId\": \"0\",\r\n            \"PaymentStatus\": \"0\",\r\n            \"SupplierPostalAddressBusinessName\": \"\",\r\n            \"SupplierPostalAddressContactName\": \"\",\r\n            \"SupplierPostalAddressStreet\": \"\",\r\n            \"SupplierPostalAddressPostCode\": \"\",\r\n            \"SupplierPostalAddressCity\": \"\",\r\n            \"SupplierPostalAddressCountry\": \"\",\r\n            \"PurchaserPostalAddressBusinessName\": \"\",\r\n            \"PurchaserPostalAddressContactName\": \"\",\r\n            \"PurchaserPostalAddressStreet\": \"\",\r\n            \"PurchaserPostalAddressPostCode\": \"\",\r\n            \"PurchaserPostalAddressCity\": \"\",\r\n            \"PurchaserPostalAddressCountry\": \"\",\r\n            \"VatPayerType\": \"0\",\r\n            \"IsTotalPriceInclVat\": \"0\",\r\n            \"IsUnitPriceInclVat\": \"0\",\r\n            \"VatTotalPrice\": \"0.00000000\",\r\n            \"TotalPriceInclVat\": \"0.00000000\",\r\n            \"DiscountType\": \"0\",\r\n            \"DiscountPercent\": \"0.00000000\",\r\n            \"DiscountTotalPrice\": \"0.00000000\",\r\n            \"DiscountTotalPriceInclVat\": \"0.00000000\",\r\n            \"TotalPriceBeforeDiscount\": \"0.00000000\",\r\n            \"TotalPriceInclVatBeforeDiscount\": \"0.00000000\",\r\n            \"AdvancePaymentDeduction\": \"0.00000000\",\r\n            \"SumForPayment\": \"0.00000000\",\r\n            \"InvoiceType\": \"0\",\r\n            \"LinkedDocumentNumber\": \"\",\r\n            \"SumOfPayments\": \"0.00000000\",\r\n            \"SentStatus\": \"0\",\r\n            \"ReminderStatus\": \"0\",\r\n            \"ReminderCount\": \"0\",\r\n            \"CountOfPayments\": \"0\",\r\n            \"MandatoryTextType\": \"0\",\r\n            \"MandatoryText\": \"\",\r\n            \"UseParagraph7or7a\": \"False\",\r\n            \"Culture\": \"sk-SK\",\r\n            \"LockType\": \"0\",\r\n            \"MigrationSystemType\": \"\",\r\n            \"MigrationSystemId\": \"\",\r\n            \"MigratedAt\": null,\r\n            \"TriggeredLastModifiedTimeStamp\": \"2019-08-06T05:26:20.250000Z\",\r\n            \"UserCustomFields\": \"\",\r\n            \"LastExportRelevantChangedTimeStamp\": \"2019-08-06T05:26:20.2500000Z\",\r\n            \"HideStamp\": \"False\",\r\n            \"CustomTextFields\": \"\",\r\n            \"OssTaxState\": \"0\",\r\n            \"SupplierOssTaxState\": \"0\",\r\n            \"Note\": \"\",\r\n            \"IssueDateStringSk\": \"06.08.2019\",\r\n            \"DeliveryDateStringSk\": \"01.01.0001\",\r\n            \"DueDateStringSk\": \"01.01.0001\",\r\n            \"Items\": [\r\n            {\r\n                \"Id\": 559,\r\n                \"InvoiceId\": 289,\r\n                \"Ordinal\": 0,\r\n                \"Name\": \"položka1\",\r\n                \"Amount\": 1.00000000,\r\n                \"MeasureUnit\": \"\",\r\n                \"UnitPrice\": 50.00000000,\r\n                \"TotalPrice\": 60.00000000,\r\n                \"Description\": \"\",\r\n                \"UnitPriceInclVat\": 50.00000000,\r\n                \"TotalPriceInclVat\": 60.00000000,\r\n                \"DiscountPercent\": 0.00000000,\r\n                \"UnitPriceBeforeDiscount\": 50.00000000,\r\n                \"UnitPriceInclVatBeforeDiscount\": 50.00000000,\r\n                \"DiscountUnitPrice\": 0.00000000,\r\n                \"DiscountUnitPriceInclVat\": 0.00000000,\r\n                \"DiscountTotalPrice\": 0.00000000,\r\n                \"DiscountTotalPriceInclVat\": 0.00000000,\r\n                \"TotalPriceBeforeDiscount\": 60.00000000,\r\n                \"TotalPriceInclVatBeforeDiscount\": 60.00000000,\r\n                \"DiscountName\": \"\",\r\n                \"StockItemType\": 0,\r\n                \"ItemCode\": \"\"\r\n            }\r\n            ]\r\n        },\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\": \"290\",\r\n            \"CompanyId\": \"254\",\r\n            \"DocumentNumber\": \"002\",\r\n            \"NumberingSequence\": \"OF\",\r\n            \"TotalPrice\": \"0.00000000\",\r\n            \"CreatedTimestamp\": \"2019-08-06T05:27:02.090000Z\",\r\n            \"CreatedBy\": \"25\",\r\n            \"LastModifiedTimestamp\": \"2019-08-06T05:27:02.090000Z\",\r\n            \"LastModifiedBy\": \"25\",\r\n            \"IsDeleted\": \"True\",\r\n            \"SupplierRegistrationId\": \"\",\r\n            \"SupplierTaxId\": \"\",\r\n            \"SupplierVatId\": \"\",\r\n            \"SupplierPhoneNumber\": \"\",\r\n            \"SupplierEmail\": \"\",\r\n            \"SupplierWeb\": \"\",\r\n            \"SupplierBusinessName\": \"\",\r\n            \"SupplierContactName\": \"\",\r\n            \"SupplierStreet\": \"\",\r\n            \"SupplierPostCode\": \"\",\r\n            \"SupplierCity\": \"\",\r\n            \"SupplierCountry\": \"\",\r\n            \"PurchaserRegistrationId\": \"\",\r\n            \"PurchaserTaxId\": \"\",\r\n            \"PurchaserVatId\": \"\",\r\n            \"PurchaserPhoneNumber\": \"\",\r\n            \"PurchaserEmail\": \"\",\r\n            \"PurchaserWeb\": \"\",\r\n            \"PurchaserBusinessName\": \"xyz\",\r\n            \"PurchaserContactName\": \"\",\r\n            \"PurchaserStreet\": \"\",\r\n            \"PurchaserPostCode\": \"\",\r\n            \"PurchaserCity\": \"\",\r\n            \"PurchaserCountry\": \"\",\r\n            \"Iban\": \"\",\r\n            \"Swift\": \"\",\r\n            \"VariableSymbol\": \"\",\r\n            \"IssueDate\": \"2019-08-06T05:26:30.2000000Z\",\r\n            \"DeliveryDate\": \"0001-01-01T00:00:00.0000000Z\",\r\n            \"DueDate\": \"2021-08-10T05:23:48.700Z\",\r\n            \"PaymentType\": \"\",\r\n            \"DeliveryType\": \"\",\r\n            \"OrderNumber\": \"\",\r\n            \"OpeningText\": \"\",\r\n            \"ClosingText\": \"\",\r\n            \"RegistrationCourtText\": \"\",\r\n            \"RowVersion\": \"AAAAAAAhDsg=\",\r\n            \"PurchaserId\": \"0\",\r\n            \"PaymentStatus\": \"0\",\r\n            \"SupplierPostalAddressBusinessName\": \"\",\r\n            \"SupplierPostalAddressContactName\": \"\",\r\n            \"SupplierPostalAddressStreet\": \"\",\r\n            \"SupplierPostalAddressPostCode\": \"\",\r\n            \"SupplierPostalAddressCity\": \"\",\r\n            \"SupplierPostalAddressCountry\": \"\",\r\n            \"PurchaserPostalAddressBusinessName\": \"\",\r\n            \"PurchaserPostalAddressContactName\": \"\",\r\n            \"PurchaserPostalAddressStreet\": \"\",\r\n            \"PurchaserPostalAddressPostCode\": \"\",\r\n            \"PurchaserPostalAddressCity\": \"\",\r\n            \"PurchaserPostalAddressCountry\": \"\",\r\n            \"VatPayerType\": \"0\",\r\n            \"IsTotalPriceInclVat\": \"0\",\r\n            \"IsUnitPriceInclVat\": \"0\",\r\n            \"VatTotalPrice\": \"0.00000000\",\r\n            \"TotalPriceInclVat\": \"0.00000000\",\r\n            \"DiscountType\": \"0\",\r\n            \"DiscountPercent\": \"0.00000000\",\r\n            \"DiscountTotalPrice\": \"0.00000000\",\r\n            \"DiscountTotalPriceInclVat\": \"0.00000000\",\r\n            \"TotalPriceBeforeDiscount\": \"0.00000000\",\r\n            \"TotalPriceInclVatBeforeDiscount\": \"0.00000000\",\r\n            \"AdvancePaymentDeduction\": \"0.00000000\",\r\n            \"SumForPayment\": \"0.00000000\",\r\n            \"InvoiceType\": \"0\",\r\n            \"LinkedDocumentNumber\": \"\",\r\n            \"SumOfPayments\": \"0.00000000\",\r\n            \"SentStatus\": \"0\",\r\n            \"ReminderStatus\": \"0\",\r\n            \"ReminderCount\": \"0\",\r\n            \"CountOfPayments\": \"0\",\r\n            \"MandatoryTextType\": \"0\",\r\n            \"MandatoryText\": \"\",\r\n            \"UseParagraph7or7a\": \"False\",\r\n            \"Culture\": \"sk-SK\",\r\n            \"LockType\": \"0\",\r\n            \"MigrationSystemType\": \"\",\r\n            \"MigrationSystemId\": \"\",\r\n            \"MigratedAt\": null,\r\n            \"TriggeredLastModifiedTimeStamp\": \"2019-08-06T05:27:02.090000Z\",\r\n            \"UserCustomFields\": \"\",\r\n            \"LastExportRelevantChangedTimeStamp\": \"2019-08-06T05:27:02.090000Z\",\r\n            \"HideStamp\": \"False\",\r\n            \"CustomTextFields\": \"\",\r\n            \"OssTaxState\": \"0\",\r\n            \"SupplierOssTaxState\": \"0\",\r\n            \"Note\": \"\",\r\n            \"IssueDateStringSk\": \"06.08.2019\",\r\n            \"DeliveryDateStringSk\": \"01.01.0001\",\r\n            \"DueDateStringSk\": \"01.01.0001\",\r\n            \"Items\": [\r\n            {\r\n                \"Id\": 560,\r\n                \"InvoiceId\": 290,\r\n                \"Ordinal\": 0,\r\n                \"Name\": \"položka x\",\r\n                \"Amount\": 1.00000000,\r\n                \"MeasureUnit\": \"\",\r\n                \"UnitPrice\": 90.00000000,\r\n                \"TotalPrice\": 100.00000000,\r\n                \"Description\": \"\",\r\n                \"UnitPriceInclVat\": 90.00000000,\r\n                \"TotalPriceInclVat\": 100.00000000,\r\n                \"DiscountPercent\": 0.00000000,\r\n                \"UnitPriceBeforeDiscount\": 90.00000000,\r\n                \"UnitPriceInclVatBeforeDiscount\": 90.00000000,\r\n                \"DiscountUnitPrice\": 0.00000000,\r\n                \"DiscountUnitPriceInclVat\": 0.00000000,\r\n                \"DiscountTotalPrice\": 0.00000000,\r\n                \"DiscountTotalPriceInclVat\": 0.00000000,\r\n                \"TotalPriceBeforeDiscount\": 100.00000000,\r\n                \"TotalPriceInclVatBeforeDiscount\": 100.00000000,\r\n                \"DiscountName\": \"\",\r\n                \"StockItemType\": 0,\r\n                \"ItemCode\": \"\"\r\n            }\r\n            ]\r\n        },\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\": \"291\",\r\n            \"CompanyId\": \"255\",\r\n            \"DocumentNumber\": \"002\",\r\n            \"NumberingSequence\": \"OF\",\r\n            \"TotalPrice\": \"0.00000000\",\r\n            \"CreatedTimestamp\": \"2019-08-06T05:27:45.300000Z\",\r\n            \"CreatedBy\": \"25\",\r\n            \"LastModifiedTimestamp\": \"2019-08-06T05:27:45.300000Z\",\r\n            \"LastModifiedBy\": \"25\",\r\n            \"IsDeleted\": \"False\",\r\n            \"SupplierRegistrationId\": \"\",\r\n            \"SupplierTaxId\": \"\",\r\n            \"SupplierVatId\": \"\",\r\n            \"SupplierPhoneNumber\": \"\",\r\n            \"SupplierEmail\": \"\",\r\n            \"SupplierWeb\": \"\",\r\n            \"SupplierBusinessName\": \"\",\r\n            \"SupplierContactName\": \"\",\r\n            \"SupplierStreet\": \"\",\r\n            \"SupplierPostCode\": \"\",\r\n            \"SupplierCity\": \"\",\r\n            \"SupplierCountry\": \"\",\r\n            \"PurchaserRegistrationId\": \"\",\r\n            \"PurchaserTaxId\": \"\",\r\n            \"PurchaserVatId\": \"\",\r\n            \"PurchaserPhoneNumber\": \"\",\r\n            \"PurchaserEmail\": \"\",\r\n            \"PurchaserWeb\": \"\",\r\n            \"PurchaserBusinessName\": \"xyz\",\r\n            \"PurchaserContactName\": \"\",\r\n            \"PurchaserStreet\": \"\",\r\n            \"PurchaserPostCode\": \"\",\r\n            \"PurchaserCity\": \"\",\r\n            \"PurchaserCountry\": \"\",\r\n            \"Iban\": \"\",\r\n            \"Swift\": \"\",\r\n            \"VariableSymbol\": \"\",\r\n            \"IssueDate\": \"2019-08-06T05:26:30.2000000Z\",\r\n            \"DeliveryDate\": \"0001-01-01T00:00:00.0000000Z\",\r\n            \"DueDate\": \"2021-09-06T05:23:48.700Z\",\r\n            \"PaymentType\": \"\",\r\n            \"DeliveryType\": \"\",\r\n            \"OrderNumber\": \"\",\r\n            \"OpeningText\": \"\",\r\n            \"ClosingText\": \"\",\r\n            \"RegistrationCourtText\": \"\",\r\n            \"RowVersion\": \"AAAAAAAhDsk=\",\r\n            \"PurchaserId\": \"0\",\r\n            \"PaymentStatus\": \"0\",\r\n            \"SupplierPostalAddressBusinessName\": \"\",\r\n            \"SupplierPostalAddressContactName\": \"\",\r\n            \"SupplierPostalAddressStreet\": \"\",\r\n            \"SupplierPostalAddressPostCode\": \"\",\r\n            \"SupplierPostalAddressCity\": \"\",\r\n            \"SupplierPostalAddressCountry\": \"\",\r\n            \"PurchaserPostalAddressBusinessName\": \"\",\r\n            \"PurchaserPostalAddressContactName\": \"\",\r\n            \"PurchaserPostalAddressStreet\": \"\",\r\n            \"PurchaserPostalAddressPostCode\": \"\",\r\n            \"PurchaserPostalAddressCity\": \"\",\r\n            \"PurchaserPostalAddressCountry\": \"\",\r\n            \"VatPayerType\": \"0\",\r\n            \"IsTotalPriceInclVat\": \"0\",\r\n            \"IsUnitPriceInclVat\": \"0\",\r\n            \"VatTotalPrice\": \"0.00000000\",\r\n            \"TotalPriceInclVat\": \"0.00000000\",\r\n            \"DiscountType\": \"0\",\r\n            \"DiscountPercent\": \"0.00000000\",\r\n            \"DiscountTotalPrice\": \"0.00000000\",\r\n            \"DiscountTotalPriceInclVat\": \"0.00000000\",\r\n            \"TotalPriceBeforeDiscount\": \"0.00000000\",\r\n            \"TotalPriceInclVatBeforeDiscount\": \"0.00000000\",\r\n            \"AdvancePaymentDeduction\": \"0.00000000\",\r\n            \"SumForPayment\": \"0.00000000\",\r\n            \"InvoiceType\": \"0\",\r\n            \"LinkedDocumentNumber\": \"\",\r\n            \"SumOfPayments\": \"0.00000000\",\r\n            \"SentStatus\": \"0\",\r\n            \"ReminderStatus\": \"0\",\r\n            \"ReminderCount\": \"0\",\r\n            \"CountOfPayments\": \"0\",\r\n            \"MandatoryTextType\": \"0\",\r\n            \"MandatoryText\": \"\",\r\n            \"UseParagraph7or7a\": \"False\",\r\n            \"Culture\": \"sk-SK\",\r\n            \"LockType\": \"0\",\r\n            \"MigrationSystemType\": \"\",\r\n            \"MigrationSystemId\": \"\",\r\n            \"MigratedAt\": null,\r\n            \"TriggeredLastModifiedTimeStamp\": \"2019-08-06T05:27:45.300000Z\",\r\n            \"UserCustomFields\": \"\",\r\n            \"LastExportRelevantChangedTimeStamp\": \"2019-08-06T05:27:45.300000Z\",\r\n            \"HideStamp\": \"False\",\r\n            \"CustomTextFields\": \"\",\r\n            \"OssTaxState\": \"0\",\r\n            \"SupplierOssTaxState\": \"0\",\r\n            \"Note\": \"\",\r\n            \"IssueDateStringSk\": \"06.08.2019\",\r\n            \"DeliveryDateStringSk\": \"01.01.0001\",\r\n            \"DueDateStringSk\": \"01.01.0001\",\r\n            \"Items\": [\r\n            {\r\n                \"Id\": 561,\r\n                \"InvoiceId\": 291,\r\n                \"Ordinal\": 0,\r\n                \"Name\": \"položka x\",\r\n                \"Amount\": 1.00000000,\r\n                \"MeasureUnit\": \"\",\r\n                \"UnitPrice\": 90.00000000,\r\n                \"TotalPrice\": 100.00000000,\r\n                \"Description\": \"\",\r\n                \"UnitPriceInclVat\": 90.00000000,\r\n                \"TotalPriceInclVat\": 100.00000000,\r\n                \"DiscountPercent\": 0.00000000,\r\n                \"UnitPriceBeforeDiscount\": 90.00000000,\r\n                \"UnitPriceInclVatBeforeDiscount\": 90.00000000,\r\n                \"DiscountUnitPrice\": 0.00000000,\r\n                \"DiscountUnitPriceInclVat\": 0.00000000,\r\n                \"DiscountTotalPrice\": 0.00000000,\r\n                \"DiscountTotalPriceInclVat\": 0.00000000,\r\n                \"TotalPriceBeforeDiscount\": 100.00000000,\r\n                \"TotalPriceInclVatBeforeDiscount\": 100.00000000,\r\n                \"DiscountName\": \"\",\r\n                \"StockItemType\": 0,\r\n                \"ItemCode\": \"\"\r\n            }\r\n            ]\r\n        },\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\": \"292\",\r\n            \"CompanyId\": \"255\",\r\n            \"DocumentNumber\": \"001\",\r\n            \"NumberingSequence\": \"OF\",\r\n            \"TotalPrice\": \"0.00000000\",\r\n            \"CreatedTimestamp\": \"2019-08-06T05:27:45.3900Z\",\r\n            \"CreatedBy\": \"25\",\r\n            \"LastModifiedTimestamp\": \"2019-08-06T05:27:45.390000Z\",\r\n            \"LastModifiedBy\": \"25\",\r\n            \"IsDeleted\": \"False\",\r\n            \"SupplierRegistrationId\": \"\",\r\n            \"SupplierTaxId\": \"\",\r\n            \"SupplierVatId\": \"\",\r\n            \"SupplierPhoneNumber\": \"\",\r\n            \"SupplierEmail\": \"\",\r\n            \"SupplierWeb\": \"\",\r\n            \"SupplierBusinessName\": \"\",\r\n            \"SupplierContactName\": \"\",\r\n            \"SupplierStreet\": \"\",\r\n            \"SupplierPostCode\": \"\",\r\n            \"SupplierCity\": \"\",\r\n            \"SupplierCountry\": \"\",\r\n            \"PurchaserRegistrationId\": \"\",\r\n            \"PurchaserTaxId\": \"\",\r\n            \"PurchaserVatId\": \"\",\r\n            \"PurchaserPhoneNumber\": \"\",\r\n            \"PurchaserEmail\": \"\",\r\n            \"PurchaserWeb\": \"\",\r\n            \"PurchaserBusinessName\": \"abc\",\r\n            \"PurchaserContactName\": \"\",\r\n            \"PurchaserStreet\": \"\",\r\n            \"PurchaserPostCode\": \"\",\r\n            \"PurchaserCity\": \"\",\r\n            \"PurchaserCountry\": \"\",\r\n            \"Iban\": \"\",\r\n            \"Swift\": \"\",\r\n            \"VariableSymbol\": \"\",\r\n            \"IssueDate\": \"2019-08-06T05:23:48.7000000Z\",\r\n            \"DeliveryDate\": \"0001-01-01T00:00:00.0000000Z\",\r\n            \"DueDate\": \"2021-11-06T05:23:48.700Z\",\r\n            \"PaymentType\": \"\",\r\n            \"DeliveryType\": \"\",\r\n            \"OrderNumber\": \"\",\r\n            \"OpeningText\": \"\",\r\n            \"ClosingText\": \"\",\r\n            \"RegistrationCourtText\": \"\",\r\n            \"RowVersion\": \"AAAAAAAhDso=\",\r\n            \"PurchaserId\": \"0\",\r\n            \"PaymentStatus\": \"0\",\r\n            \"SupplierPostalAddressBusinessName\": \"\",\r\n            \"SupplierPostalAddressContactName\": \"\",\r\n            \"SupplierPostalAddressStreet\": \"\",\r\n            \"SupplierPostalAddressPostCode\": \"\",\r\n            \"SupplierPostalAddressCity\": \"\",\r\n            \"SupplierPostalAddressCountry\": \"\",\r\n            \"PurchaserPostalAddressBusinessName\": \"\",\r\n            \"PurchaserPostalAddressContactName\": \"\",\r\n            \"PurchaserPostalAddressStreet\": \"\",\r\n            \"PurchaserPostalAddressPostCode\": \"\",\r\n            \"PurchaserPostalAddressCity\": \"\",\r\n            \"PurchaserPostalAddressCountry\": \"\",\r\n            \"VatPayerType\": \"0\",\r\n            \"IsTotalPriceInclVat\": \"0\",\r\n            \"IsUnitPriceInclVat\": \"0\",\r\n            \"VatTotalPrice\": \"0.00000000\",\r\n            \"TotalPriceInclVat\": \"0.00000000\",\r\n            \"DiscountType\": \"0\",\r\n            \"DiscountPercent\": \"0.00000000\",\r\n            \"DiscountTotalPrice\": \"0.00000000\",\r\n            \"DiscountTotalPriceInclVat\": \"0.00000000\",\r\n            \"TotalPriceBeforeDiscount\": \"0.00000000\",\r\n            \"TotalPriceInclVatBeforeDiscount\": \"0.00000000\",\r\n            \"AdvancePaymentDeduction\": \"0.00000000\",\r\n            \"SumForPayment\": \"0.00000000\",\r\n            \"InvoiceType\": \"0\",\r\n            \"LinkedDocumentNumber\": \"\",\r\n            \"SumOfPayments\": \"0.00000000\",\r\n            \"SentStatus\": \"0\",\r\n            \"ReminderStatus\": \"0\",\r\n            \"ReminderCount\": \"0\",\r\n            \"CountOfPayments\": \"0\",\r\n            \"MandatoryTextType\": \"0\",\r\n            \"MandatoryText\": \"\",\r\n            \"UseParagraph7or7a\": \"False\",\r\n            \"Culture\": \"sk-SK\",\r\n            \"LockType\": \"0\",\r\n            \"MigrationSystemType\": \"\",\r\n            \"MigrationSystemId\": \"\",\r\n            \"MigratedAt\": null,\r\n            \"TriggeredLastModifiedTimeStamp\": \"2019-08-06T05:27:45.390000Z\",\r\n            \"UserCustomFields\": \"\",\r\n            \"LastExportRelevantChangedTimeStamp\": \"2019-08-06T05:27:45.390000Z\",\r\n            \"HideStamp\": \"False\",\r\n            \"CustomTextFields\": \"\",\r\n            \"OssTaxState\": \"0\",\r\n            \"SupplierOssTaxState\": \"0\",\r\n            \"Note\": \"\",\r\n            \"IssueDateStringSk\": \"06.08.2019\",\r\n            \"DeliveryDateStringSk\": \"01.01.0001\",\r\n            \"DueDateStringSk\": \"01.01.0001\",\r\n            \"Items\": [\r\n            {\r\n                \"Id\": 562,\r\n                \"InvoiceId\": 292,\r\n                \"Ordinal\": 0,\r\n                \"Name\": \"položka1\",\r\n                \"Amount\": 1.00000000,\r\n                \"MeasureUnit\": \"\",\r\n                \"UnitPrice\": 50.00000000,\r\n                \"TotalPrice\": 60.00000000,\r\n                \"Description\": \"\",\r\n                \"UnitPriceInclVat\": 50.00000000,\r\n                \"TotalPriceInclVat\": 60.00000000,\r\n                \"DiscountPercent\": 0.00000000,\r\n                \"UnitPriceBeforeDiscount\": 50.00000000,\r\n                \"UnitPriceInclVatBeforeDiscount\": 50.00000000,\r\n                \"DiscountUnitPrice\": 0.00000000,\r\n                \"DiscountUnitPriceInclVat\": 0.00000000,\r\n                \"DiscountTotalPrice\": 0.00000000,\r\n                \"DiscountTotalPriceInclVat\": 0.00000000,\r\n                \"TotalPriceBeforeDiscount\": 60.00000000,\r\n                \"TotalPriceInclVatBeforeDiscount\": 60.00000000,\r\n                \"DiscountName\": \"\",\r\n                \"StockItemType\": 0,\r\n                \"ItemCode\": \"\"\r\n            }\r\n            ]\r\n        },\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\": \"293\",\r\n            \"CompanyId\": \"254\",\r\n            \"DocumentNumber\": \"001\",\r\n            \"NumberingSequence\": \"OF\",\r\n            \"TotalPrice\": \"0.00000000\",\r\n            \"CreatedTimestamp\": \"2019-08-06T05:27:53.26000Z\",\r\n            \"CreatedBy\": \"25\",\r\n            \"LastModifiedTimestamp\": \"2019-08-06T05:27:53.260000Z\",\r\n            \"LastModifiedBy\": \"25\",\r\n            \"IsDeleted\": \"False\",\r\n            \"SupplierRegistrationId\": \"\",\r\n            \"SupplierTaxId\": \"\",\r\n            \"SupplierVatId\": \"\",\r\n            \"SupplierPhoneNumber\": \"\",\r\n            \"SupplierEmail\": \"\",\r\n            \"SupplierWeb\": \"\",\r\n            \"SupplierBusinessName\": \"\",\r\n            \"SupplierContactName\": \"\",\r\n            \"SupplierStreet\": \"\",\r\n            \"SupplierPostCode\": \"\",\r\n            \"SupplierCity\": \"\",\r\n            \"SupplierCountry\": \"\",\r\n            \"PurchaserRegistrationId\": \"\",\r\n            \"PurchaserTaxId\": \"\",\r\n            \"PurchaserVatId\": \"\",\r\n            \"PurchaserPhoneNumber\": \"\",\r\n            \"PurchaserEmail\": \"\",\r\n            \"PurchaserWeb\": \"\",\r\n            \"PurchaserBusinessName\": \"abc\",\r\n            \"PurchaserContactName\": \"\",\r\n            \"PurchaserStreet\": \"\",\r\n            \"PurchaserPostCode\": \"\",\r\n            \"PurchaserCity\": \"\",\r\n            \"PurchaserCountry\": \"\",\r\n            \"Iban\": \"\",\r\n            \"Swift\": \"\",\r\n            \"VariableSymbol\": \"\",\r\n            \"IssueDate\": \"2019-08-06T05:23:48.7000000Z\",\r\n            \"DeliveryDate\": \"0001-01-01T00:00:00.0000000Z\",\r\n            \"DueDate\": \"2020-08-06T05:23:48.700Z\",\r\n            \"PaymentType\": \"\",\r\n            \"DeliveryType\": \"\",\r\n            \"OrderNumber\": \"\",\r\n            \"OpeningText\": \"\",\r\n            \"ClosingText\": \"\",\r\n            \"RegistrationCourtText\": \"\",\r\n            \"RowVersion\": \"AAAAAAAhDss=\",\r\n            \"PurchaserId\": \"0\",\r\n            \"PaymentStatus\": \"0\",\r\n            \"SupplierPostalAddressBusinessName\": \"\",\r\n            \"SupplierPostalAddressContactName\": \"\",\r\n            \"SupplierPostalAddressStreet\": \"\",\r\n            \"SupplierPostalAddressPostCode\": \"\",\r\n            \"SupplierPostalAddressCity\": \"\",\r\n            \"SupplierPostalAddressCountry\": \"\",\r\n            \"PurchaserPostalAddressBusinessName\": \"\",\r\n            \"PurchaserPostalAddressContactName\": \"\",\r\n            \"PurchaserPostalAddressStreet\": \"\",\r\n            \"PurchaserPostalAddressPostCode\": \"\",\r\n            \"PurchaserPostalAddressCity\": \"\",\r\n            \"PurchaserPostalAddressCountry\": \"\",\r\n            \"VatPayerType\": \"0\",\r\n            \"IsTotalPriceInclVat\": \"0\",\r\n            \"IsUnitPriceInclVat\": \"0\",\r\n            \"VatTotalPrice\": \"0.00000000\",\r\n            \"TotalPriceInclVat\": \"0.00000000\",\r\n            \"DiscountType\": \"0\",\r\n            \"DiscountPercent\": \"0.00000000\",\r\n            \"DiscountTotalPrice\": \"0.00000000\",\r\n            \"DiscountTotalPriceInclVat\": \"0.00000000\",\r\n            \"TotalPriceBeforeDiscount\": \"0.00000000\",\r\n            \"TotalPriceInclVatBeforeDiscount\": \"0.00000000\",\r\n            \"AdvancePaymentDeduction\": \"0.00000000\",\r\n            \"SumForPayment\": \"0.00000000\",\r\n            \"InvoiceType\": \"0\",\r\n            \"LinkedDocumentNumber\": \"\",\r\n            \"SumOfPayments\": \"0.00000000\",\r\n            \"SentStatus\": \"0\",\r\n            \"ReminderStatus\": \"0\",\r\n            \"ReminderCount\": \"0\",\r\n            \"CountOfPayments\": \"0\",\r\n            \"MandatoryTextType\": \"0\",\r\n            \"MandatoryText\": \"\",\r\n            \"UseParagraph7or7a\": \"False\",\r\n            \"Culture\": \"sk-SK\",\r\n            \"LockType\": \"0\",\r\n            \"MigrationSystemType\": \"\",\r\n            \"MigrationSystemId\": \"\",\r\n            \"MigratedAt\": null,\r\n            \"TriggeredLastModifiedTimeStamp\": \"2019-08-06T05:27:53.26000Z\",\r\n            \"UserCustomFields\": \"\",\r\n            \"LastExportRelevantChangedTimeStamp\": \"2019-08-06T05:27:53.260000Z\",\r\n            \"HideStamp\": \"False\",\r\n            \"CustomTextFields\": \"\",\r\n            \"OssTaxState\": \"0\",\r\n            \"SupplierOssTaxState\": \"0\",\r\n            \"Note\": \"\",\r\n            \"IssueDateStringSk\": \"06.08.2019\",\r\n            \"DeliveryDateStringSk\": \"01.01.0001\",\r\n            \"DueDateStringSk\": \"01.01.0001\",\r\n            \"Items\": [\r\n            {\r\n                \"Id\": 563,\r\n                \"InvoiceId\": 293,\r\n                \"Ordinal\": 0,\r\n                \"Name\": \"položka1\",\r\n                \"Amount\": 1.00000000,\r\n                \"MeasureUnit\": \"\",\r\n                \"UnitPrice\": 50.00000000,\r\n                \"TotalPrice\": 60.00000000,\r\n                \"Description\": \"\",\r\n                \"UnitPriceInclVat\": 50.00000000,\r\n                \"TotalPriceInclVat\": 60.00000000,\r\n                \"DiscountPercent\": 0.00000000,\r\n                \"UnitPriceBeforeDiscount\": 50.00000000,\r\n                \"UnitPriceInclVatBeforeDiscount\": 50.00000000,\r\n                \"DiscountUnitPrice\": 0.00000000,\r\n                \"DiscountUnitPriceInclVat\": 0.00000000,\r\n                \"DiscountTotalPrice\": 0.00000000,\r\n                \"DiscountTotalPriceInclVat\": 0.00000000,\r\n                \"TotalPriceBeforeDiscount\": 60.00000000,\r\n                \"TotalPriceInclVatBeforeDiscount\": 60.00000000,\r\n                \"DiscountName\": \"\",\r\n                \"StockItemType\": 0,\r\n                \"ItemCode\": \"\"\r\n            }\r\n            ]\r\n        },\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\": \"294\",\r\n            \"CompanyId\": \"254\",\r\n            \"DocumentNumber\": \"002\",\r\n            \"NumberingSequence\": \"OF\",\r\n            \"TotalPrice\": \"0.00000000\",\r\n            \"CreatedTimestamp\": \"2019-08-06T05:27:53.31000Z\",\r\n            \"CreatedBy\": \"25\",\r\n            \"LastModifiedTimestamp\": \"2019-08-06T05:27:53.310000Z\",\r\n            \"LastModifiedBy\": \"25\",\r\n            \"IsDeleted\": \"False\",\r\n            \"SupplierRegistrationId\": \"\",\r\n            \"SupplierTaxId\": \"\",\r\n            \"SupplierVatId\": \"\",\r\n            \"SupplierPhoneNumber\": \"\",\r\n            \"SupplierEmail\": \"\",\r\n            \"SupplierWeb\": \"\",\r\n            \"SupplierBusinessName\": \"\",\r\n            \"SupplierContactName\": \"\",\r\n            \"SupplierStreet\": \"\",\r\n            \"SupplierPostCode\": \"\",\r\n            \"SupplierCity\": \"\",\r\n            \"SupplierCountry\": \"\",\r\n            \"PurchaserRegistrationId\": \"\",\r\n            \"PurchaserTaxId\": \"\",\r\n            \"PurchaserVatId\": \"\",\r\n            \"PurchaserPhoneNumber\": \"\",\r\n            \"PurchaserEmail\": \"\",\r\n            \"PurchaserWeb\": \"\",\r\n            \"PurchaserBusinessName\": \"xyz\",\r\n            \"PurchaserContactName\": \"\",\r\n            \"PurchaserStreet\": \"\",\r\n            \"PurchaserPostCode\": \"\",\r\n            \"PurchaserCity\": \"\",\r\n            \"PurchaserCountry\": \"\",\r\n            \"Iban\": \"\",\r\n            \"Swift\": \"\",\r\n            \"VariableSymbol\": \"\",\r\n            \"IssueDate\": \"2019-08-06T05:26:30.2000000Z\",\r\n            \"DeliveryDate\": \"0001-01-01T00:00:00.0000000Z\",\r\n            \"DueDate\": \"2021-05-06T05:23:48.700Z\",\r\n            \"PaymentType\": \"\",\r\n            \"DeliveryType\": \"\",\r\n            \"OrderNumber\": \"\",\r\n            \"OpeningText\": \"\",\r\n            \"ClosingText\": \"\",\r\n            \"RegistrationCourtText\": \"\",\r\n            \"RowVersion\": \"AAAAAAAhDsw=\",\r\n            \"PurchaserId\": \"0\",\r\n            \"PaymentStatus\": \"0\",\r\n            \"SupplierPostalAddressBusinessName\": \"\",\r\n            \"SupplierPostalAddressContactName\": \"\",\r\n            \"SupplierPostalAddressStreet\": \"\",\r\n            \"SupplierPostalAddressPostCode\": \"\",\r\n            \"SupplierPostalAddressCity\": \"\",\r\n            \"SupplierPostalAddressCountry\": \"\",\r\n            \"PurchaserPostalAddressBusinessName\": \"\",\r\n            \"PurchaserPostalAddressContactName\": \"\",\r\n            \"PurchaserPostalAddressStreet\": \"\",\r\n            \"PurchaserPostalAddressPostCode\": \"\",\r\n            \"PurchaserPostalAddressCity\": \"\",\r\n            \"PurchaserPostalAddressCountry\": \"\",\r\n            \"VatPayerType\": \"0\",\r\n            \"IsTotalPriceInclVat\": \"0\",\r\n            \"IsUnitPriceInclVat\": \"0\",\r\n            \"VatTotalPrice\": \"0.00000000\",\r\n            \"TotalPriceInclVat\": \"0.00000000\",\r\n            \"DiscountType\": \"0\",\r\n            \"DiscountPercent\": \"0.00000000\",\r\n            \"DiscountTotalPrice\": \"0.00000000\",\r\n            \"DiscountTotalPriceInclVat\": \"0.00000000\",\r\n            \"TotalPriceBeforeDiscount\": \"0.00000000\",\r\n            \"TotalPriceInclVatBeforeDiscount\": \"0.00000000\",\r\n            \"AdvancePaymentDeduction\": \"0.00000000\",\r\n            \"SumForPayment\": \"0.00000000\",\r\n            \"InvoiceType\": \"0\",\r\n            \"LinkedDocumentNumber\": \"\",\r\n            \"SumOfPayments\": \"0.00000000\",\r\n            \"SentStatus\": \"0\",\r\n            \"ReminderStatus\": \"0\",\r\n            \"ReminderCount\": \"0\",\r\n            \"CountOfPayments\": \"0\",\r\n            \"MandatoryTextType\": \"0\",\r\n            \"MandatoryText\": \"\",\r\n            \"UseParagraph7or7a\": \"False\",\r\n            \"Culture\": \"sk-SK\",\r\n            \"LockType\": \"0\",\r\n            \"MigrationSystemType\": \"\",\r\n            \"MigrationSystemId\": \"\",\r\n            \"MigratedAt\": null,\r\n            \"TriggeredLastModifiedTimeStamp\": \"2019-08-06T05:27:53.31000Z\",\r\n            \"UserCustomFields\": \"\",\r\n            \"LastExportRelevantChangedTimeStamp\": \"2019-08-06T05:27:53.310000Z\",\r\n            \"HideStamp\": \"False\",\r\n            \"CustomTextFields\": \"\",\r\n            \"OssTaxState\": \"0\",\r\n            \"SupplierOssTaxState\": \"0\",\r\n            \"Note\": \"\",\r\n            \"IssueDateStringSk\": \"06.08.2019\",\r\n            \"DeliveryDateStringSk\": \"01.01.0001\",\r\n            \"DueDateStringSk\": \"01.01.0001\",\r\n            \"Items\": [\r\n                {\r\n                    \"Id\": 564,\r\n                    \"InvoiceId\": 294,\r\n                    \"Ordinal\": 0,\r\n                    \"Name\": \"položka x\",\r\n                    \"Amount\": 1.00000000,\r\n                    \"MeasureUnit\": \"\",\r\n                    \"UnitPrice\": 90.00000000,\r\n                    \"TotalPrice\": 100.00000000,\r\n                    \"Description\": \"\",\r\n                    \"UnitPriceInclVat\": 90.00000000,\r\n                    \"TotalPriceInclVat\": 100.00000000,\r\n                    \"DiscountPercent\": 0.00000000,\r\n                    \"UnitPriceBeforeDiscount\": 90.00000000,\r\n                    \"UnitPriceInclVatBeforeDiscount\": 90.00000000,\r\n                    \"DiscountUnitPrice\": 0.00000000,\r\n                    \"DiscountUnitPriceInclVat\": 0.00000000,\r\n                    \"DiscountTotalPrice\": 0.00000000,\r\n                    \"DiscountTotalPriceInclVat\": 0.00000000,\r\n                    \"TotalPriceBeforeDiscount\": 100.00000000,\r\n                    \"TotalPriceInclVatBeforeDiscount\": 100.00000000,\r\n                    \"DiscountName\": \"\",\r\n                    \"StockItemType\": 0,\r\n                    \"ItemCode\": \"\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"@search.action\":\"mergeOrUpload\",\r\n            \"Id\": \"295\",\r\n            \"CompanyId\": \"255\",\r\n            \"DocumentNumber\": \"001\",\r\n            \"NumberingSequence\": \"OF\",\r\n            \"TotalPrice\": \"0.00000000\",\r\n            \"CreatedTimestamp\": \"2019-08-06T05:27:59.460000Z\",\r\n            \"CreatedBy\": \"25\",\r\n            \"LastModifiedTimestamp\": \"2019-08-06T05:27:59.460000Z\",\r\n            \"LastModifiedBy\": \"25\",\r\n            \"IsDeleted\": \"True\",\r\n            \"SupplierRegistrationId\": \"\",\r\n            \"SupplierTaxId\": \"\",\r\n            \"SupplierVatId\": \"\",\r\n            \"SupplierPhoneNumber\": \"\",\r\n            \"SupplierEmail\": \"\",\r\n            \"SupplierWeb\": \"\",\r\n            \"SupplierBusinessName\": \"\",\r\n            \"SupplierContactName\": \"\",\r\n            \"SupplierStreet\": \"\",\r\n            \"SupplierPostCode\": \"\",\r\n            \"SupplierCity\": \"\",\r\n            \"SupplierCountry\": \"\",\r\n            \"PurchaserRegistrationId\": \"\",\r\n            \"PurchaserTaxId\": \"\",\r\n            \"PurchaserVatId\": \"\",\r\n            \"PurchaserPhoneNumber\": \"\",\r\n            \"PurchaserEmail\": \"\",\r\n            \"PurchaserWeb\": \"\",\r\n            \"PurchaserBusinessName\": \"abc\",\r\n            \"PurchaserContactName\": \"\",\r\n            \"PurchaserStreet\": \"\",\r\n            \"PurchaserPostCode\": \"\",\r\n            \"PurchaserCity\": \"\",\r\n            \"PurchaserCountry\": \"\",\r\n            \"Iban\": \"\",\r\n            \"Swift\": \"\",\r\n            \"VariableSymbol\": \"\",\r\n            \"IssueDate\": \"2019-08-06T05:23:48.7000000Z\",\r\n            \"DeliveryDate\": \"0001-01-01T00:00:00.0000000Z\",\r\n            \"DueDate\": \"0001-01-01T00:00:00.0000000Z\",\r\n            \"PaymentType\": \"\",\r\n            \"DeliveryType\": \"\",\r\n            \"OrderNumber\": \"\",\r\n            \"OpeningText\": \"\",\r\n            \"ClosingText\": \"\",\r\n            \"RegistrationCourtText\": \"\",\r\n            \"RowVersion\": \"AAAAAAAhDs0=\",\r\n            \"PurchaserId\": \"0\",\r\n            \"PaymentStatus\": \"0\",\r\n            \"SupplierPostalAddressBusinessName\": \"\",\r\n            \"SupplierPostalAddressContactName\": \"\",\r\n            \"SupplierPostalAddressStreet\": \"\",\r\n            \"SupplierPostalAddressPostCode\": \"\",\r\n            \"SupplierPostalAddressCity\": \"\",\r\n            \"SupplierPostalAddressCountry\": \"\",\r\n            \"PurchaserPostalAddressBusinessName\": \"\",\r\n            \"PurchaserPostalAddressContactName\": \"\",\r\n            \"PurchaserPostalAddressStreet\": \"\",\r\n            \"PurchaserPostalAddressPostCode\": \"\",\r\n            \"PurchaserPostalAddressCity\": \"\",\r\n            \"PurchaserPostalAddressCountry\": \"\",\r\n            \"VatPayerType\": \"0\",\r\n            \"IsTotalPriceInclVat\": \"0\",\r\n            \"IsUnitPriceInclVat\": \"0\",\r\n            \"VatTotalPrice\": \"0.00000000\",\r\n            \"TotalPriceInclVat\": \"0.00000000\",\r\n            \"DiscountType\": \"0\",\r\n            \"DiscountPercent\": \"0.00000000\",\r\n            \"DiscountTotalPrice\": \"0.00000000\",\r\n            \"DiscountTotalPriceInclVat\": \"0.00000000\",\r\n            \"TotalPriceBeforeDiscount\": \"0.00000000\",\r\n            \"TotalPriceInclVatBeforeDiscount\": \"0.00000000\",\r\n            \"AdvancePaymentDeduction\": \"0.00000000\",\r\n            \"SumForPayment\": \"0.00000000\",\r\n            \"InvoiceType\": \"0\",\r\n            \"LinkedDocumentNumber\": \"\",\r\n            \"SumOfPayments\": \"0.00000000\",\r\n            \"SentStatus\": \"0\",\r\n            \"ReminderStatus\": \"0\",\r\n            \"ReminderCount\": \"0\",\r\n            \"CountOfPayments\": \"0\",\r\n            \"MandatoryTextType\": \"0\",\r\n            \"MandatoryText\": \"\",\r\n            \"UseParagraph7or7a\": \"False\",\r\n            \"Culture\": \"sk-SK\",\r\n            \"LockType\": \"0\",\r\n            \"MigrationSystemType\": \"\",\r\n            \"MigrationSystemId\": \"\",\r\n            \"MigratedAt\": null,\r\n            \"TriggeredLastModifiedTimeStamp\": \"2019-08-06T05:27:59.460000Z\",\r\n            \"UserCustomFields\": \"\",\r\n            \"LastExportRelevantChangedTimeStamp\": \"2019-08-06T05:27:59.460000Z\",\r\n            \"HideStamp\": \"False\",\r\n            \"CustomTextFields\": \"\",\r\n            \"OssTaxState\": \"0\",\r\n            \"SupplierOssTaxState\": \"0\",\r\n            \"Note\": \"\",\r\n            \"IssueDateStringSk\": \"06.08.2019\",\r\n            \"DeliveryDateStringSk\": \"01.01.0001\",\r\n            \"DueDateStringSk\": \"01.01.0001\",\r\n            \"Items\": [\r\n                {\r\n                    \"Id\": 565,\r\n                    \"InvoiceId\": 295,\r\n                    \"Ordinal\": 0,\r\n                    \"Name\": \"položka1\",\r\n                    \"Amount\": 1.00000000,\r\n                    \"MeasureUnit\": \"\",\r\n                    \"UnitPrice\": 50.00000000,\r\n                    \"TotalPrice\": 60.00000000,\r\n                    \"Description\": \"\",\r\n                    \"UnitPriceInclVat\": 50.00000000,\r\n                    \"TotalPriceInclVat\": 60.00000000,\r\n                    \"DiscountPercent\": 0.00000000,\r\n                    \"UnitPriceBeforeDiscount\": 50.00000000,\r\n                    \"UnitPriceInclVatBeforeDiscount\": 50.00000000,\r\n                    \"DiscountUnitPrice\": 0.00000000,\r\n                    \"DiscountUnitPriceInclVat\": 0.00000000,\r\n                    \"DiscountTotalPrice\": 0.00000000,\r\n                    \"DiscountTotalPriceInclVat\": 0.00000000,\r\n                    \"TotalPriceBeforeDiscount\": 60.00000000,\r\n                    \"TotalPriceInclVatBeforeDiscount\": 60.00000000,\r\n                    \"DiscountName\": \"\",\r\n                    \"StockItemType\": 0,\r\n                    \"ItemCode\": \"\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.index?api-version=2020-06-30",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"indexes('{{index}}')",
+								"docs",
+								"search.index"
+							],
+							"query": [
+								{
+									"key": "api-version",
+									"value": "2020-06-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Documents indexed correctly",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Documents should be indexed correctly.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    var result = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Correct number of docs should be indexed.\", function () {\r",
+									"        pm.expect(result.response.numFound).to.equal(9);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Documents should be indexed in correct format.\", function () {\r",
+									"        pm.expect(result.response.docs[0].id).to.equal(\"1\");\r",
+									"        pm.expect(Object.keys(result.response.docs[0]).length).to.be.greaterThan(2);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
 						},
 						{
-							"key": "q",
-							"value": "*%3A*"
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, [1000]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8983/solr/{{index}}/select?indent=true&q.op=OR&q=*%3A*&rows=30",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8983",
+							"path": [
+								"solr",
+								"{{index}}",
+								"select"
+							],
+							"query": [
+								{
+									"key": "indent",
+									"value": "true"
+								},
+								{
+									"key": "q.op",
+									"value": "OR"
+								},
+								{
+									"key": "q",
+									"value": "*%3A*"
+								},
+								{
+									"key": "rows",
+									"value": "30"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Search all documents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Search should retrieve correct documents.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    var result = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
+									"        pm.expect(result[\"@odata.count\"]).to.equal(9);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Property 'Id' should exist.\", function () {\r",
+									"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Nested items should have correct format.\", function () {\r",
+									"        pm.expect(result.value[8].Items[0]).to.not.equal(undefined);\r",
+									"        pm.expect(result.value[8][\"Items.Name\"]).to.equal(undefined);\r",
+									"    })\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
 						},
 						{
-							"key": "rows",
-							"value": "30"
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
-					]
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"search\":\"*:*\", \"top\": 10}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"indexes('{{index}}')",
+								"docs",
+								"search.post.search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search all documents in schema without nested fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Search should retrieve correct documents.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    var result = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
+									"        pm.expect(result[\"@odata.count\"]).to.equal(3);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Property 'Id' should exist.\", function () {\r",
+									"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"search\":\"*:*\", \"top\": 10}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8000/indexes('{{flatIndex}}')/docs/search.post.search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"indexes('{{flatIndex}}')",
+								"docs",
+								"search.post.search"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Search all documents",
-			"event": [
+			"name": "Filter",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Search should retrieve correct documents.\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"\r",
-							"    var result = pm.response.json();\r",
-							"\r",
-							"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
-							"        pm.expect(result[\"@odata.count\"]).to.equal(9);\r",
-							"    });\r",
-							"\r",
-							"    pm.test(\"Property 'Id' should exist.\", function () {\r",
-							"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
-							"    });\r",
-							"\r",
-							"    pm.test(\"Nested items should have correct format.\", function () {\r",
-							"        pm.expect(result.value[8].Items[0]).to.not.equal(undefined);\r",
-							"        pm.expect(result.value[8][\"Items.Name\"]).to.equal(undefined);\r",
-							"    })\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"search\":\"*:*\", \"top\": 10}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Search with filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Search should retrieve correct documents.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    var result = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
+									"        pm.expect(result[\"@odata.count\"]).to.equal(3);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.post.search",
-					"protocol": "https",
-					"host": [
-						"localhost"
 					],
-					"port": "8000",
-					"path": [
-						"indexes('invoicingindex')",
-						"docs",
-						"search.post.search"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Search all documents in schema without nested fields",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Search should retrieve correct documents.\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"\r",
-							"    var result = pm.response.json();\r",
-							"\r",
-							"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
-							"        pm.expect(result[\"@odata.count\"]).to.equal(3);\r",
-							"    });\r",
-							"\r",
-							"    pm.test(\"Property 'Id' should exist.\", function () {\r",
-							"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
-							"    });\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"search\":\"*:*\", \"top\": 10}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"search\":\"*:*\",\r\n    \"filter\":\"(not IsDeleted) and DueDate ge 2021-1-01T00:00:00.000Z and DueDate le 2021-10-31T23:59:00.000Z\",\r\n    \"top\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"indexes('{{index}}')",
+								"docs",
+								"search.post.search"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "https://localhost:8000/indexes('partners-index')/docs/search.post.search",
-					"protocol": "https",
-					"host": [
-						"localhost"
+				{
+					"name": "Search with filter with empty field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Search should retrieve correct documents.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    var result = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
+									"        pm.expect(result[\"@odata.count\"]).to.equal(1);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"port": "8000",
-					"path": [
-						"indexes('partners-index')",
-						"docs",
-						"search.post.search"
-					]
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"search\":\"*:*\",\r\n    \"filter\":\"(not IsDeleted) and DocumentNumber eq ''\",\r\n    \"top\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"indexes('{{index}}')",
+								"docs",
+								"search.post.search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search with filter with non empty field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Search should retrieve correct documents.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    var result = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
+									"        pm.expect(result[\"@odata.count\"]).to.equal(8);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"search\":\"*:*\",\r\n    \"filter\":\"DocumentNumber ne ''\",\r\n    \"top\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"indexes('{{index}}')",
+								"docs",
+								"search.post.search"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "Delete document",
@@ -327,14 +588,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.index?api-version=2020-06-30",
+					"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.index?api-version=2020-06-30",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"indexes('invoicingindex')",
+						"indexes('{{index}}')",
 						"docs",
 						"search.index"
 					],
@@ -391,14 +652,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.post.search",
+					"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"indexes('invoicingindex')",
+						"indexes('{{index}}')",
 						"docs",
 						"search.post.search"
 					]
@@ -445,14 +706,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.index?api-version=2020-06-30",
+					"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.index?api-version=2020-06-30",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"indexes('invoicingindex')",
+						"indexes('{{index}}')",
 						"docs",
 						"search.index"
 					],
@@ -485,7 +746,7 @@
 							"    var document = result[\"value\"][0];\r",
 							"\r",
 							"    pm.test(\"Document should have correct number of properties\", function () {\r",
-							"        pm.expect(Object.keys(document).length).to.equal(24);\r",
+							"        pm.expect(Object.keys(document).length).to.equal(69);\r",
 							"    });\r",
 							"\r",
 							"    pm.test(\"Document should have updated values\", function () {\r",
@@ -521,14 +782,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.post.search",
+					"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"indexes('invoicingindex')",
+						"indexes('{{index}}')",
 						"docs",
 						"search.post.search"
 					]
@@ -575,14 +836,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.index?api-version=2020-06-30",
+					"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.index?api-version=2020-06-30",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"indexes('invoicingindex')",
+						"indexes('{{index}}')",
 						"docs",
 						"search.index"
 					],
@@ -645,14 +906,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.post.search",
+					"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"indexes('invoicingindex')",
+						"indexes('{{index}}')",
 						"docs",
 						"search.post.search"
 					]
@@ -697,14 +958,14 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.index?api-version=2020-06-30",
+					"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.index?api-version=2020-06-30",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"indexes('invoicingindex')",
+						"indexes('{{index}}')",
 						"docs",
 						"search.index"
 					],
@@ -767,20 +1028,121 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/indexes('invoicingindex')/docs/search.post.search",
+					"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
 					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"indexes('invoicingindex')",
+						"indexes('{{index}}')",
 						"docs",
 						"search.post.search"
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Delete all documents",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Documents should be indexed correctly.\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(function(){}, [1000]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<add><delete><query>*:*</query></delete></add>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8983/solr/{{index}}/update?commitWithin=1000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8983",
+					"path": [
+						"solr",
+						"{{index}}",
+						"update"
+					],
+					"query": [
+						{
+							"key": "commitWithin",
+							"value": "1000"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "index",
+			"value": "invoicingindex",
+			"type": "string"
+		},
+		{
+			"key": "flatIndex",
+			"value": "partners-index",
+			"type": "string"
 		}
 	]
 }
