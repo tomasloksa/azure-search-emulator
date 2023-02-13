@@ -23,6 +23,10 @@ jobs:
         run:
           docker compose -f demo/docker-compose-postman.yml up -d
 
+      - name: Wait for index creation
+        run: sleep 60s
+        shell: bash
+
       - name: Run API test
         run: |
           postman collection run Tests/AzureSearchEmulator.postman_collection.json
