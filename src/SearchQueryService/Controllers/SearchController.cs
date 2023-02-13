@@ -260,6 +260,11 @@ namespace SearchQueryService.Controllers
                 }
                 else
                 {
+                    if (item.Value.Count == 1 && item.Value[0].ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+
                     for (int i = 0; i < item.Value.Count; i++)
                     {
                         item.Value[i] = ConvertValue(item.Value[i]);
