@@ -13,6 +13,8 @@ using SearchQueryService.Documents.Models.Solr;
 using SearchQueryService.Helpers;
 using SearchQueryService.Indexes;
 using SearchQueryService.Indexes.Models.Solr;
+using Microsoft.Extensions.Options;
+using SearchQueryService.Config;
 
 namespace SearchQueryService.Controllers
 {
@@ -29,13 +31,16 @@ namespace SearchQueryService.Controllers
         private readonly ILogger _logger;
         private readonly SolrService _solrService;
         private readonly SchemaMemory _schemaMemory;
+        private readonly DocumentOptions _documentOptions;
 
         public SearchController(
             ILogger<SearchController> logger,
+            IOptions<DocumentOptions> documentOptions,
             SchemaMemory schemaMemory,
             SolrService solrService)
         {
             _logger = logger;
+            _documentOptions = documentOptions?.Value;
             _solrService = solrService;
             _schemaMemory = schemaMemory;
         }
@@ -260,6 +265,12 @@ namespace SearchQueryService.Controllers
                 }
                 else
                 {
+                    if (!_documentOptions.RemoveNullFieldsOnMerge &&
+                        item.Value.Count == 1 && item.Value[0].ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+
                     for (int i = 0; i < item.Value.Count; i++)
                     {
                         item.Value[i] = ConvertValue(item.Value[i]);

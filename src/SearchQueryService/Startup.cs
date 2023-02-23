@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Polly;
 using Polly.Extensions.Http;
+using SearchQueryService.Config;
 using SearchQueryService.Helpers;
 using SearchQueryService.Indexes;
 using SearchQueryService.Services;
@@ -31,11 +32,14 @@ namespace SearchQueryService
             services.AddSingleton<ISearchQueryBuilder, SolrSearchQueryBuilder>();
             services.AddSingleton<SchemaMemory>();
 
+            services.ConfigureOptions<DocumentOptions>(Configuration);
+
             services.AddHttpClient();
             services.AddHttpClient<SolrService>(httpClient =>
             {
                 httpClient.BaseAddress = Tools.GetSearchUrl();
             }).AddPolicyHandler(GetRetryPolicy());
+
             services
                 .AddHealthChecks()
                 .AddCheck<SolrHealthCheck>("Solr");
