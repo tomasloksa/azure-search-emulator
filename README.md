@@ -71,6 +71,14 @@ Due to another limitation in Solr API, the primary key cannot be changed via API
 and therefore has been set to `id`, but `Id` is also supported, due to camelCasing of property names. 
 
 Whole index creation process uses *ILogger* for logging the status, which can be read off the container's log.
+
+## Settings
+
+**`RemoveNullValuesOnMerge`** - this settings specifies, whether fields that receive `null` value in `mergeOrUpdate` should be removed.
+
+Default value is `true`, as this is the default behaviour of Azure Cognitive Search.
+For some reason, the Azure Search SDK sends null values, even when it doesn't want to remove the fields. If you encounter the same problem, and update isn't working properly, set this to `false`.
+
 ## Features
 
 Currently supports:
