@@ -10,6 +10,7 @@ using SearchQueryService.Services;
 using Polly;
 using SearchQueryService.Exceptions;
 using SearchQueryService.Indexes.Models.Solr;
+using System.IO.Compression;
 
 namespace SearchQueryService.Indexes
 {
@@ -34,9 +35,14 @@ namespace SearchQueryService.Indexes
 
         public async Task ProcessDirectory()
         {
-            string[] indexDirectories = Directory.GetDirectories("../srv/data");
+            const string dir = "../srv/data";
+            WaitForFiles(dir);
+            CheckIfZipExist(dir);
+
+
+            string[] indexDirectories = Directory.GetDirectories(dir);
             _logger.LogInformation("Starting index creation process..");
-            _logger.LogInformation($"=== Creating {indexDirectories.Length} indexes");
+            _logger.LogInformation("=== Creating {indexDirectoriesLength} indexes.", indexDirectories.Length);
 
             await _solrService.CheckAndThrowExceptionIfSolrIsNotAvailable();
 
@@ -46,11 +52,11 @@ namespace SearchQueryService.Indexes
 
                 if (index == null)
                 {
-                    _logger.LogInformation($"index.json not found in: \"{indexDir}\", skipping");
+                    _logger.LogInformation("index.json not found in: \"{indexDir}\", skipping", indexDir);
                     continue;
                 }
 
-                _logger.LogInformation($"====== Creating index: {index.Name}");
+                _logger.LogInformation("====== Creating index: {indexName}", index.Name);
 
                 var fieldsToAdd = GetFieldsFromIndex(index).ToList();
 
@@ -68,6 +74,35 @@ namespace SearchQueryService.Indexes
             }
 
             _logger.LogInformation("Index creation finished");
+        }
+
+        private void WaitForFiles(string indexDir)
+        {
+            bool isFilesExist = Policy
+                .HandleResult<bool>(isFilesExist => !isFilesExist)
+                .WaitAndRetry(60, retryAttempt =>
+                {
+                    _logger.LogWarning("====== Waiting until files exist. Attempt: {retryAttempt}", retryAttempt);
+                    return TimeSpan.FromSeconds(2);
+                })
+                .Execute(() => FilesExist(indexDir));
+
+            if (!isFilesExist)
+            {
+                throw new InvalidOperationException($"Files not found in: {indexDir}");
+            }
+        }
+
+        private static bool FilesExist(string indexDir)
+            => Directory.Exists(indexDir) && Directory.EnumerateFiles(indexDir).Any();
+
+        private static void CheckIfZipExist(string dir)
+        {
+            string zipFileName = Path.Combine(dir, "/indexes.zip");
+            if (File.Exists(zipFileName))
+            {
+                ZipFile.ExtractToDirectory(zipFileName, dir, true);
+            }
         }
 
         private async Task<bool> CanCreateIndex(SearchIndex index)
