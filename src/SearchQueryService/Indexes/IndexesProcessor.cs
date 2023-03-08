@@ -103,7 +103,7 @@ namespace SearchQueryService.Indexes
 
         private static void CheckIfZipExist(string dir)
         {
-            string zipFileName = Path.Combine(dir, "/indexes.zip");
+            string zipFileName = Path.Combine(dir, "Indexes.zip");
             if (File.Exists(zipFileName))
             {
                 ZipFile.ExtractToDirectory(zipFileName, dir, true);
