@@ -1,6 +1,7 @@
 ﻿using Flurl;
 using Kros.Extensions;
 using SearchQueryService.Documents.Models.Azure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -59,7 +60,9 @@ namespace SearchQueryService.Services
 
             if (!string.IsNullOrWhiteSpace(searchFields))
             {
-                string[] fields = searchFields.Replace(" ", "").Split(",");
+                string[] fields = searchFields
+                    .Replace(" ", "")
+                    .Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
                 return string.Join(" OR ", fields.Select(field => $"{field}: ({search})"));
             }
 
