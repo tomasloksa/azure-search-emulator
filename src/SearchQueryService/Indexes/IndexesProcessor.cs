@@ -10,6 +10,9 @@ using SearchQueryService.Services;
 using Polly;
 using SearchQueryService.Exceptions;
 using SearchQueryService.Indexes.Models.Solr;
+using System.IO.Compression;
+using Microsoft.Extensions.Options;
+using SearchQueryService.Config;
 
 namespace SearchQueryService.Indexes
 {
@@ -20,23 +23,30 @@ namespace SearchQueryService.Indexes
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         private readonly SolrService _solrService;
         private readonly SchemaMemory _schemaMemory;
+        private readonly IOptions<IndexesProcessorOptions> _indexersOptions;
         private readonly ILogger _logger;
 
         public IndexesProcessor(
             SolrService solrService,
             SchemaMemory schemaMemory,
+            IOptions<IndexesProcessorOptions> indexersOptions,
             ILogger<IndexesProcessor> logger)
         {
             _solrService = solrService;
             _schemaMemory = schemaMemory;
+            _indexersOptions = indexersOptions;
             _logger = logger;
         }
 
         public async Task ProcessDirectory()
         {
-            string[] indexDirectories = Directory.GetDirectories("../srv/data");
+            const string dir = "../srv/data";
+            WaitForFiles(dir);
+            CheckIfZipExist(dir);
+
+            string[] indexDirectories = Directory.GetDirectories(dir);
             _logger.LogInformation("Starting index creation process..");
-            _logger.LogInformation($"=== Creating {indexDirectories.Length} indexes");
+            _logger.LogInformation("=== Creating {indexDirectoriesLength} indexes.", indexDirectories.Length);
 
             await _solrService.CheckAndThrowExceptionIfSolrIsNotAvailable();
 
@@ -46,11 +56,11 @@ namespace SearchQueryService.Indexes
 
                 if (index == null)
                 {
-                    _logger.LogInformation($"index.json not found in: \"{indexDir}\", skipping");
+                    _logger.LogInformation("index.json not found in: \"{indexDir}\", skipping", indexDir);
                     continue;
                 }
 
-                _logger.LogInformation($"====== Creating index: {index.Name}");
+                _logger.LogInformation("====== Creating index: {indexName}", index.Name);
 
                 var fieldsToAdd = GetFieldsFromIndex(index).ToList();
 
@@ -68,6 +78,36 @@ namespace SearchQueryService.Indexes
             }
 
             _logger.LogInformation("Index creation finished");
+        }
+
+        private void WaitForFiles(string indexDir)
+        {
+            bool isFilesExist = Policy
+                .HandleResult<bool>(isFilesExist => !isFilesExist)
+                .WaitAndRetry(_indexersOptions.Value.WaitForFilesRetryCount, retryAttempt =>
+                {
+                    _logger.LogWarning("====== Waiting until files exist. Attempt: {retryAttempt}", retryAttempt);
+                    return TimeSpan.FromSeconds(2);
+                })
+                .Execute(() => FilesExist(indexDir));
+
+            if (!isFilesExist)
+            {
+                throw new InvalidOperationException($"Files not found in: {indexDir}");
+            }
+        }
+
+        private static bool FilesExist(string indexDir)
+            => Directory.Exists(indexDir)
+                && (Directory.EnumerateFiles(indexDir).Any() || Directory.EnumerateDirectories(indexDir).Any());
+
+        private static void CheckIfZipExist(string dir)
+        {
+            string zipFileName = Path.Combine(dir, "Indexes.zip");
+            if (File.Exists(zipFileName))
+            {
+                ZipFile.ExtractToDirectory(zipFileName, dir, true);
+            }
         }
 
         private async Task<bool> CanCreateIndex(SearchIndex index)
