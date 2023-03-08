@@ -44,7 +44,6 @@ namespace SearchQueryService.Indexes
             WaitForFiles(dir);
             CheckIfZipExist(dir);
 
-
             string[] indexDirectories = Directory.GetDirectories(dir);
             _logger.LogInformation("Starting index creation process..");
             _logger.LogInformation("=== Creating {indexDirectoriesLength} indexes.", indexDirectories.Length);
@@ -99,7 +98,8 @@ namespace SearchQueryService.Indexes
         }
 
         private static bool FilesExist(string indexDir)
-            => Directory.Exists(indexDir) && Directory.EnumerateFiles(indexDir).Any();
+            => Directory.Exists(indexDir)
+                && (Directory.EnumerateFiles(indexDir).Any() || Directory.EnumerateDirectories(indexDir).Any());
 
         private static void CheckIfZipExist(string dir)
         {
