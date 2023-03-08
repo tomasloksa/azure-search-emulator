@@ -33,6 +33,7 @@ namespace SearchQueryService
             services.AddSingleton<SchemaMemory>();
 
             services.ConfigureOptions<DocumentOptions>(Configuration);
+            services.ConfigureOptions<IndexesProcessorOptions>(Configuration);
 
             services.AddHttpClient();
             services.AddHttpClient<SolrService>(httpClient =>

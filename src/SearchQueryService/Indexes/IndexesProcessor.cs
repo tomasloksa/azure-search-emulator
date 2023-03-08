@@ -11,6 +11,8 @@ using Polly;
 using SearchQueryService.Exceptions;
 using SearchQueryService.Indexes.Models.Solr;
 using System.IO.Compression;
+using Microsoft.Extensions.Options;
+using SearchQueryService.Config;
 
 namespace SearchQueryService.Indexes
 {
@@ -21,15 +23,18 @@ namespace SearchQueryService.Indexes
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         private readonly SolrService _solrService;
         private readonly SchemaMemory _schemaMemory;
+        private readonly IOptions<IndexesProcessorOptions> _indexersOptions;
         private readonly ILogger _logger;
 
         public IndexesProcessor(
             SolrService solrService,
             SchemaMemory schemaMemory,
+            IOptions<IndexesProcessorOptions> indexersOptions,
             ILogger<IndexesProcessor> logger)
         {
             _solrService = solrService;
             _schemaMemory = schemaMemory;
+            _indexersOptions = indexersOptions;
             _logger = logger;
         }
 
@@ -80,7 +85,7 @@ namespace SearchQueryService.Indexes
         {
             bool isFilesExist = Policy
                 .HandleResult<bool>(isFilesExist => !isFilesExist)
-                .WaitAndRetry(60, retryAttempt =>
+                .WaitAndRetry(_indexersOptions.Value.WaitForFilesRetryCount, retryAttempt =>
                 {
                     _logger.LogWarning("====== Waiting until files exist. Attempt: {retryAttempt}", retryAttempt);
                     return TimeSpan.FromSeconds(2);
