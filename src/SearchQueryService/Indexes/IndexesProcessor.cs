@@ -19,6 +19,7 @@ namespace SearchQueryService.Indexes
     public class IndexesProcessor
     {
         private const int DefaultIndexSize = 4;
+        private const string IndexesZipFileName = "Indexes.zip";
 
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         private readonly SolrService _solrService;
@@ -41,7 +42,7 @@ namespace SearchQueryService.Indexes
         public async Task ProcessDirectory()
         {
             const string dir = "../srv/data";
-            WaitForFiles(dir);
+            WaitForIndexesZipFile(dir);
             CheckIfZipExist(dir);
 
             string[] indexDirectories = Directory.GetDirectories(dir);
@@ -80,8 +81,13 @@ namespace SearchQueryService.Indexes
             _logger.LogInformation("Index creation finished");
         }
 
-        private void WaitForFiles(string indexDir)
+        private void WaitForIndexesZipFile(string indexDir)
         {
+            if (!_indexersOptions.Value.WaitForIndexesZip)
+            {
+                return;
+            }
+
             bool isFilesExist = Policy
                 .HandleResult<bool>(isFilesExist => !isFilesExist)
                 .WaitAndRetry(_indexersOptions.Value.WaitForFilesRetryCount, retryAttempt =>
@@ -98,12 +104,11 @@ namespace SearchQueryService.Indexes
         }
 
         private static bool FilesExist(string indexDir)
-            => Directory.Exists(indexDir)
-                && (Directory.EnumerateFiles(indexDir).Any() || Directory.EnumerateDirectories(indexDir).Any());
+            => File.Exists(Path.Combine(indexDir, IndexesZipFileName));
 
         private static void CheckIfZipExist(string dir)
         {
-            string zipFileName = Path.Combine(dir, "Indexes.zip");
+            string zipFileName = Path.Combine(dir, IndexesZipFileName);
             if (File.Exists(zipFileName))
             {
                 ZipFile.ExtractToDirectory(zipFileName, dir, true);
