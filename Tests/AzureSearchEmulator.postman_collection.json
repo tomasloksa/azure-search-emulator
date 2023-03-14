@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "27729c21-0ee0-420e-a8d9-935127e71bcd",
+		"_postman_id": "af42ed99-5988-4820-ab00-47ab42ea749b",
 		"name": "AzureSearchEmulator",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "8467650"
@@ -314,69 +314,6 @@
 					"response": []
 				},
 				{
-					"name": "Search with searchFields comma",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Search should retrieve correct documents.\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"\r",
-									"    var result = pm.response.json();\r",
-									"\r",
-									"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
-									"        pm.expect(result[\"@odata.count\"]).to.equal(1);\r",
-									"    });\r",
-									"\r",
-									"    pm.test(\"Property 'Id' should exist.\", function () {\r",
-									"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
-									"    });\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"search\":\"M*\", \"top\": 10, \"searchFields\":\"Name, ItemCode,\"}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "https://localhost:8000/indexes('{{index}}')/docs/search.post.search",
-							"protocol": "https",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"indexes('{{index}}')",
-								"docs",
-								"search.post.search"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Search all documents in schema without nested fields",
 					"event": [
 						{
@@ -417,6 +354,69 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\"search\":\"*:*\", \"top\": 10}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:8000/indexes('{{flatIndex}}')/docs/search.post.search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"indexes('{{flatIndex}}')",
+								"docs",
+								"search.post.search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search with searchFields comma",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Search should retrieve correct documents.\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    var result = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Search should retrieve correct number of documents.\", function () {\r",
+									"        pm.expect(result[\"@odata.count\"]).to.equal(1);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Property 'Id' should exist.\", function () {\r",
+									"        pm.expect(result.value[0].Id).to.not.equal(undefined);\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"search\":\"t*\", \"top\": 10, \"searchFields\":\"SearchName, Id,\"}",
 							"options": {
 								"raw": {
 									"language": "json"
