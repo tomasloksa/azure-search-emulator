@@ -874,7 +874,8 @@
         "StockItemType": 0,
         "ItemCode": ""
       }
-    ]
+    ],
+    "TagIds": [ 321, 654, 987 ]
   },
   {
     "Id": "295",
@@ -1003,6 +1004,7 @@
         "StockItemType": 0,
         "ItemCode": ""
       }
-    ]
+    ],
+    "TagIds": [ 123, 456, 789 ]
   }
 ]
