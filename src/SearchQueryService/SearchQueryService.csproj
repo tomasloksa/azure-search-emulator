@@ -6,7 +6,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
     <DockerfileContext>..\..</DockerfileContext>
-    <Version>1.3.1</Version>
+    <Version>1.3.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
