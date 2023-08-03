@@ -1104,6 +1104,20 @@
             "synonymMaps": []
         },
         {
+            "name": "TagIds",
+            "type": "Collection(Edm.Int64)",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": "slovak_asciifolding",
+            "synonymMaps": []
+        },
+        {
             "name": "Items",
             "type": "Collection(Edm.ComplexType)",
             "fields": [
