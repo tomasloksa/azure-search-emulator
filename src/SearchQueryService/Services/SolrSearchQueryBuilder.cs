@@ -31,7 +31,7 @@ namespace SearchQueryService.Services
             { @"(\w+:)\s?''", "-$1['' TO * ]" },
 
             // lambda expression
-            { @"(\w+)/(any|all)\(\w+: \w+(.*)\)", "$1$3" }
+            { @"(\w+)/(any|all)\(\w+: \w+([^\)]*)\)", "$1$3" }
         };
 
         public string Build(string indexName, AzSearchParams searchParams)
